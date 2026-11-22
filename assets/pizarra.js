@@ -807,7 +807,9 @@ function caja(c){
    elementos lleva a la entrada del libro de Euclides (omapa/elementos),
    que a su vez nombra esta diapositiva en su «En clase»: el vínculo va y vuelve.
    Van antes de un ejemplo (ej.antes), después de los ejemplos de un tema
-   (t.despues) o al principio de la unidad (cfg.INICIO, en #teoria-inicio). */
+   (t.despues) o al principio de la unidad (cfg.INICIO, en #teoria-inicio).
+   chip, si está, cambia el nombre del cajón sin cambiarle el color: en una
+   clase que no es de geometría, el cajón «lenguaje» se llama «Lenguaje». */
 const CAJONES = { definicion:'Definición', postulado:'Postulado', nocion:'Noción común',
   teorema:'Teorema', construccion:'Construcción', estrategia:'Estrategia', lenguaje:'El lenguaje de la geometría' };
 /* Lo que dice la diapositiva aparece por partes, como los pasos de un
@@ -831,7 +833,7 @@ function teoria(td, cinta, attrs = ''){
   return `
   <section class="teoria-diapo" id="d-${td.id}" data-cajon="${td.cajon}"${attrs}>
     ${cinta ? `<p class="cinta">${cinta}</p>` : ''}
-    <p class="cajon-chip">${CAJONES[td.cajon]}${td.cod ? ` <b>${td.cod}</b>` : ''}</p>
+    <p class="cajon-chip">${td.chip || CAJONES[td.cajon]}${td.cod ? ` <b>${td.cod}</b>` : ''}</p>
     <h3 class="teoria-tit">${td.titulo}</h3>
     <div class="teoria-cuerpo${td.figura ? ' con-figura' : ''}">
       <div class="teoria-txt">

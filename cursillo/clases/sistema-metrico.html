@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="../../assets/img/seraweb.svg" type="image/svg+xml">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sistema métrico decimal · Cursillo · SeraWeb</title>
+<meta name="description" content="Cursillo de ingreso: el sistema métrico decimal en cinco temas. La escalera de las unidades, los números complejos, cómo se leen «la décima del km» y «la centena del dl», superficie, volumen y el agua.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file: 'unsafe-inline'; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; font-src 'self' file:; media-src 'self' file:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<script src="../../assets/acceso.js"></script>
+<link rel="stylesheet" href="../../assets/base.css">
+<link rel="stylesheet" href="../../assets/sitio.css">
+<link rel="stylesheet" href="../../assets/clase.css">
+<style>
+/* ---------- solo de esta página ---------- */
+/* los rótulos del cuaderno (km, cosecha, frente) van chicos */
+.cuaderno .al-rot{font-size:.7em; padding-right:1em}
+</style>
+</head>
+<body data-diapos=".intro, .arranque, .teoria-diapo, .concepto, .ejemplo-diapo, .desafio">
+<nav class="sitio-nav">
+  <div class="sitio-nav-int">
+    <a class="sitio-marca" href="../../index.html">Sera<span>Web</span></a>
+    <div class="sitio-ruta">
+      <a href="../../index.html">Inicio</a><span class="sep">/</span>
+      <a href="../index.html">Cursillo</a><span class="sep">/</span>
+      <span>Sistema métrico decimal</span>
+    </div>
+  </div>
+</nav>
+
+<div class="envoltura">
+
+  <header class="tapa">
+    <p class="sello">SeraWeb · Cursillo de ingreso</p>
+    <h1>Sistema métrico decimal</h1>
+    <p class="bajada">«Para todos los tiempos, para todos los pueblos.»<span class="firma">lema del
+      sistema métrico, atribuido a Condorcet</span></p>
+    <div class="pie-tapa">
+      <span>Aritmética y Álgebra · unidad 6</span>
+      <span>Docente: Juan Serafini</span>
+    </div>
+  </header>
+
+  <nav class="nav" aria-label="Ir a un tema">
+    <div class="nav-int" id="nav"></div>
+  </nav>
+
+  <section class="intro" id="inicio" data-tema="unidad">
+    <p class="cinta">Cursillo de ingreso · Aritmética y Álgebra · unidad 6</p>
+    <h2>Medir es comparar con una unidad</h2>
+    <ul class="puntos">
+      <li>Una medida es un número <b>y</b> una unidad: 3,75 solo no dice nada; 3,75 km, sí.</li>
+      <li>En el sistema métrico, cada unidad vale <b>10 veces</b> la de abajo: cambiar de unidad es correr la coma.</li>
+      <li>Todo el tema es una <b>escalera</b>: saber cuántos escalones hay y cuánto vale cada uno.</li>
+    </ul>
+    <div class="recorrido" id="recorrido"></div>
+  </section>
+  <div id="arranque-lugar"></div>
+
+  <main id="temas"></main>
+
+  <footer class="creditos">
+    Material de clase del cursillo de ingreso · Sigue la unidad 6 (Sistema métrico decimal)
+    del programa de Aritmética y Álgebra. Los ejemplos y las explicaciones son propios; los
+    ejercicios del ejercitario quedan para los alumnos. Cada respuesta de esta página está
+    verificada en <span class="ec">verificacion/cursillo_sistema_metrico.py</span>.
+  </footer>
+</div>
+
+<script src="../../assets/pizarra.js"></script>
+
+<script>
+/* Las unidades no van en cursiva: «m» es metro, no una incógnita. */
+Pizarra.letras = /(?!)/g;
+
+const TEMAS = [
+{
+  n:1, corto:'Longitud y la escalera', titulo:'La longitud y la escalera de las unidades', pag:'longitud',
+  concepto:{
+    formaTxt:'km → hm → dam → m → dm → cm → mm: cada escalón hacia abajo, × 10',
+    serie:[
+      { rot:'bajar', txt:'a una unidad más chica: se multiplica' },
+      { rot:'subir', txt:'a una unidad más grande: se divide' },
+      { rot:'cuántas veces', txt:'una vez por escalón' },
+    ],
+    puntos:[
+      'El <b>metro</b> es la unidad principal de longitud; las demás son múltiplos y submúltiplos de diez.',
+      'Multiplicar por 10 es correr la coma un lugar a la derecha; por 1.000, tres lugares.',
+      'El número se agranda cuando la unidad se achica: la misma distancia, en pedazos más chicos.',
+    ]
+  },
+  ejemplos:[
+    { titulo:'bajar en la escalera', enun:'Pasar 3,75 km a metros.',
+      antes:[
+        { id:'smd', cajon:'definicion', titulo:'Sistema métrico decimal',
+          pregunta:'¿Por qué se llama «decimal»?',
+          enun:'Es un sistema de unidades en el que cada unidad vale <b>10 veces</b> la que está debajo. Los nombres se arman con un prefijo y la unidad principal: <b>kilo</b>metro, <b>centi</b>litro, <b>mili</b>gramo.',
+          mas:['<b>kilo</b> (k) es mil, <b>hecto</b> (h) es cien, <b>deca</b> (da) es diez.',
+               '<b>deci</b> (d) es un décimo, <b>centi</b> (c) un centésimo, <b>mili</b> (m) un milésimo.'],
+          como:'Como nuestros números: diez unidades forman una decena, diez decenas una centena. Por eso pasar de una unidad a otra es correr la coma.' },
+      ],
+      pasos:[
+        'De km a m hay tres escalones hacia abajo: km → hm → dam → m.',
+        P('Bajar es multiplicar por 10 en cada escalón: tres escalones, por 1.000.', '3,75 km = 3,75 · 1.000 m', ' = 3.750 m'),
+      ],
+      final:'3,75 km = 3.750 m',
+      control:`Subo los tres escalones:${A('3.750 : 1.000 = 3,75 ✓')}` },
+    { titulo:'cambio el sentido: subir', enun:`Pasar ${N('4.260 cm')} a metros.`,
+      pasos:[
+        'De cm a m hay dos escalones hacia <b>arriba</b>: cm → dm → m.',
+        P('Subir es dividir por 10 en cada escalón: dos escalones, por 100.', '4.260 cm = 4.260 : 100 m', ' = 42,6 m'),
+      ],
+      final:'4.260 cm = 42,6 m',
+      control:`Bajo los dos escalones:${A('42,6 · 100 = 4.260 ✓')}` },
+    { titulo:'cambio: se cruza el metro', enun:`Pasar ${N('0,48 hm')} a ${N('decímetros')}.`,
+      pasos:[
+        'De hm a dm se pasa por el metro: hm → dam → m → dm. Son tres escalones hacia abajo.',
+        P('Por 1.000: la coma se corre tres lugares a la derecha.', '0,48 hm = 0,48 · 1.000 dm', ' = 480 dm'),
+      ],
+      final:'0,48 hm = 480 dm',
+      control:`Subo los tres escalones:${A('480 : 1.000 = 0,48 ✓')}` },
+    { titulo:'cambio: una medida con varias unidades', enun:`Pasar ${N('2 km 4 hm 15 m')} a metros.`,
+      antes:[
+        { id:'complejo', cajon:'lenguaje', chip:'Lenguaje', titulo:'Número complejo e incomplejo',
+          pregunta:'¿Cómo escribirías «2 km 4 hm 15 m» con una sola unidad?',
+          enun:'Una medida escrita con varias unidades, como <b>2 km 4 hm 15 m</b>, es un número <b>complejo</b>. Escrita con una sola unidad, como <b>2.415 m</b>, es un número <b>incomplejo</b>.',
+          mas:['Acá «complejo» no tiene nada que ver con los números complejos del álgebra: quiere decir «compuesto de partes».'],
+          como:'Como decir «1 hora 20 minutos» o «80 minutos»: la misma duración, escrita de dos maneras.' },
+      ],
+      pasos:[
+        'Cada parte se pasa a metros por separado, y después se suman.',
+        P('Cada parte, a metros.', ['km', '2 km = 2.000 m'], ['hm', '4 hm = 400 m']),
+        P('Sumo las tres partes.', ['total', '2.000 m + 400 m + 15 m = 2.415 m']),
+      ],
+      final:'2 km 4 hm 15 m = 2.415 m',
+      control:'Leído al revés: en 2.415 m, el 2 son los km, el 4 los hm y el 15 los m ✓' },
+    { titulo:'al revés: de incomplejo a complejo', enun:`Escribir ${N('3.072 cm')} como número complejo, con m, dm y cm.`,
+      pasos:[
+        P('Primero los metros: cada 100 cm es 1 m.', '3.072 cm = 3.000 cm + 72 cm', ['metros', '3.000 cm = 30 m']),
+        P('Lo que sobra, en dm y cm: cada 10 cm es 1 dm.', '72 cm = 70 cm + 2 cm', ['decímetros', '70 cm = 7 dm']),
+      ],
+      final:'3.072 cm = 30 m 7 dm 2 cm',
+      control:`Vuelvo a centímetros:${A('30 m 7 dm 2 cm = 3.000 cm + 70 cm + 2 cm', ' = 3.072 cm ✓')}` },
+  ],
+  preguntas:[
+    { p:'En el ejemplo 1, ¿por qué el número se agrandó si la distancia es la misma?',
+      r:'Porque el metro es más chico que el kilómetro: hacen falta más metros para cubrir la misma distancia. Unidad más chica, número más grande.' },
+    { p:'¿Cómo me acuerdo si multiplico o divido?',
+      r:'Pensando si la unidad nueva es más chica o más grande. Si es más chica (bajar), entran más: multiplico. Si es más grande (subir), entran menos: divido.' },
+    { p:'En el ejemplo 4, ¿por qué no paso el 15 m?',
+      r:'Porque ya está en metros, que es la unidad que pide. Solo se pasan las partes que están en otra unidad.' },
+    { p:'¿Existen el miriámetro y el mam?',
+      r:'Sí: el miriámetro (mam) son 10 km. Casi no se usa, pero aparece en los exámenes de ingreso. Está un escalón arriba del km.' },
+  ],
+  notas:`<p>Es la base de toda la unidad: si la escalera está clara, superficie y volumen son
+      la misma idea con escalones de 100 y de 1.000. Conviene dibujarla en el pizarrón y
+      dejarla toda la clase.</p>
+    <p>El error más común es multiplicar cuando hay que dividir. La pregunta que lo corta es
+      «¿la unidad nueva es más grande o más chica?», antes de hacer ninguna cuenta.</p>
+    <p>Los números complejos aparecen en casi todos los problemas del cuestionario: el
+      ejemplo 5 (de incomplejo a complejo) es el que menos practican y el que más cuesta.</p>
+    <p>Para practicar: <b>Ejercitario 5.1</b>, ejercicios de conversión de longitud.</p>`
+},
+{
+  n:2, corto:'Capacidad y masa', titulo:'Capacidad y masa: la misma escalera', pag:'capacidad y masa',
+  concepto:{
+    formaTxt:'kL → hL → daL → L → dL → cL → mL   y   kg → hg → dag → g → dg → cg → mg',
+    serie:[
+      { rot:'Tm', txt:'tonelada métrica: 1.000 kg' },
+      { rot:'Qm', txt:'quintal métrico: 100 kg' },
+      { rot:'mag', txt:'miriagramo: 10 kg' },
+    ],
+    puntos:[
+      'El <b>litro</b> (capacidad) y el <b>gramo</b> (masa) tienen la misma escalera que el metro: × 10 por escalón.',
+      'Para masas grandes hay tres unidades fuera de la escalera: la Tm, el Qm y el mag.',
+      'El kilogramo se usa más que el gramo, pero los nombres se arman sobre el gramo.',
+    ]
+  },
+  ejemplos:[
+    { titulo:'la misma escalera, con litros', enun:'Pasar 2,5 L a mililitros.',
+      pasos:[
+        'De L a mL hay tres escalones hacia abajo: L → dL → cL → mL.',
+        P('Por 1.000.', '2,5 L = 2,5 · 1.000 mL', ' = 2.500 mL'),
+      ],
+      final:'2,5 L = 2.500 mL',
+      control:`Subo los tres escalones:${A('2.500 : 1.000 = 2,5 ✓')}` },
+    { titulo:'cambio: una capacidad con varias unidades', enun:`Pasar ${N('4 daL 7 L 5 dL')} a litros.`,
+      pasos:[
+        P('Cada parte, a litros.', ['daL', '4 daL = 40 L'], ['dL', '5 dL = 0,5 L']),
+        P('Sumo.', ['total', '40 L + 7 L + 0,5 L = 47,5 L']),
+      ],
+      final:'4 daL 7 L 5 dL = 47,5 L',
+      control:'Leído al revés: en 47,5 L, el 4 son los daL, el 7 los L y el 5 los dL ✓' },
+    { titulo:'cambio la magnitud: masa', enun:`Pasar ${N('0,85 kg')} a ${N('gramos')}.`,
+      pasos:[
+        'De kg a g: tres escalones hacia abajo, kg → hg → dag → g.',
+        P('Por 1.000.', '0,85 kg = 0,85 · 1.000 g', ' = 850 g'),
+      ],
+      final:'0,85 kg = 850 g',
+      control:`Subo los tres escalones:${A('850 : 1.000 = 0,85 ✓')}` },
+    { titulo:'cambio: unidades fuera de la escalera', enun:`Pasar ${N('1 Tm 3 Qm')} 45 kg a kilogramos.`,
+      pasos:[
+        'La Tm y el Qm no están en la escalera: se pasan con su equivalencia.',
+        P('Cada parte, a kg.', ['Tm', '1 Tm = 1.000 kg'], ['Qm', '3 Qm = 300 kg']),
+        P('Sumo.', ['total', '1.000 kg + 300 kg + 45 kg = 1.345 kg']),
+      ],
+      final:'1 Tm 3 Qm 45 kg = 1.345 kg',
+      control:'Leído al revés: 1.345 kg son 1 Tm (1.000 kg), 3 Qm (300 kg) y 45 kg ✓' },
+    { titulo:'cambio: un problema', prosa:true, fija:1,
+      enun:`«Una cooperativa de Itapúa cosechó 2 Tm 350 kg de soja. Un camión se llevó ${N('40 bolsas de 5 mag')} cada una. ¿Cuántos kilogramos de soja quedaron?»`,
+      pasos:[
+        'Todo en kilogramos: es lo que pide la pregunta.',
+        P('La cosecha.', ['Tm', '2 Tm = 2.000 kg'], ['cosecha', '2.000 kg + 350 kg = 2.350 kg']),
+        P('Lo que se llevó el camión.', ['bolsa', '5 mag = 50 kg'], ['camión', '40 · 50 kg = 2.000 kg']),
+        P('Resto.', ['quedan', '2.350 kg − 2.000 kg = 350 kg']),
+      ],
+      final:'quedaron 350 kg',
+      control:`Lo que se llevó más lo que quedó es la cosecha:${A('2.000 kg + 350 kg = 2.350 kg ✓')}` },
+  ],
+  preguntas:[
+    { p:'¿Por qué el kilogramo, que es el que más usamos, no es la unidad principal?',
+      r:'En la escalera, los nombres se arman sobre el gramo: kilo-gramo, hecto-gramo. En física, en cambio, la unidad del sistema internacional es el kilogramo. Las dos cosas son ciertas.' },
+    { p:'En el ejercitario el litro se escribe «l», con minúscula. ¿Es lo mismo que «L»?',
+      r:'Sí: las dos son el símbolo del litro. Acá usamos la mayúscula porque, proyectada, la «l» se confunde con un 1.' },
+    { p:'¿La Tm no es lo mismo que la tonelada?',
+      r:'Sí: la tonelada métrica son 1.000 kg. Se escribe Tm para no confundirla con otras toneladas (la inglesa, por ejemplo), que pesan distinto.' },
+    { p:'En el problema, ¿por qué no pasé todo a gramos?',
+      r:'Se puede, y da lo mismo, pero con números más largos. Conviene trabajar en la unidad que pide la respuesta.' },
+  ],
+  notas:`<p>El mensaje es que no hay nada nuevo: la escalera del metro sirve tal cual para el
+      litro y el gramo. Lo nuevo son la Tm, el Qm y el mag, que hay que memorizar porque no
+      siguen el patrón de los nombres.</p>
+    <p>Los problemas del examen suelen dar un complejo con unidades mezcladas (Tm, kg, g) y
+      preguntar en una sola: el ejemplo 5 es el modelo. Antes de resolverlo, conviene
+      preguntar «¿en qué unidad me piden la respuesta?».</p>
+    <p>Para practicar: <b>Ejercitario 5.1</b>, ejercicios 2 y 9.</p>`
+},
+{
+  n:3, corto:'Leer las unidades', titulo:'La décima, la centena: cómo se leen las unidades', pag:'el lenguaje',
+  concepto:{
+    formaTxt:'la décima de una unidad es la unidad : 10; la centena, la unidad · 100',
+    serie:[
+      { rot:'décima', txt:': 10' }, { rot:'centésima', txt:': 100' }, { rot:'milésima', txt:': 1.000' },
+      { rot:'decena', txt:'· 10' }, { rot:'centena', txt:'· 100' }, { rot:'millar', txt:'· 1.000' },
+    ],
+    puntos:[
+      'Primero se hace la cuenta en la unidad principal; después se busca en la escalera a qué unidad llegó.',
+      'Si hay varias palabras encadenadas, se leen de atrás para adelante.',
+    ]
+  },
+  ejemplos:[
+    { titulo:'una décima', enun:'¿Qué unidad es la décima del km?',
+      antes:[
+        { id:'decima', cajon:'lenguaje', chip:'Lenguaje', titulo:'La décima y la centena de una unidad',
+          pregunta:'¿Qué quiere decir «la décima del metro»?',
+          enun:'La <b>décima</b> de una unidad es esa unidad partida en 10; la <b>centésima</b>, partida en 100; la <b>milésima</b>, en 1.000.',
+          mas:['Al revés, la <b>decena</b> de una unidad son 10 de ellas; la <b>centena</b>, 100; el <b>millar</b>, 1.000.',
+               'La décima del metro es el decímetro: de ahí sale el nombre.'],
+          como:'La décima de un billete de ₲ 100.000 es uno de ₲ 10.000.' },
+      ],
+      pasos:[
+        P('La décima es dividir por 10. Lo hago en metros.', '1 km = 1.000 m', '1.000 m : 10 = 100 m'),
+        P('Busco en la escalera qué unidad vale 100 m.', '100 m = 1 hm'),
+      ],
+      final:'la décima del km es el hm',
+      control:`Diez hm forman un km:${A('10 · 100 m = 1.000 m ✓')}` },
+    { titulo:'cambio: una centésima', enun:`¿Qué unidad es la ${N('centésima')} del km?`,
+      pasos:[
+        P('La centésima es dividir por 100.', '1.000 m : 100 = 10 m'),
+        P('En la escalera:', '10 m = 1 dam'),
+      ],
+      final:'la centésima del km es el dam',
+      control:`Cien dam forman un km:${A('100 · 10 m = 1.000 m ✓')}` },
+    { titulo:'cambio: una centena, que multiplica', enun:`¿Qué unidad es la ${N('centena')} del ${N('dL')}?`,
+      pasos:[
+        P('La centena es multiplicar por 100. Lo hago en litros.', '1 dL = 0,1 L', '100 · 0,1 L = 10 L'),
+        P('En la escalera:', '10 L = 1 daL'),
+      ],
+      final:'la centena del dL es el daL',
+      control:`Al revés, el daL partido en 100:${A('10 L : 100 = 0,1 L ✓')}` },
+    { titulo:'cambio: desde fuera de la escalera', enun:`¿Qué unidad es la ${N('milésima')} de la ${N('Tm')}?`,
+      pasos:[
+        P('La Tm, en kilogramos.', '1 Tm = 1.000 kg'),
+        P('La milésima es dividir por 1.000.', '1.000 kg : 1.000 = 1 kg'),
+      ],
+      final:'la milésima de la Tm es el kg',
+      control:`Mil kg forman una Tm:${A('1.000 · 1 kg = 1.000 kg ✓')}` },
+    { titulo:'cambio: varias palabras encadenadas', enun:`¿Qué unidad son ${N('10 decenas de décimas')} del hm?`,
+      pasos:[
+        'Se lee de atrás para adelante: primero la décima del hm, después las decenas, después las 10.',
+        P('La décima del hm.', '1 hm : 10 = 1 dam'),
+        P('Una decena de esas: 10 dam.', '10 · 1 dam = 1 hm'),
+        P('Y 10 de esas decenas.', '10 · 1 hm = 1 km'),
+      ],
+      final:'10 decenas de décimas del hm son 1 km',
+      control:`Todo junto, en una cuenta:${A('10 · 10 · 0,1 hm = 10 hm', ' = 1 km ✓')}` },
+  ],
+  preguntas:[
+    { p:'¿«La décima del km» y «el km dividido por 10» es lo mismo?',
+      r:'Sí. «Décima» es la manera de decirlo con palabras: es la parte que resulta de partir en 10.' },
+    { p:'En el ejemplo 5, ¿por qué de atrás para adelante?',
+      r:'Porque «10 decenas de décimas del hm» se arma así: la décima del hm, de eso una decena, de eso 10. Es como leer «la mitad del doble de 6»: primero el doble.' },
+    { p:'¿Por qué en el ejemplo 3 la centena da una unidad más grande?',
+      r:'Porque centena multiplica: 100 dL son más que 1 dL. Décima, centésima y milésima achican; decena, centena y millar agrandan.' },
+  ],
+  notas:`<p>Este tema no está como título en el material de lectura, pero el cuestionario lo
+      pregunta en casi todos los ejercicios («la centésima del dm representa el mm», «la
+      centena del daL representa el kl»). Por eso va aparte.</p>
+    <p>Las proposiciones del examen se contestan con verdadero o falso: conviene que en el
+      ejemplo 1 alguien diga, antes de la cuenta, si cree que la décima del km es el hm o el
+      mam. Casi siempre aparece la confusión, y la cuenta la resuelve.</p>
+    <p>Para practicar: <b>Cuestionario</b>, ejercicios 3 y 7.</p>`
+},
+{
+  n:4, corto:'Superficie', titulo:'La superficie y las unidades agrarias', pag:'superficie',
+  concepto:{
+    formaTxt:'km² → hm² → dam² → m² → dm² → cm² → mm²: cada escalón, × 100',
+    serie:[
+      { rot:'ha', txt:'hectárea = 1 hm²' },
+      { rot:'a', txt:'área = 1 dam²' },
+      { rot:'ca', txt:'centiárea = 1 m²' },
+    ],
+    puntos:[
+      'Un m² es un cuadrado de 1 m de lado: adentro entran 10 · 10 = 100 dm².',
+      'Por eso en superficie el escalón vale <b>100</b>: la coma se corre de a dos lugares.',
+      'Para campos y terrenos se usan las unidades agrarias: ha, a y ca.',
+    ]
+  },
+  ejemplos:[
+    { titulo:'un escalón de superficie', enun:'Pasar 3,5 m² a dm².',
+      pasos:[
+        'De m² a dm² es un escalón hacia abajo. En superficie, el escalón vale 100.',
+        P('Por 100.', '3,5 m² = 3,5 · 100 dm²', ' = 350 dm²'),
+      ],
+      final:'3,5 m² = 350 dm²',
+      control:`Subo el escalón:${A('350 : 100 = 3,5 ✓')}` },
+    { titulo:'cambio el sentido: subir', enun:`Pasar ${N('45.000 cm²')} a m².`,
+      pasos:[
+        'De cm² a m² hay dos escalones hacia arriba: cm² → dm² → m².',
+        P('Dos escalones de 100: divido por 10.000.', '45.000 cm² = 45.000 : 10.000 m²', ' = 4,5 m²'),
+      ],
+      final:'45.000 cm² = 4,5 m²',
+      control:`Bajo los dos escalones:${A('4,5 · 10.000 = 45.000 ✓')}` },
+    { titulo:'cambio: desde un múltiplo', enun:`Pasar ${N('0,07 km²')} a ${N('dam²')}.`,
+      pasos:[
+        'De km² a dam²: km² → hm² → dam², dos escalones hacia abajo.',
+        P('Por 10.000: la coma se corre cuatro lugares.', '0,07 km² = 0,07 · 10.000 dam²', ' = 700 dam²'),
+      ],
+      final:'0,07 km² = 700 dam²',
+      control:`Subo los dos escalones:${A('700 : 10.000 = 0,07 ✓')}` },
+    { titulo:'cambio: unidades agrarias', enun:`Pasar ${N('3 ha 8 a 5 ca')} a m².`,
+      antes:[
+        { id:'agrarias', cajon:'definicion', titulo:'Unidades agrarias',
+          pregunta:'¿Cuántos metros cuadrados tiene una hectárea?',
+          enun:'Para campos y terrenos se usan la <b>hectárea</b> (ha), el <b>área</b> (a) y la <b>centiárea</b> (ca).',
+          revela:{ txt:'1 ha es 1 hm²: un cuadrado de 100 m de lado, 10.000 m².' },
+          mas:['1 a es 1 dam², 100 m²; y 1 ca es 1 m².'],
+          como:'Una cancha de fútbol tiene un poco menos de una hectárea.' },
+      ],
+      pasos:[
+        P('Cada parte, a m².', ['ha', '3 ha = 30.000 m²'], ['a', '8 a = 800 m²'], ['ca', '5 ca = 5 m²']),
+        P('Sumo.', ['total', '30.000 m² + 800 m² + 5 m² = 30.805 m²']),
+      ],
+      final:'3 ha 8 a 5 ca = 30.805 m²',
+      control:'En 30.805 m², las cifras se leen de a dos desde la derecha: 3 ha, 08 a, 05 ca ✓' },
+    { titulo:'cambio: un problema', prosa:true, fija:1,
+      enun:`«Un terreno rectangular en Caacupé mide 250 m de frente y 120 m de fondo. Se vende a ${N('₲ 18.000.000 la hectárea')}. ¿Cuánto cuesta el terreno?»`,
+      pasos:[
+        'El precio está por hectárea: hay que saber cuántas hectáreas tiene.',
+        P('La superficie, en m².', '250 m · 120 m = 30.000 m²'),
+        P('A hectáreas: cada ha son 10.000 m².', '30.000 m² = 30.000 : 10.000 ha', ' = 3 ha'),
+        P('Por el precio de una hectárea.', '3 · ₲ 18.000.000 = ₲ 54.000.000'),
+      ],
+      final:'el terreno cuesta ₲ 54.000.000',
+      control:`Al revés, cuántas hectáreas paga:${A('₲ 54.000.000 : ₲ 18.000.000 = 3 ✓')}` },
+  ],
+  preguntas:[
+    { p:'¿Por qué en superficie el escalón es de 100 y no de 10?',
+      r:'Porque un cuadrado tiene dos dimensiones. Si el lado se hace 10 veces más chico, entran 10 a lo largo y 10 a lo ancho: 100.' },
+    { p:'En el ejemplo 4, ¿por qué el 8 a se escribe 08?',
+      r:'Porque cada unidad agraria ocupa dos cifras: el escalón es de 100. En 30.805 se lee de a dos desde la derecha: 05 ca, 08 a y 3 ha. El cero dice que no hay decenas de área.' },
+    { p:'¿La hectárea es lo mismo que el hm²?',
+      r:'Sí: es el mismo tamaño con otro nombre. Lo mismo el área y el dam², y la centiárea y el m².' },
+  ],
+  notas:`<p>El error que más se ve: correr la coma un solo lugar por escalón, como en
+      longitud. Antes del ejemplo 1 conviene dibujar un m² partido en dm² y contar los
+      cuadraditos.</p>
+    <p>Las unidades agrarias son las que más aparecen en los problemas (campos, fincas,
+      terrenos), casi siempre en complejo, con ha, a y ca juntas. El control del ejemplo 4 (leer
+      de a dos cifras) sirve también para pasar de incomplejo a complejo.</p>
+    <p>Para practicar: <b>Ejercitario 5.1</b>, ejercicios 3, 4 y 7.</p>`
+},
+{
+  n:5, corto:'Volumen, capacidad y masa', titulo:'El volumen, y su relación con la capacidad y la masa', pag:'volumen',
+  concepto:{
+    formaTxt:'km³ → hm³ → dam³ → m³ → dm³ → cm³ → mm³: cada escalón, × 1.000',
+    serie:[
+      { rot:'1 dm³', txt:'1 L, y 1 kg de agua' },
+      { rot:'1 m³', txt:'1 kL, y 1 Tm de agua' },
+      { rot:'1 cm³', txt:'1 mL, y 1 g de agua' },
+    ],
+    puntos:[
+      'Un m³ es un cubo de 1 m de arista: adentro entran 10 · 10 · 10 = 1.000 dm³.',
+      'Un cubo de 1 dm de arista tiene capacidad para 1 litro: <b>1 dm³ = 1 L</b>.',
+      'Y 1 litro de <b>agua</b> pesa 1 kg. Solo el agua: un litro de aceite pesa menos.',
+    ]
+  },
+  ejemplos:[
+    { titulo:'un escalón de volumen', enun:'Pasar 5,7 dm³ a cm³.',
+      pasos:[
+        'De dm³ a cm³ es un escalón hacia abajo. En volumen, el escalón vale 1.000.',
+        P('Por 1.000.', '5,7 dm³ = 5,7 · 1.000 cm³', ' = 5.700 cm³'),
+      ],
+      final:'5,7 dm³ = 5.700 cm³',
+      control:`Subo el escalón:${A('5.700 : 1.000 = 5,7 ✓')}` },
+    { titulo:'cambio: de volumen a capacidad', enun:`Pasar ${N('0,35 m³')} a ${N('litros')}.`,
+      antes:[
+        { id:'agua', cajon:'definicion', titulo:'Volumen, capacidad y masa del agua',
+          pregunta:'Una caja cúbica de 10 cm de lado, llena de agua: ¿cuántos litros tiene? ¿Cuánto pesa el agua?',
+          enun:'<b>1 dm³ = 1 L</b>: un cubo de 1 dm de arista tiene capacidad para un litro.',
+          revela:{ txt:'Tiene un litro, y el agua pesa 1 kg.' },
+          mas:['Para el agua, además, <b>1 L pesa 1 kg</b>.',
+               'Así, 1 m³ son 1.000 litros (un kL), y pesan 1.000 kg de agua (una Tm).'],
+          como:'Un cartón de leche de un litro es casi un cubo de 10 cm de lado.' },
+      ],
+      pasos:[
+        P('De m³ a dm³: un escalón hacia abajo, por 1.000.', '0,35 m³ = 0,35 · 1.000 dm³', ' = 350 dm³'),
+        P('Cada dm³ es un litro.', '350 dm³ = 350 L'),
+      ],
+      final:'0,35 m³ = 350 L',
+      control:`Por la capacidad:${A('350 L = 0,35 kL')}y 1 kL es 1 m³ ✓` },
+    { titulo:'cambio: la masa del agua', prosa:true, fija:1,
+      enun:`«Un tanque de 1,2 m³ está lleno de agua. ¿Cuántos ${N('kilogramos')} de agua tiene?»`,
+      pasos:[
+        'De volumen a masa se pasa por la capacidad: m³ → dm³ → L → kg.',
+        P('A dm³, que son litros.', '1,2 m³ = 1.200 dm³', '1.200 dm³ = 1.200 L'),
+        P('Cada litro de agua pesa 1 kg.', ['agua', '1.200 L pesan 1.200 kg']),
+      ],
+      final:'el tanque tiene 1.200 kg de agua',
+      control:'Por la Tm: 1 m³ de agua pesa 1 Tm, y 1,2 Tm son 1.200 kg ✓' },
+    { titulo:'cambio: un volumen con varias unidades', enun:`Pasar ${N('3 m³ 40 dm³ 500 cm³')} a litros.`,
+      pasos:[
+        P('Cada parte, a dm³, que son litros.', ['m³', '3 m³ = 3.000 dm³'], ['cm³', '500 cm³ = 0,5 dm³']),
+        P('Sumo, en litros.', ['total', '3.000 L + 40 L + 0,5 L = 3.040,5 L']),
+      ],
+      final:'3 m³ 40 dm³ 500 cm³ = 3.040,5 L',
+      control:'En 3.040,5 las cifras se leen de a tres: 3 m³, 040 dm³ y 500 cm³ ✓' },
+    { titulo:'cambio: un problema', prosa:true, fija:1,
+      enun:`«El medidor de agua de una casa en Luque marcaba 2.318,6 m³ el lunes y 2.326,15 m³ el sábado. ¿Cuántos ${N('litros')} se consumieron?»`,
+      pasos:[
+        P('Lo que se consumió es la diferencia de las dos lecturas.', '2.326,15 m³ − 2.318,6 m³ = 7,55 m³'),
+        P('A litros: por 1.000.', '7,55 m³ = 7.550 dm³', '7.550 dm³ = 7.550 L'),
+      ],
+      final:'se consumieron 7.550 L',
+      control:`La lectura del lunes más el consumo da la del sábado:${A('2.318,6 m³ + 7,55 m³ = 2.326,15 m³ ✓')}` },
+  ],
+  preguntas:[
+    { p:'¿Por qué en volumen el escalón es de 1.000?',
+      r:'Porque un cubo tiene tres dimensiones: 10 a lo largo, 10 a lo ancho y 10 a lo alto, 1.000 en total.' },
+    { p:'¿Un litro de aceite también pesa 1 kg?',
+      r:'No: pesa menos, más o menos 920 g. Que 1 L pese 1 kg vale solo para el agua. Por eso los problemas aclaran «de agua».' },
+    { p:'En el ejemplo 2, ¿por qué no paso de m³ directo a litros?',
+      r:'Se puede: 1 m³ son 1.000 L. Pasar por el dm³ es lo mismo, pero se ve de dónde sale el 1.000.' },
+    { p:'En el ejemplo 5, ¿cómo resto si una lectura tiene dos decimales y la otra uno?',
+      r:'Se completa con un cero, 2.318,60, y se alinean las comas. Así la resta da 7,55.' },
+  ],
+  notas:`<p>El corazón del tema es el último punto del concepto: <b>1 dm³ es 1 L, y pesa 1 kg
+      de agua</b>. Con eso se cruza entre las tres magnitudes, que es lo que más preguntan las
+      proposiciones del examen («1.000 kL equivale a 1 dam³»).</p>
+    <p>Ojo con el material de lectura: en su ejemplo 5 da como falsa «la décima de la Tm es
+      equivalente a 100 l», pero es verdadera (la décima de la Tm son 100 kg, que en agua
+      son 100 L). La misma proposición está en los ejercicios 1 y 6 del cuestionario. Vale
+      la pena mostrarlo en clase: el control también sirve para encontrar errores ajenos.</p>
+    <p>Para practicar: <b>Ejercitario 5.1</b>, ejercicios 5, 8 y 9, y <b>Cuestionario</b>, ejercicio 5.</p>`
+},
+];
+
+const PREGUNTA_INICIAL = { prosa:true,
+  enun:'«En la ruta a San Lorenzo, un cartel dice: 1,8 km. Si cada paso mide 60 cm, ¿cuántos pasos faltan?»',
+  fija:1,
+  pasos:[
+    'Para dividir dos medidas, tienen que estar en la misma unidad.',
+    P('Paso las dos a metros.', ['camino', '1,8 km = 1.800 m'], ['paso', '60 cm = 0,6 m']),
+    P('Divido.', '1.800 m : 0,6 m = 3.000'),
+  ],
+  final:'son 3.000 pasos',
+  control:`En centímetros:${A('3.000 · 60 cm = 180.000 cm', '180.000 cm = 1,8 km ✓')}`,
+};
+
+const DESAFIO = {
+  titulo:'La finca de don Ramón', prosa:true, fija:1,
+  enun:'«Don Ramón quiere alambrar con 4 hilos todo el contorno de su finca rectangular, en Paraguarí. El frente mide 0,45 km 5 dam y el fondo, 2 hm 4 dam. El alambre viene en rollos de 500 m. ¿Cuántos rollos tiene que comprar?»',
+  pasos:[
+    'Todo en metros: el rollo viene en metros.',
+    P('El frente.', ['km', '0,45 km = 450 m'], ['dam', '5 dam = 50 m'], ['frente', '450 m + 50 m = 500 m']),
+    P('El fondo.', ['hm', '2 hm = 200 m'], ['dam', '4 dam = 40 m'], ['fondo', '200 m + 40 m = 240 m']),
+    P('El contorno, y por 4 hilos.', ['contorno', '2 · 500 m + 2 · 240 m = 1.480 m'], ['alambre', '4 · 1.480 m = 5.920 m']),
+    P('¿Cuántos rollos de 500 m?', ['rollos', '5.920 : 500 = 11,84']),
+    'Con 11 rollos no alcanza: hay que comprar uno más.',
+  ],
+  final:'hacen falta 12 rollos',
+  control:`${A(['11 rollos', '11 · 500 m = 5.500 m'], ['12 rollos', '12 · 500 m = 6.000 m'])}5.500 m no alcanzan para 5.920 m, y 6.000 m sí ✓`,
+  preguntas:[
+    { p:'¿Y cuántas hectáreas tiene la finca?',
+      r:'500 m · 240 m = 120.000 m², y cada hectárea son 10.000 m²: 12 ha.' },
+    { p:'¿Por qué no se redondea 11,84 a 11,8?',
+      r:'Porque no se compra un pedazo de rollo. La respuesta es un número entero de rollos, y tiene que alcanzar: se redondea siempre para arriba.' },
+    { p:'Si el fondo limitara con un arroyo y no hiciera falta alambrarlo, ¿cuántos rollos serían?',
+      r:'Sin un lado de 500 m: 980 m de contorno, 3.920 m de alambre, 7,84 rollos. Habría que comprar 8.' },
+  ],
+  notas:`<p>Junta casi toda la unidad: números complejos de longitud, el contorno de un
+      rectángulo, y una decisión que no es de cuentas (redondear para arriba).</p>
+    <p>Es el tipo de problema del examen, que suele traer opciones cercanas: 11,84, 11 y 12
+      podrían estar las tres. Conviene preguntar qué opción elegiría alguien que no leyó
+      bien la pregunta.</p>`
+};
+
+const UNIDAD = {
+  preguntas:[
+    { p:'¿Por qué hay que aprender esto si el celular convierte unidades?',
+      r:'Porque en el examen no hay celular, y porque las preguntas no son solo de convertir: son de leer «la centena del dal» o de cruzar volumen con masa.' },
+    { p:'¿Todo el mundo usa el sistema métrico?',
+      r:'Casi todo. Estados Unidos sigue usando millas, pies y libras en la vida diaria, aunque en ciencia usa el métrico.' },
+  ],
+  notas:`<p>Clase del cursillo de ingreso sobre la <b>unidad 6</b> de Aritmética y Álgebra.
+      Sigue el orden del material de lectura (longitud, capacidad, masa, superficie,
+      volumen y su relación), con un tema aparte para el lenguaje de «décima» y «centena»,
+      que el cuestionario pregunta mucho y el material no explica.</p>
+    <p>Los ejemplos son propios. Los del material de lectura, los ejercitarios 5.1 y 5.2 y
+      el cuestionario quedan para que los trabajen los alumnos.</p>
+    <p>Conviene arrancar dibujando la escalera (km … mm) en un costado del pizarrón y
+      dejarla toda la clase: los cinco temas la usan.</p>`
+};
+
+Pizarra.unidad({ TEMAS, DESAFIO, PREGUNTA_INICIAL, UNIDAD, grado:'cursillo', temasLibro:5 });
+</script>
+
+<script src="../../assets/proyeccion.js" defer></script>
+<script src="../../assets/timer.js" defer></script>
+<script src="../../assets/clase.js" defer></script>
+</body>
+</html>

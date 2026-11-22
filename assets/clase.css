@@ -625,7 +625,8 @@ body[data-solo="1"] .envoltura{padding-bottom:96px}
   gap:24px; align-items:start; margin-top:4px}
 .pizarra-grid.sola{grid-template-columns:minmax(0,1fr)}
 /* un problema con palabras necesita más lugar para el enunciado */
-.pizarra-grid.prosa{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.pizarra-grid.prosa{grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  max-width:none}   /* el .prosa de base.css (62ch) es para párrafos: acá dejaba el cuaderno angosto */
 body[data-solo="1"] .pizarra .enunciado.frase{font-size:1.05em}
 @media (max-width:760px){.pizarra-grid{grid-template-columns:minmax(0,1fr)}}
 .arranque{margin-top:22px}

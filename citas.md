@@ -74,6 +74,7 @@ mujeres y gente de otras épocas.
 | «La belleza de la matemática solo se le muestra a quien la sigue con paciencia.» | Maryam Mirzakhani, entrevista de 2014 |
 | «No se puede ser matemático sin ser, además, poeta del alma.» | Sofia Kovalévskaya, en sus memorias |
 | «Lo que sabemos es una gota; lo que ignoramos, un océano.» | Atribuida a Isaac Newton |
+| «Para todos los tiempos, para todos los pueblos.» | Lema del sistema métrico (*à tous les temps, à tous les peuples*), de la Francia de la Revolución; se le atribuye a Condorcet |
 
 ---
 
@@ -97,5 +98,6 @@ explicarlo.
 | 9.º | Cuerpos geométricos | «Lo que sabemos es una gota; lo que ignoramos, un océano.» |
 | 9.º | Estadística y probabilidad | «Él no juega a los dados.» |
 | Química | Números cuánticos y configuración | «Él no juega a los dados.» — **en uso** (para 9.º Estadística, buscar otra) |
+| Cursillo | Sistema métrico decimal | «Para todos los tiempos, para todos los pueblos.» — **en uso** |
 | — | OMAPA | «Si no podés resolver un problema, hay uno más fácil que sí podés resolver: encontralo.» |
 | — | Para una prueba difícil | «No te preocupes por tus dificultades con la matemática; las mías son mayores.» |

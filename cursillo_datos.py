@@ -59,7 +59,7 @@ TEMAS = {
         'titulo': 'Sistema métrico decimal',
         'materia': 'Matemática 1', 'bloque': 'Aritmética',
         'fuente': 'Aritmética y Álgebra · Unidad 6',
-        'clase': None, 'teoria': [],
+        'clase': 'cursillo/clases/sistema-metrico.html', 'teoria': [],
         'ejercicios': [('Ejercitario', '5.1 y 5.2', None),
                        ('Cuestionario', 'Unidad 6', None)],
     },

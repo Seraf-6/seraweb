@@ -51,6 +51,7 @@ quimica/index.html          Química                      ← lo genera build.py
 fisica/index.html           Física (por ahora vacía)     ← lo genera build.py
 cursillo/index.html         Cursillo: la semana y los temas ← lo genera build.py
 cursillo/clases/<tema>.html clases del cursillo         ← escritas a mano
+cursillo/clases/sistema-metrico.html  unidad 6 de Aritmética y Álgebra ← escrita a mano
 cursillo/materiales…/        el material del Poli (zip): FUENTE, no se publica (.gitignore)
 omapa/index.html            módulo de olimpiada          ← lo genera build.py
 omapa/clases/bloque-N.html  clases por herramienta       ← escritas a mano
@@ -290,7 +291,7 @@ la letra y no desde el renglón: con el interlineado grande de los
 enunciados quedaba casi en el renglón de arriba.
 Lo que se simplifica se tacha con `tacha('(x + 2)')`: en el cuaderno, una raya
 roja que se dibuja después de escribir el renglón (las fracciones algebraicas de 8.º).
-Cada página elige sus letras en cursiva con `Pizarra.letras`. Toda limpieza que espera el final de una animación
+Una diapositiva de teoría puede renombrar su cajón con `chip` sin cambiarle el color (en el cursillo, el cajón «lenguaje» se llama «Lenguaje» y no «El lenguaje de la geometría»). Cada página elige sus letras en cursiva con `Pizarra.letras`. Toda limpieza que espera el final de una animación
 tiene además un temporizador de respaldo (`alTerminar`): con la ventana
 oculta o el navegador ocupado el aviso de fin puede no llegar, y las cajas
 viejas quedaban acumuladas.
@@ -754,7 +755,12 @@ se dio cada uno.
 semana en `SEMANAS` (solo sus clases) y los temas nuevos en `TEMAS`, y se corre
 `python build.py` y `python verificacion/cursillo.py`. Las clases del cursillo
 son páginas de clase como las demás (el motor de la pizarra, su verificador
-`verificacion/cursillo_<tema>.py`) y se escriben a pedido.
+`verificacion/cursillo_<tema>.py`) y se escriben a pedido. La primera es
+`cursillo/clases/sistema-metrico.html` (verificador
+`verificacion/cursillo_sistema_metrico.py`, que convierte por dos caminos: la tabla
+de equivalencias y la escalera de prefijos). En el cursillo, **el litro se escribe
+«L»** (kL, daL, mL): proyectada, la «l» se confunde con un 1. El observador lo
+explica, porque el material del Poli usa la minúscula.
 
 **El material del Poli no se publica: es la fuente.** Juan lo baja del Drive
 del cursillo (zip por materia: Aritmética y Álgebra, Geometría Analítica y
