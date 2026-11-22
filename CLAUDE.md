@@ -51,7 +51,7 @@ quimica/index.html          Química                      ← lo genera build.py
 fisica/index.html           Física (por ahora vacía)     ← lo genera build.py
 cursillo/index.html         Cursillo: la semana y los temas ← lo genera build.py
 cursillo/clases/<tema>.html clases del cursillo         ← escritas a mano
-cursillo/pdf/teoria|libro/  teoría y ejercitario en PDF
+cursillo/materiales…/        el material del Poli (zip): FUENTE, no se publica (.gitignore)
 omapa/index.html            módulo de olimpiada          ← lo genera build.py
 omapa/clases/bloque-N.html  clases por herramienta       ← escritas a mano
 omapa/elementos/libro-1.html  Euclides, libro I (la página) ← lee libro1.js
@@ -733,8 +733,9 @@ arman **según lo que toque**: si mañana se da divisibilidad, se hace esa.
 **La fuente es `cursillo_datos.py`**, no `contenido.py`:
 
 - `TEMAS`, el banco: cada tema con su materia y bloque, su clase para proyectar
-  (`cursillo/clases/<id>.html`, o None mientras no exista), la teoría en PDF y
-  los ejercicios del libro (libro, dónde, PDF o None).
+  (`cursillo/clases/<id>.html`, o None mientras no exista), la unidad del
+  material del Poli de donde sale (`fuente`) y los ejercitarios que los alumnos
+  ya tienen (solo la referencia: «Ejercitario 5.1 y 5.2»).
 - `SEMANAS`, el horario: una entrada por semana, identificada por su lunes, con
   **solo las clases de Juan** (las que dicen «Serafini»). Ni un nombre de otro
   docente. La consigna va tal como la manda la coordinación; `temas` la enlaza
@@ -755,10 +756,19 @@ semana en `SEMANAS` (solo sus clases) y los temas nuevos en `TEMAS`, y se corre
 son páginas de clase como las demás (el motor de la pizarra, su verificador
 `verificacion/cursillo_<tema>.py`) y se escriben a pedido.
 
-**Los PDF del cursillo se publican**: la teoría y el ejercitario oficial
-(Matemáticas esenciales, Principia), en `cursillo/pdf/`. Es una excepción a
-«material con derechos de autor» decidida por Juan (noviembre de 2026). Las
-claves, no: el verificador falla si encuentra CLAVE o RESPUESTA en un nombre.
+**El material del Poli no se publica: es la fuente.** Juan lo baja del Drive
+del cursillo (zip por materia: Aritmética y Álgebra, Geometría Analítica y
+Cálculo, Física, Geometría y Trigonometría; cada unidad con su teoría, sus
+ejercitarios, su cuestionario y «Sus Solucionarios») a `cursillo/materiales…/`,
+que `.gitignore` rechaza. Lo que se proyecta del Poli tal cual, Juan lo
+proyecta desde el Drive. Lo que va al sitio es **la versión propia de cada
+clase**, con su estilo y sobre el motor de la pizarra: el material del Poli
+dice qué temas entran y en qué orden, como el libro en Matemática, y los
+ejemplos son propios (los del ejercitario quedan para los alumnos). Lo decidió
+Juan (noviembre de 2026). Los solucionarios son claves y las «Clases síncronas»
+llevan el nombre de otra docente: ninguno de los dos sirve ni de cita.
+El verificador falla si en `cursillo/` hay un archivo con CLAVE o RESPUESTA en
+el nombre.
 
 El verificador falla además si un lunes no es lunes o se repite, si hay dos
 clases en el mismo día y turno, si un grupo no tiene la forma
@@ -904,8 +914,8 @@ rechaza `.csv`, `.xlsx`, `.opus`, `.ogg` y `.heic`).
 
 **Material con derechos de autor.** Nada de escanear ni reproducir páginas de
 libros de texto. Los problemas de olimpiada son la excepción decidida por Juan:
-se publican con su fuente (ver "El módulo de OMAPA"), nunca sus claves. La otra
-excepción son los PDF del cursillo (ver "El módulo del Cursillo"). Si hace falta ejercitación al estilo de un libro, se generan
+se publican con su fuente (ver "El módulo de OMAPA"), nunca sus claves. El material
+del cursillo tampoco se publica (ver "El módulo del Cursillo"). Si hace falta ejercitación al estilo de un libro, se generan
 series originales propias.
 
 ---

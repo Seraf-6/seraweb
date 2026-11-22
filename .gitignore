@@ -32,3 +32,8 @@ Thumbs.db
 # Material de entrenamiento de aurea.academy (PDF de terceros): se queda en la
 # computadora del docente, no se publica.
 omapa/Entrenamiento JT Aurea/
+
+# Material del cursillo (Poli CPA): es la fuente para armar las clases propias,
+# no se publica. Los zip y lo que se descomprima quedan en la computadora.
+cursillo/materiales*/
+cursillo/**/*.zip

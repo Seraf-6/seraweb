@@ -33,32 +33,43 @@ DIAS = ['lun', 'mar', 'mie', 'jue', 'vie', 'sab']
 # ══════════════════════════════════════════════════════════════════
 #  El banco de temas
 #  'clase':      'cursillo/clases/<id>.html' cuando exista, si no None
-#  'teoria':     [('Título', 'cursillo/pdf/teoria/<archivo>.pdf'), …]
-#  'ejercicios': [('Libro', 'dónde', 'cursillo/pdf/libro/<archivo>.pdf' o None), …]
+#  'fuente':     de qué unidad del material del Poli sale (la carpeta y la
+#                unidad): es la fuente para armar la clase propia, no se publica
+#  'teoria':     [('Título', 'cursillo/<archivo>'), …] material propio, si hay
+#  'ejercicios': [('Material', 'dónde', None), …] los que los alumnos ya tienen
 # ══════════════════════════════════════════════════════════════════
 TEMAS = {
     'operaciones': {
         'titulo': 'Operaciones fundamentales',
         'materia': 'Matemática 1', 'bloque': 'Aritmética',
+        'fuente': 'Aritmética y Álgebra · Unidad 3',
         'clase': None, 'teoria': [],
-        'ejercicios': [('Matemáticas esenciales', 'Capítulo 1', None)],
+        'ejercicios': [('Ejercitario', '2.1 y 2.2', None),
+                       ('Matemáticas esenciales', 'Capítulo 1', None)],
     },
     'divisibilidad': {
         'titulo': 'Divisibilidad',
         'materia': 'Matemática 1', 'bloque': 'Aritmética',
+        'fuente': 'Aritmética y Álgebra · Unidad 4',
         'clase': None, 'teoria': [],
-        'ejercicios': [('Matemáticas esenciales', 'Capítulo 1', None)],
+        'ejercicios': [('Ejercitario', '3.1 y 3.2', None),
+                       ('Cuestionario', 'Unidad 4', None)],
     },
     'sistema-metrico': {
         'titulo': 'Sistema métrico decimal',
         'materia': 'Matemática 1', 'bloque': 'Aritmética',
-        'clase': None, 'teoria': [], 'ejercicios': [],
+        'fuente': 'Aritmética y Álgebra · Unidad 6',
+        'clase': None, 'teoria': [],
+        'ejercicios': [('Ejercitario', '5.1 y 5.2', None),
+                       ('Cuestionario', 'Unidad 6', None)],
     },
     'vectores': {
         'titulo': 'Vectores',
         'materia': 'Analítica', 'bloque': 'Geometría analítica',
+        'fuente': 'Geometría Analítica y Cálculo · Unidad 2',
         'clase': None, 'teoria': [],
-        'ejercicios': [('Ejercitario Principia', 'Capítulo 2', None)],
+        'ejercicios': [('Ejercitario', '2.1 y 2.2 de fijación', None),
+                       ('Ejercitario Principia', 'Capítulo 2', None)],
     },
 }
 

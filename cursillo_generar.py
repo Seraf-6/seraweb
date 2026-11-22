@@ -128,6 +128,8 @@ def banco(sube):
                       else '<span class="etiqueta pend">Clase por hacer</span>')
                 dado_html = (f'<p class="cur-dado">Se dio en: {e(" / ".join(dado))}</p>'
                              if dado else '')
+                if t.get('fuente'):
+                    dado_html = f'<p class="cur-dado">Sale de: {e(t["fuente"])}</p>' + dado_html
                 out.append(f"""<div class="tarjeta cur-tarjeta{'' if t.get('clase') else ' sin-clase'}" id="tema-{tid}">
       {et}<h3>{e(t['titulo'])}</h3>
       <div class="cur-mats">{material_tema(tid, sube)}</div>{dado_html}
