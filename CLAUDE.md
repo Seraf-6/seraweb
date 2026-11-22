@@ -291,6 +291,18 @@ la letra y no desde el renglón: con el interlineado grande de los
 enunciados quedaba casi en el renglón de arriba.
 Lo que se simplifica se tacha con `tacha('(x + 2)')`: en el cuaderno, una raya
 roja que se dibuja después de escribir el renglón (las fracciones algebraicas de 8.º).
+Un cambio de unidad con factores unitarios se escribe
+`convierte('0,35 m³', ['1.000 dm³', '1 m³'], ['1 L', '1 dm³'], '350 L')`: la
+medida por fracciones que valen 1, con las unidades que se cancelan ya tachadas.
+Da un renglón para `P()` o `A()`, y el verificador de la página lee cada llamada
+y rehace la cuenta. Si un renglón del cuaderno no entra a lo ancho, el motor lo
+mide antes de escribirlo y usa la letra chica desde el principio, como con un
+cuaderno largo.
+**La práctica** (`practica:[{ enun, resp }, …]` en un tema, o en un ejemplo
+para que vaya justo después) es una diapositiva con tres ejercicios a la vista
+a la vez, sin pasos, cada uno con su «Ver respuesta»: el docente resuelve los
+ejemplos y les deja esos tres. La página agrega `.practica-diapo` a
+`data-diapos`. Lo pidió Juan para el cursillo.
 Una diapositiva de teoría puede renombrar su cajón con `chip` sin cambiarle el color (en el cursillo, el cajón «lenguaje» se llama «Lenguaje» y no «El lenguaje de la geometría»). Cada página elige sus letras en cursiva con `Pizarra.letras`. Toda limpieza que espera el final de una animación
 tiene además un temporizador de respaldo (`alTerminar`): con la ventana
 oculta o el navegador ocupado el aviso de fin puede no llegar, y las cajas
@@ -485,6 +497,14 @@ El panel da: contraste (6 paletas), color de letra (dos juegos, uno para fondo
 claro y otro para oscuro), tamaño (80 % a 200 %), cuadrícula (dos pasos o sin),
 una diapositiva a la vez, y zona libre para escribir en la pizarra. Todo queda
 guardado en `localStorage` de esa computadora.
+
+**El control remoto del proyector.** En «una a la vez», Av Pág y → (lo que
+mandan los controles de presentación) avanzan primero los pasos de lo que está
+en pantalla —el ejemplo, la teoría, la próxima respuesta de la práctica— y,
+cuando no queda ninguno, pasan a la diapositiva siguiente; Re Pág y ← vuelven
+igual. ↓ y ↑ cambian de diapositiva sin mirar los pasos. Con un control de dos
+botones alcanza. `proyeccion.js` le pregunta a `Pizarra.avanza(diapo, dir)` si
+hay un paso para dar: una página sin la pizarra solo cambia de diapositiva.
 
 **El valor por defecto es el fondo crema.** No es capricho: se probó proyectando
 sobre la pizarra blanca del aula y es el que mejor aguanta el tinte verdoso del
@@ -758,7 +778,10 @@ son páginas de clase como las demás (el motor de la pizarra, su verificador
 `verificacion/cursillo_<tema>.py`) y se escriben a pedido. La primera es
 `cursillo/clases/sistema-metrico.html` (verificador
 `verificacion/cursillo_sistema_metrico.py`, que convierte por dos caminos: la tabla
-de equivalencias y la escalera de prefijos). En el cursillo, **el litro se escribe
+de equivalencias y la escalera de prefijos, y controla cada `convierte()` de la
+página). **Se enseña con el factor unitario**: nunca «: 100», siempre «por 1 m
+sobre 100 cm», con las unidades tachadas; el verificador rechaza un cambio de
+unidad dividiendo. En el cursillo, **el litro se escribe
 «L»** (kL, daL, mL): proyectada, la «l» se confunde con un 1. El observador lo
 explica, porque el material del Poli usa la minúscula.
 
@@ -769,9 +792,14 @@ ejercitarios, su cuestionario y «Sus Solucionarios») a `cursillo/materiales…
 que `.gitignore` rechaza. Lo que se proyecta del Poli tal cual, Juan lo
 proyecta desde el Drive. Lo que va al sitio es **la versión propia de cada
 clase**, con su estilo y sobre el motor de la pizarra: el material del Poli
-dice qué temas entran y en qué orden, como el libro en Matemática, y los
-ejemplos son propios (los del ejercitario quedan para los alumnos). Lo decidió
-Juan (noviembre de 2026). Los solucionarios son claves y las «Clases síncronas»
+dice qué temas entran y en qué orden, como el libro en Matemática. **Los
+ejemplos que se proyectan son los problemas del material** (la lectura, los
+ejercitarios, el cuestionario) **con otros números**, y cada uno dice de dónde
+sale (`fte()`, como en OMAPA); los ejemplos chicos son las piezas del problema
+grande del tema. Después de los ejemplos, **tres ejercicios propios** en una
+diapositiva de práctica. Lo pidió Juan (22/11/2026): en el cursillo, a diferencia de
+Matemática, los ejemplos siguen los del material. Los números se cambian igual:
+el material no se publica, y el original queda para resolverlo en clase. Los solucionarios son claves y las «Clases síncronas»
 llevan el nombre de otra docente: ninguno de los dos sirve ni de cita.
 El verificador falla si en `cursillo/` hay un archivo con CLAVE o RESPUESTA en
 el nombre.

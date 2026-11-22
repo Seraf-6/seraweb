@@ -793,7 +793,8 @@ body[data-solo="1"] .recorrido .t{font-size:.95em}
 .pizarra-der{position:sticky; top:64px}
 .pizarra-der .lienzo svg{max-height:calc(100vh - 150px)}
 /* en proyección, la diapositiva de la pizarra usa toda la pantalla */
-body[data-solo="1"] .envoltura:has(.pizarra.activa){max-width:none}
+body[data-solo="1"] .envoltura:has(.pizarra.activa),
+body[data-solo="1"] .envoltura:has(.practica-diapo.activa){max-width:none}
 body[data-solo="1"] .t-mini{font-size:.85em}
 body[data-solo="1"] .t-mini th{font-size:1em}
 
@@ -871,6 +872,25 @@ body[data-solo="1"] .teoria-fuente,
 body[data-solo="1"] .cajon .verbo{font-size:.6em}
 body[data-solo="1"] .cajon{padding:8px 12px 10px}
 body[data-solo="1"] .cajon p{font-size:.9em}
+
+/* ═══ la práctica: tres ejercicios a la vista, para que los hagan ellos ═══
+   Sin pasos: cada uno con su «Ver respuesta» (practica(), en pizarra.js). */
+.practica-diapo{padding-block:28px; border-bottom:1px solid var(--linea-fuerte); scroll-margin-top:72px}
+.practica{list-style:none; counter-reset:prac; margin:6px 0 0; padding:0;
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; align-items:stretch}
+.practica li{counter-increment:prac; display:flex; flex-direction:column; gap:12px;
+  padding:14px 16px 16px; border:1.5px solid var(--linea-fuerte); border-radius:6px; background:var(--papel)}
+.practica li::before{content:counter(prac, lower-alpha) ")"; font-family:var(--serif); font-weight:800;
+  font-size:1.3rem; color:var(--acento)}
+.prac-enun{flex:1; font-family:var(--serif); font-size:1.3rem; line-height:1.4}
+.prac-ver{align-self:flex-start}
+.prac-resp{padding:8px 12px; border-radius:4px; background:var(--rojo-suave);
+  font-family:var(--serif); font-weight:700; font-size:1.2rem; line-height:1.35; color:var(--acento)}
+.prac-resp[hidden]{display:none}
+@media (max-width:900px){ .practica{grid-template-columns:1fr} }
+body[data-solo="1"] .practica-diapo{border-bottom:none; padding-block:12px}
+body[data-solo="1"] .prac-enun{font-size:1.5em}
+body[data-solo="1"] .prac-resp{font-size:1.35em}
 
 /* el panel de proyección puede tapar el dibujo, para que lo hagan ellos:
    se tapa sin moverse nada, y el lugar queda libre en la pizarra */

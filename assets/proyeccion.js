@@ -261,12 +261,20 @@
     if (!estado.solo) return;
     var t = ev.target.tagName;
     if (t === 'INPUT' || t === 'TEXTAREA') return;   // no robar las flechas de un campo
-    if (ev.key === 'ArrowRight' || ev.key === 'PageDown'){
-      estado.i++; aplicar(); window.scrollTo(0, 0); ev.preventDefault();
-    }
-    if (ev.key === 'ArrowLeft' || ev.key === 'PageUp'){
-      estado.i--; aplicar(); window.scrollTo(0, 0); ev.preventDefault();
-    }
+    // El control remoto del proyector manda Av Pág y Re Pág (algunos, las
+    // flechas). Esas teclas avanzan primero los pasos de lo que está en
+    // pantalla (el ejemplo, la teoría, las respuestas de la práctica) y,
+    // cuando ya no queda nada, cambian de diapositiva: con un control de dos
+    // botones alcanza. ↓ y ↑ cambian de diapositiva sin mirar los pasos.
+    var dir = 0, directo = false;
+    if (ev.key === 'ArrowRight' || ev.key === 'PageDown') dir = 1;
+    if (ev.key === 'ArrowLeft' || ev.key === 'PageUp') dir = -1;
+    if (ev.key === 'ArrowDown'){ dir = 1; directo = true; }
+    if (ev.key === 'ArrowUp'){ dir = -1; directo = true; }
+    if (!dir) return;
+    ev.preventDefault();
+    if (!directo && window.Pizarra && Pizarra.avanza && Pizarra.avanza(diapos[estado.i], dir)) return;
+    estado.i += dir; aplicar(); window.scrollTo(0, 0);
   });
 
   cargar();

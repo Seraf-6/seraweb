@@ -5,7 +5,7 @@
    preguntas del observador, las notas) y llama a Pizarra.unidad(). Todo
    lo demás vive acá y es igual en todas las clases:
 
-   - la notación: I(), M(), Q(), N(), A() y P();
+   - la notación: I(), M(), Q(), N(), A(), P() y convierte();
    - las fracciones exactas y el plano cartesiano;
    - la pizarra de cada ejemplo, sus botones y su movimiento;
    - el armado de la unidad: concepto, ejemplos, taller, ficha, desafío,
@@ -119,6 +119,29 @@ function A(...filas){
      P('Sumo 5 a los dos miembros.', `6x − 5 ${N('+ 5')} = 25 ${N('+ 5')}`, '6x = 30')
    Un paso que es solo un texto se da como texto, sin P(). */
 const P = (t, ...q) => ({ t, q });
+
+/* convierte() escribe un cambio de unidad con factores unitarios, como en
+   el pizarrón: la medida, por una o más fracciones que valen 1 (arriba la
+   unidad que se quiere, abajo la que se saca), igual a la medida nueva. Las
+   unidades que se simplifican se tachan solas.
+     convierte('3,75 km', ['1.000 m', '1 km'], '3.750 m')
+     convierte('0,35 m³', ['1.000 dm³', '1 m³'], ['1 L', '1 dm³'], '350 L')
+   Cada medida es un número (3, 2,5, 1.000 o 3/4) y su unidad, separados por
+   un espacio. Devuelve un renglón con un solo =, para P() o A(). El
+   verificador de la página lee cada llamada y rehace la cuenta. */
+function convierte(...args){
+  const res = args.pop(), cant = args.shift(), facs = args;
+  const parte = s => { const k = s.indexOf(' '); return { n:s.slice(0, k), u:s.slice(k + 1) }; };
+  const arriba = [parte(cant), ...facs.map(f => parte(f[0]))];
+  const abajo = facs.map(f => parte(f[1]));
+  abajo.forEach(d => {
+    const a = arriba.find(x => !x.fuera && x.u === d.u);
+    if (a) a.fuera = d.fuera = true;
+  });
+  const num = n => { const m = /^(\d+)\/(\d+)$/.exec(n); return m ? Q(m[1], m[2]) : n; };
+  const med = x => `${num(x.n)} ${x.fuera ? tacha(x.u) : x.u}`;
+  return `${med(arriba[0])} · ${abajo.map((d, i) => Q(med(arriba[i + 1]), med(d))).join(' · ')} = ${res}`;
+}
 
 /* ═══ fracciones exactas ═══
    Nada de decimales: una ecuación con enteros puede dar 16/5, y
@@ -453,6 +476,27 @@ function filasHasta(ej, k){
   return filas;
 }
 
+/* ¿Algún renglón del cuaderno entero es más ancho que el lugar que tiene
+   (₲ 75.000.000 + ₲ 5.000.000 = ₲ 80.000.000)? Se mide de verdad: la
+   primera vez que el cuaderno está a la vista, se escriben todos sus
+   renglones en una copia invisible. Si la ventana cambia de ancho, se vuelve
+   a medir; si no, la letra no cambia a mitad del ejemplo. */
+function noEntra(ej, div){
+  const w = div.clientWidth;
+  if (!w) return false;
+  if (div.dataset.medido === String(w)) return div.dataset.noEntra === '1';
+  const prueba = document.createElement('div');
+  prueba.className = 'cuaderno';
+  prueba.style.cssText = `position:absolute; visibility:hidden; left:0; top:0; width:${w}px`;
+  prueba.innerHTML = `<div class="alineado">${filasHasta(ej, Infinity).map(({ f }) => celdas(f, 0)).join('')}</div>`;
+  div.appendChild(prueba);
+  const no = prueba.scrollWidth > prueba.clientWidth + 1;
+  prueba.remove();
+  div.dataset.medido = w;
+  div.dataset.noEntra = no ? '1' : '0';
+  return no;
+}
+
 function pintaCuaderno(clave, avanzando, borrados = false, div = document.getElementById('der-' + clave)){
   const ej = BLOQUES[clave];
   const k = avance[clave] || 0;
@@ -483,7 +527,7 @@ function pintaCuaderno(clave, avanzando, borrados = false, div = document.getEle
   // en la pantalla, sin cambiar de tamaño a mitad del ejemplo
   // (un renglón con fracción apilada ocupa casi dos)
   const peso = filasHasta(ej, Infinity).reduce((s, { f }) => s + (/class="fr"/.test([].concat(f).join('')) ? 1.8 : 1), 0);
-  const largo = peso > 9 ? ' largo' : '';
+  const largo = peso > 9 || noEntra(ej, div) ? ' largo' : '';
   div.innerHTML = `<div class="cuaderno${largo}"><span class="cu-rot">${ej.rotCuaderno || 'en el cuaderno'}</span>
       <div class="alineado">${cuerpo}</div></div>`;
   acompanaAlto(div, antes);
@@ -871,6 +915,59 @@ document.addEventListener('click', ev => {
   llevaAlaVista(nav);
 });
 
+/* ═══ la práctica ═══
+   Tres ejercicios para que los hagan ellos, los tres a la vista a la vez y
+   sin pasos: cada uno con su botón «Ver respuesta». Van después de los
+   ejemplos de un tema (t.practica) o después de un ejemplo (ej.practica):
+     practica:[{ enun:'Pasar 2,35 km a metros.', resp:'2.350 m' }, …]
+   La página agrega .practica-diapo a data-diapos. */
+let nPractica = 0;
+function practica(items, cinta){
+  return `
+  <section class="practica-diapo" id="pr-${++nPractica}">
+    <p class="cinta">${cinta}</p>
+    <h4 class="ej-titulo">Ahora ustedes</h4>
+    <ol class="practica">${items.map(it => `
+      <li><div class="prac-enun">${sombrero(it.enun)}</div>
+        <button class="boton prac-ver" type="button" data-accion="prac-ver" aria-expanded="false">Ver respuesta</button>
+        <div class="prac-resp" hidden>${sombrero(it.resp)}</div></li>`).join('')}
+    </ol>
+  </section>`;
+}
+document.addEventListener('click', ev => {
+  const b = ev.target.closest('[data-accion="prac-ver"]');
+  if (!b) return;
+  const resp = b.nextElementSibling, ver = resp.hidden;
+  resp.hidden = !ver;
+  resp.classList.toggle('recien-parte', ver);
+  b.setAttribute('aria-expanded', String(ver));
+  b.textContent = ver ? 'Ocultar' : 'Ver respuesta';
+});
+
+/* El control remoto del proyector (assets/proyeccion.js) pregunta acá si
+   la diapositiva tiene un paso más para dar antes de pasar a la siguiente:
+   el ejemplo, la teoría o la próxima respuesta de la práctica. Devuelve
+   true si lo dio. */
+Pizarra.avanza = (diapo, dir) => {
+  if (!diapo) return false;
+  const toca = sel => {
+    const b = diapo.querySelector(sel);
+    if (!b || b.disabled) return false;
+    b.click();
+    return true;
+  };
+  if (diapo.querySelector('[data-nav]'))
+    return toca(`[data-nav] [data-accion="${dir > 0 ? 'revelar' : 'atras'}"]`);
+  if (diapo.querySelector('.teoria-nav'))
+    return toca(`.teoria-nav [data-accion="${dir > 0 ? 'teoria-sigue' : 'teoria-atras'}"]`);
+  const ver = [...diapo.querySelectorAll('[data-accion="prac-ver"]')];
+  const b = dir > 0 ? ver.find(x => x.getAttribute('aria-expanded') === 'false')
+                    : ver.filter(x => x.getAttribute('aria-expanded') === 'true').pop();
+  if (!b) return false;
+  b.click();
+  return true;
+};
+
 Pizarra.unidad = cfg => {
   const { TEMAS, DESAFIO, PREGUNTA_INICIAL, UNIDAD, LABS = {}, INICIO, grado, temasLibro = TEMAS.length } = cfg;
   const idT = t => t.id || String(t.n);
@@ -899,7 +996,9 @@ Pizarra.unidad = cfg => {
     ${t.ejemplos.map((ej, i) => (ej.antes || []).map(td => teoria(td, cintaT(t))).join('') +
       bloque(`${idT(t)}-${i + 1}`, ej, {
         rotulo:`Ejemplo ${i + 1}.`,
-        cinta:`<b>${etiqueta(t)}</b> · ${t.corto} · ejemplo ${i + 1} de ${total}` })).join('')}
+        cinta:`<b>${etiqueta(t)}</b> · ${t.corto} · ejemplo ${i + 1} de ${total}` }) +
+      (ej.practica ? practica(ej.practica, `<b>${etiqueta(t)}</b> · ${t.corto} · después del ejemplo ${i + 1}`) : '')).join('')}
+    ${t.practica ? practica(t.practica, `<b>${etiqueta(t)}</b> · ${t.corto} · para practicar`) : ''}
     ${(t.despues || []).map(td => teoria(td, cintaT(t))).join('')}
   </div>
 

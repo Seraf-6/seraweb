@@ -11,16 +11,24 @@ Fraction (nada de float) y por DOS caminos que no se tocan:
    dimensión). La Tm, el Qm y las unidades agrarias no están en la escalera:
    se ubican por su equivalencia con un escalón (ha = hm², a = dam², ca = m²).
 
+La clase convierte con factores unitarios: `convierte('3,75 km',
+['1.000 m', '1 km'], '3.750 m')`. Cada llamada de la página se lee y se
+controla: que cada factor valga 1 (por los dos caminos), que la cuenta de
+los números dé, que las unidades que se tachan se cancelen y quede la del
+resultado, y que la medida de la izquierda sea la de la derecha.
+
 Después:
 3. Los problemas se vuelven a hacer desde el enunciado, con otro orden de
    cuentas (el control que dice la página).
-4. La página tiene escrita tal cual cada respuesta final.
-5. Dentro de un tema no se repite una respuesta.
+4. La página tiene escrita tal cual cada respuesta final, también las de
+   la práctica.
+5. Dentro de un tema no se repite una respuesta (la práctica cuenta).
 6. Ningún renglón encadena dos igualdades.
-7. Todo ejemplo tiene su control.
+7. Todo ejemplo tiene su control; toda práctica, tres ejercicios.
 
     python verificacion/cursillo_sistema_metrico.py
 """
+import ast
 import re
 import sys
 from fractions import Fraction as F
@@ -53,13 +61,14 @@ TABLA = {
     'km2': F(1000000), 'hm2': F(10000), 'dam2': F(100), 'm2': F(1), 'dm2': F(1, 100),
     'cm2': F(1, 10000), 'mm2': F(1, 1000000), 'ha': F(10000), 'a': F(100), 'ca': F(1),
     # volumen, en m³; el litro es el dm³
-    'm3': F(1), 'dm3': F(1, 1000), 'cm3': F(1, 1000000),
+    'km3': F(10) ** 9, 'hm3': F(10) ** 6, 'dam3': F(1000), 'm3': F(1), 'dm3': F(1, 1000),
+    'cm3': F(1, 10) ** 6, 'mm3': F(1, 10) ** 9,
 }
 MAGNITUD = {**{u: 'L' for u in ('mam', 'km', 'hm', 'dam', 'm', 'dm', 'cm', 'mm')},
             **{u: 'C' for u in ('kl', 'hl', 'dal', 'l', 'dl', 'cl', 'ml')},
             **{u: 'M' for u in ('Tm', 'Qm', 'mag', 'kg', 'hg', 'dag', 'g', 'dg', 'cg', 'mg')},
             **{u: 'S' for u in ('km2', 'hm2', 'dam2', 'm2', 'dm2', 'cm2', 'mm2', 'ha', 'a', 'ca')},
-            **{u: 'V' for u in ('m3', 'dm3', 'cm3')}}
+            **{u: 'V' for u in ('km3', 'hm3', 'dam3', 'm3', 'dm3', 'cm3', 'mm3')}}
 
 
 def por_tabla(cant, de, a):
@@ -79,7 +88,6 @@ def por_tabla(cant, de, a):
 # ── camino 2: la escalera ──
 ESCALERA = ['k', 'h', 'da', '', 'd', 'c', 'm']        # de arriba hacia abajo
 SALTO = {'L': 10, 'C': 10, 'M': 10, 'S': 100, 'V': 1000}
-BASE = {'L': 'm', 'C': 'l', 'M': 'g', 'S': 'm', 'V': 'm'}
 FUERA = {'mam': ('km', 1, 'L'), 'Tm': ('kg', 3, 'M'), 'Qm': ('kg', 2, 'M'), 'mag': ('kg', 1, 'M'),
          'ha': ('hm2', 0, 'S'), 'a': ('dam2', 0, 'S'), 'ca': ('m2', 0, 'S')}
 
@@ -104,14 +112,9 @@ def por_escalera(cant, de, a):
     if md == ma:
         return cant * F(SALTO[md]) ** (pa - pd)
     # el puente del agua: 1 dm³ = 1 l = 1 kg; se lleva todo a esos tres
-    def a_puente(q, m, p):              # q en la unidad de posición p → en dm³/l/kg
-        objetivo = {'V': ESCALERA.index('d'), 'C': ESCALERA.index(''), 'M': ESCALERA.index('k')}[m]
-        return q * F(SALTO[m]) ** (objetivo - p)
-
-    def de_puente(q, m, p):
-        objetivo = {'V': ESCALERA.index('d'), 'C': ESCALERA.index(''), 'M': ESCALERA.index('k')}[m]
-        return q * F(SALTO[m]) ** (p - objetivo)
-    return de_puente(a_puente(cant, md, pd), ma, pa)
+    objetivo = {'V': ESCALERA.index('d'), 'C': ESCALERA.index(''), 'M': ESCALERA.index('k')}
+    al_puente = cant * F(SALTO[md]) ** (objetivo[md] - pd)
+    return al_puente * F(SALTO[ma]) ** (pa - objetivo[ma])
 
 
 def conv(cant, de, a):
@@ -123,11 +126,14 @@ def conv(cant, de, a):
 
 
 def suma(partes, a):
-    return sum((conv(c, u, a) for c, u in partes), F(0))
+    return sum((conv(F(c), u, a) for c, u in partes), F(0))
 
 
 def num(s):
-    """'3,75' o '1.257,3' → Fraction."""
+    """'3,75', '1.257,3' o '3/4' → Fraction."""
+    if '/' in s:
+        n, d = s.split('/')
+        return F(int(n), int(d))
     return F(s.replace('.', '').replace(',', '.'))
 
 
@@ -147,105 +153,163 @@ def fmt(q):
     return s + dec
 
 
-def unid(u):
-    return u.replace('2', '²').replace('3', '³')
+def unidad(u):
+    """Como se escribe en la página (kL, m², dm³) → la clave de la TABLA."""
+    u = u.replace('²', '2').replace('³', '3')
+    if u.endswith('L'):
+        u = u[:-1] + 'l'
+    return u
+
+
+def medida(s):
+    """'3,75 km' → (Fraction, 'km')."""
+    s = s.replace('✓', '').strip()
+    n, u = s.split(' ', 1)
+    return num(n), unidad(u.strip())
 
 
 # ── las respuestas de la página ──
-FINALES = {}          # tema → [respuesta final escrita en la página]
+FINALES = {}          # tema → [respuesta escrita en la página]
 
 
 def cuenta(tema, valor, texto):
-    """`texto` es la respuesta final de la página; el número que trae tiene que ser `valor`."""
+    """`texto` es la respuesta de la página; el número que trae tiene que ser `valor`."""
     FINALES.setdefault(tema, []).append(texto)
     print(f'  {tema:8s} {texto}')
     return valor
 
 
+def c(tema, cant, de, a, txt_de=None, txt_a=None):
+    """Una conversión con su respuesta escrita «3,75 km = 3.750 m»."""
+    v = conv(num(cant), unidad(de), unidad(a))
+    cuenta(tema, v, f'{txt_de or cant + " " + de} = {fmt(v)} {txt_a or a}')
+    return v
+
+
 def main():
     print('Para arrancar')
-    # 1,8 km de camino, pasos de 60 cm
     pasos = conv(num('1,8'), 'km', 'm') / conv(F(60), 'cm', 'm')
-    assert pasos == 3000
     cuenta('arranque', pasos, f'son {fmt(pasos)} pasos')
-    if fmt(pasos * 60) != '180.000' or conv(F(180000), 'cm', 'km') != num('1,8'):
+    if conv(pasos * 60, 'cm', 'km') != num('1,8'):
         mal('el control del arranque')
 
-    print('Tema 1 · longitud')
-    v = conv(num('3,75'), 'km', 'm');  cuenta('1', v, f'3,75 km = {fmt(v)} m')
-    v = conv(F(4260), 'cm', 'm');      cuenta('1', v, f'4.260 cm = {fmt(v)} m')
-    v = conv(num('0,48'), 'hm', 'dm'); cuenta('1', v, f'0,48 hm = {fmt(v)} dm')
-    v = suma([(2, 'km'), (4, 'hm'), (15, 'm')], 'm'); cuenta('1', v, f'2 km 4 hm 15 m = {fmt(v)} m')
-    # incomplejo → complejo
-    total = F(3072)
-    m_ = total // 100; resto = total - m_ * 100; dm_ = resto // 10; cm_ = resto - dm_ * 10
-    if suma([(m_, 'm'), (dm_, 'dm'), (cm_, 'cm')], 'cm') != total:
-        mal('3.072 cm no vuelve')
-    cuenta('1', total, f'3.072 cm = {fmt(m_)} m {fmt(dm_)} dm {fmt(cm_)} cm')
+    print('Tema 1 · longitud (lectura, ejemplo 1; ejercitario 5.2, ej. 3)')
+    c('1', '0,64', 'km', 'm')
+    v = conv(F(3, 4), 'hm', 'm');  cuenta('1', v, '${Q(3, 4)} hm = ' + f'{fmt(v)} m')
+    c('1', '18,5', 'cm', 'm')
+    lat = suma([(F(1, 5), 'dm'), (num('16,5'), 'cm'), (35, 'mm')], 'm')
+    cuenta('1', lat, '${Q(1, 5)} dm 16,5 cm 35 mm = ' + f'{fmt(lat)} m')
+    frente = suma([(num('0,64'), 'km'), (F(3, 4), 'hm'), (25, 'm')], 'm')
+    lateral = 1000 * lat
+    alambre = 4 * (frente + 2 * lateral)
+    cuenta('1', alambre, f'hacen falta {fmt(alambre)} m de alambre')
+    # control: un hilo es el frente y los dos laterales, sin el fondo
+    if alambre / 4 != conv(F(740), 'm', 'm') + 2 * conv(F(22), 'dam', 'm'):
+        mal('el control del alambrado')
+    print('  práctica')
+    v = conv(num('2,35'), 'km', 'm');  cuenta('1', v, f'{fmt(v)} m')
+    v = conv(F(870), 'mm', 'm');       cuenta('1', v, f'{fmt(v)} m')
+    perim = 2 * (conv(num('0,12'), 'km', 'm') + suma([(8, 'dam'), (5, 'm')], 'm'))
+    cuenta('1', 3 * perim, f'{fmt(3 * perim)} m')
 
-    print('Tema 2 · capacidad y masa')
-    v = conv(num('2,5'), 'l', 'ml');   cuenta('2', v, f'2,5 L = {fmt(v)} mL')
-    v = suma([(4, 'dal'), (7, 'l'), (5, 'dl')], 'l'); cuenta('2', v, f'4 daL 7 L 5 dL = {fmt(v)} L')
-    v = conv(num('0,85'), 'kg', 'g');  cuenta('2', v, f'0,85 kg = {fmt(v)} g')
-    v = suma([(1, 'Tm'), (3, 'Qm'), (45, 'kg')], 'kg'); cuenta('2', v, f'1 Tm 3 Qm 45 kg = {fmt(v)} kg')
-    cosecha = suma([(2, 'Tm'), (350, 'kg')], 'kg')
-    bolsa = conv(F(5), 'mag', 'kg')
-    quedan = cosecha - 40 * bolsa
+    print('Tema 2 · capacidad y masa (ejercitario 5.2, ej. 4 y 9; lectura, ejemplo 2)')
+    c('2', '7', 'hL', 'L')
+    c('2', '350', 'L', 'daL')
+    c('2', '700', 'hg', 'kg')
+    cosecha = suma([(4, 'Tm'), (30, 'kg'), (6000, 'g')], 'kg')
+    cuenta('2', cosecha, f'4 Tm 30 kg 6.000 g = {fmt(cosecha)} kg')
+    bolsa = suma([(700, 'hg'), (500, 'dag')], 'kg')
+    quedan = cosecha - 50 * bolsa
     cuenta('2', quedan, f'quedaron {fmt(quedan)} kg')
-    if quedan + 40 * bolsa != conv(F(2350000), 'g', 'kg'):
-        mal('el control de la soja')
+    if suma([(50 * 700, 'hg'), (50 * 500, 'dag')], 'g') + conv(quedan, 'kg', 'g') != conv(cosecha, 'kg', 'g'):
+        mal('el control de la mandioca')
+    print('  práctica')
+    v = conv(num('3,6'), 'dal', 'l');  cuenta('2', v, f'{fmt(v)} L')
+    v = suma([(2, 'Tm'), (4, 'Qm'), (15, 'kg')], 'kg');  cuenta('2', v, f'{fmt(v)} kg')
+    paq = conv(suma([(1, 'Tm'), (200, 'kg')], 'kg'), 'kg', 'g') / 500
+    cuenta('2', paq, f'{fmt(paq)} paquetes')
 
-    print('Tema 3 · leer las unidades')
-    # la décima del km, la centésima del km, la centena del dl, la milésima de la Tm,
-    # 10 decenas de décimas del hm: cada una tiene que ser exactamente una unidad
-    casos = [
-        (conv(F(1), 'km', 'm') / 10, 'm', 'hm', 'la décima del km es el hm'),
-        (conv(F(1), 'km', 'm') / 100, 'm', 'dam', 'la centésima del km es el dam'),
-        (conv(F(100), 'dl', 'l'), 'l', 'dal', 'la centena del dL es el daL'),
-        (conv(F(1), 'Tm', 'kg') / 1000, 'kg', 'kg', 'la milésima de la Tm es el kg'),
-        (conv(10 * 10 * F(1, 10), 'hm', 'm'), 'm', 'km', '10 decenas de décimas del hm son 1 km'),
-    ]
-    for valor, en, unidad, texto in casos:
-        if conv(valor, en, unidad) != 1:
-            mal(f'{texto}: da {conv(valor, en, unidad)} {unidad}, no 1')
-        cuenta('3', valor, texto)
-
-    print('Tema 4 · superficie')
-    v = conv(num('3,5'), 'm2', 'dm2');    cuenta('4', v, f'3,5 m² = {fmt(v)} dm²')
-    v = conv(F(45000), 'cm2', 'm2');      cuenta('4', v, f'45.000 cm² = {fmt(v)} m²')
-    v = conv(num('0,07'), 'km2', 'dam2'); cuenta('4', v, f'0,07 km² = {fmt(v)} dam²')
-    v = suma([(3, 'ha'), (8, 'a'), (5, 'ca')], 'm2'); cuenta('4', v, f'3 ha 8 a 5 ca = {fmt(v)} m²')
-    sup = F(250) * F(120)
-    ha = conv(sup, 'm2', 'ha')
-    precio = ha * 18000000
-    cuenta('4', precio, f'el terreno cuesta ₲ {fmt(precio)}')
-    if precio / 18000000 != conv(F(3), 'hm2', 'ha') or ha != 3:
+    print('Tema 3 · superficie (lectura, ejemplos 3 y 4; ejercitario 5.1, ej. 7; 5.2, ej. 5)')
+    c('3', '5.208', 'm²', 'dam²')
+    c('3', '6.000', 'cm²', 'm²')
+    campo = suma([(3, 'ha'), (15, 'a'), (40, 'ca')], 'm2')
+    cuenta('3', campo, f'3 ha 15 a 40 ca = {fmt(campo)} m²')
+    precio = (94620000 + 63080000) / campo
+    cuenta('3', precio, f'cada m² a ₲ {fmt(precio)}')
+    if precio * campo - 63080000 != 94620000:
+        mal('el control del campo')
+    ter = suma([(2, 'ha'), (50, 'a')], 'a')
+    precio2 = (75000000 + 20000 * ter) / conv(ter, 'a', 'm2')
+    cuenta('3', precio2, f'cada m² a ₲ {fmt(precio2)}')
+    # control: lo que cobra por área, menos la ganancia de esa área, es lo que costó
+    if (precio2 * 100 - 20000) * ter != 75000000:
         mal('el control del terreno')
+    print('  práctica')
+    v = conv(num('2,4'), 'ha', 'm2');  cuenta('3', v, f'{fmt(v)} m²')
+    v = conv(F(56000), 'cm2', 'm2');   cuenta('3', v, f'{fmt(v)} m²')
+    v = suma([(1, 'ha'), (20, 'a')], 'm2') * 2500;  cuenta('3', v, f'₲ {fmt(v)}')
 
-    print('Tema 5 · volumen')
-    v = conv(num('5,7'), 'dm3', 'cm3');  cuenta('5', v, f'5,7 dm³ = {fmt(v)} cm³')
-    v = conv(num('0,35'), 'm3', 'l');    cuenta('5', v, f'0,35 m³ = {fmt(v)} L')
-    v = conv(num('1,2'), 'm3', 'kg');    cuenta('5', v, f'el tanque tiene {fmt(v)} kg de agua')
-    v = conv(F(3), 'm3', 'l') + conv(F(40), 'dm3', 'l') + conv(F(500), 'cm3', 'l')
-    cuenta('5', v, f'3 m³ 40 dm³ 500 cm³ = {fmt(v)} L')
-    consumo = num('2.326,15') - num('2.318,6')
+    print('Tema 4 · volumen (cuestionario 2 y 5; lectura, ejemplo 5; ejercitario 5.1, ej. 9)')
+    c('4', '0,62', 'm³', 'dm³')
+    c('4', '4.200', 'kL', 'dam³')
+    v = suma([(3, 'kl'), (25, 'dal'), (400, 'cl')], 'm3')
+    cuenta('4', v, f'3 kL 25 daL 400 cL = {fmt(v)} m³')
+    consumo = num('1.362,25') - num('1.348,6')
     v = conv(consumo, 'm3', 'l')
-    cuenta('5', v, f'se consumieron {fmt(v)} L')
-    if conv(num('2.326,15'), 'm3', 'l') - conv(num('2.318,6'), 'm3', 'l') != v:
+    cuenta('4', v, f'se consumieron {fmt(v)} L')
+    if conv(num('1.348,6'), 'm3', 'l') + v != conv(num('1.362,25'), 'm3', 'l'):
         mal('el control del medidor')
+    agua = conv(F(12 * 2), 'l', 'kg')               # 12 botellas de 2 L, de agua
+    caja = agua + conv(F(12 * 60), 'g', 'kg') + conv(F(1200), 'g', 'kg')
+    carga = 40 * caja
+    cuenta('4', carga, f'la carga pesa {fmt(carga)} kg')
+    # control: todo en gramos, sumado por separado
+    if conv(F(40 * 12 * 2), 'l', 'g') + 40 * 12 * 60 + 40 * 1200 != conv(carga, 'kg', 'g'):
+        mal('el control de las botellas')
+    print('  práctica')
+    v = conv(num('2,5'), 'm3', 'l');   cuenta('4', v, f'{fmt(v)} L')
+    v = conv(num('1,8'), 'm3', 'kg');  cuenta('4', v, f'{fmt(v)} kg')
+    v = conv(F(3), 'm3', 'l') / 12;    cuenta('4', v, f'{fmt(v)} baldes')
 
-    print('Desafío')
-    frente = conv(num('0,45'), 'km', 'm') + conv(F(5), 'dam', 'm')
-    fondo = conv(F(2), 'hm', 'm') + conv(F(4), 'dam', 'm')
-    alambre = 4 * 2 * (frente + fondo)
-    rollos = -(-alambre // 500)
-    cuenta('desafio', rollos, f'hacen falta {fmt(rollos)} rollos')
-    if not (11 * 500 < alambre <= 12 * 500):
-        mal('el control de los rollos')
-    if conv(frente * fondo, 'm2', 'ha') != 12:
-        mal('la finca no mide 12 ha (lo dice el observador del desafío)')
-    print(f'  (frente {fmt(frente)} m, fondo {fmt(fondo)} m, alambre {fmt(alambre)} m, '
-          f'superficie {fmt(conv(frente * fondo, "m2", "ha"))} ha)')
+    print('Tema 5 · leer las unidades (lectura, ejemplos 4 y 5; cuestionario 3)')
+    casos = [
+        (conv(F(1, 10), 'km', 'm'), 'm', 'hm', 'la décima del km es el hm'),
+        (conv(F(1, 100), 'hm', 'm'), 'm', 'm', 'la centésima del hm es el m'),
+        (conv(F(100), 'dl', 'l'), 'l', 'dal', 'la centena del dL es el daL'),
+        (conv(100 * 10 * 100 * F(1, 1000), 'dg', 'g'), 'g', 'dag',
+         '100 decenas de centenas de milésimas del dg son 1 dag'),
+    ]
+    for valor, en, u, texto in casos:
+        if conv(valor, en, u) != 1:
+            mal(f'{texto}: da {conv(valor, en, u)} {u}, no 1')
+        cuenta('5', valor, texto)
+    # «La centésima de la Tm, en agua, equivale a 10 L»
+    v = conv(F(1, 100), 'Tm', 'l')
+    if v != 10:
+        mal('la centésima de la Tm no son 10 L de agua')
+    cuenta('5', v, 'es verdadera: 10 kg de agua son 10 L')
+    print('  práctica')
+    if conv(F(1, 100), 'km', 'dam') != 1:
+        mal('la centésima del km no es el dam')
+    cuenta('5', 1, 'el dam')
+    if conv(F(1000), 'mg', 'g') != 1:
+        mal('el millar del mg no es el g')
+    cuenta('5', 1, 'el gramo')
+    if conv(F(1), 'kl', 'kg') != conv(F(1), 'Tm', 'kg') or conv(F(1), 'kl', 'kg') == conv(F(1), 'Qm', 'kg'):
+        mal('1 kL de agua no pesa 1 Tm')
+    cuenta('5', 1, 'falsa: pesa 1.000 kg, que es 1 Tm')
+
+    print('Desafío (ejercitario 5.1, ej. 4)')
+    areas = conv(F(6400), 'm2', 'a')
+    kg = areas * 15
+    m3 = kg / 800                                # 800 kg de trigo ocupan 1 m³
+    hl = conv(m3, 'm3', 'hl')
+    cobro = hl * 150000
+    cuenta('desafio', cobro, f'se cobran ₲ {fmt(cobro)}')
+    # control: por el camino de los litros
+    if conv(kg / 800 * 1000, 'dm3', 'l') / 100 * 150000 != cobro:
+        mal('el control del desafío')
+    print(f'  ({fmt(areas)} a, {fmt(kg)} kg, {fmt(m3)} m³, {fmt(hl)} hL)')
 
     # ── la página ──
     print('La página')
@@ -261,21 +325,68 @@ def main():
         repetidas = {t for t in lista if lista.count(t) > 1}
         if repetidas:
             mal(f'tema {tema}: respuestas repetidas {repetidas}')
+
+    # cada factor unitario de la página
+    llamadas = re.findall(r'convierte\(([^()]*)\)', html)
+    n = 0
+    for args in llamadas:
+        if args.startswith('...'):           # la definición, en pizarra.js no; por las dudas
+            continue
+        try:
+            partes = ast.literal_eval('(' + args + ',)')
+        except (ValueError, SyntaxError):
+            mal(f'no puedo leer convierte({args[:60]})')
+            continue
+        n += 1
+        cant, *facs, res = partes
+        q, u = medida(cant)
+        r, ur = medida(res)
+        arriba, abajo, cuentas = [u], [], q
+        for f_ in facs:
+            (qa, ua), (qb, ub) = medida(f_[0]), medida(f_[1])
+            if conv(qa, ua, ub) != qb:
+                mal(f'el factor {f_[0]} / {f_[1]} no vale 1')
+            cuentas = cuentas * qa / qb
+            arriba.append(ua)
+            abajo.append(ub)
+        for d in abajo:
+            if d in arriba:
+                arriba.remove(d)
+            else:
+                mal(f'convierte({cant!r}, …): la unidad {d} de abajo no se tacha con nada')
+        if arriba != [ur]:
+            mal(f'convierte({cant!r}, …): quedan {arriba} y el resultado está en {ur}')
+        if cuentas != r:
+            mal(f'convierte({cant!r}, …): la cuenta da {fmt(cuentas)}, no {res}')
+        if conv(q, u, ur) != r:
+            mal(f'{cant} no son {res}')
+    print(f'  {n} conversiones con factor unitario, todas controladas')
+    if n < 30:
+        mal(f'solo {n} conversiones con convierte(): ¿se volvió a dividir por 100?')
+
     # ningún renglón encadena dos igualdades: cada renglón de P() y de A() es
-    # una cadena entre comillas simples
-    for s in re.findall(r"'([^'\n]*)'", html):
+    # una cadena entre comillas simples, o una plantilla sin lo de adentro de ${}
+    cadenas = re.findall(r"'([^'\n]*)'", html)
+    cadenas += [re.sub(r'\$\{[^{}]*\}', '', s) for s in re.findall(r'`([^`]*)`', html)]
+    for s in cadenas:
         if len(re.findall(r'\s=\s', s)) > 1:
             mal(f'dos igualdades en un renglón: «{s[:70]}»')
-    # todo ejemplo con su control
-    n_final = len(re.findall(r'\bfinal:', html))
-    n_control = len(re.findall(r'\bcontrol:', html))
+    # en una clase con factor unitario no se divide por 10, 100, 1.000 para cambiar de unidad
+    for s in re.findall(r"'([^'\n]*)'", html):
+        if re.search(r'\d\s+:\s*(10|100|1\.000|10\.000)\s+(m|L|g|dm|cm|ha|a)\b', s):
+            mal(f'un cambio de unidad dividiendo: «{s[:70]}»')
+
+    # todo ejemplo con su control; toda práctica con tres ejercicios
+    n_final = len(re.findall(r'\bfinal:[\'`]', html))
+    n_control = len(re.findall(r'\bcontrol:[\'`]', html))
     if n_final != n_control:
         mal(f'{n_final} respuestas y {n_control} controles: falta algún control')
-    # el material del Poli no se copia: ningún ejemplo suyo
-    for frase in ('48.504', '2 ha 25 a 60 ca', '1257,3', '1.257,3', '2742,8', '2 kl 34 dal',
-                  '0,037 hm', 'mandioca', 'hacendado', 'tártago'):
-        if frase in html:
-            mal(f'la página trae «{frase}», que es del material del Poli')
+    n_prac = len(re.findall(r'\bpractica:\s*\[', html))
+    n_resp = len(re.findall(r'\bresp:', html))
+    if n_prac == 0 or n_resp != 3 * n_prac:
+        mal(f'{n_prac} prácticas y {n_resp} ejercicios: tienen que ser tres por práctica')
+    if n_prac and '.practica-diapo' not in html:
+        mal('la página tiene práctica y no pone .practica-diapo en data-diapos')
 
 
 main()
