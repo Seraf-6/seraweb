@@ -50,7 +50,9 @@ fichas/
   pdf/<grado>/Ficha_NN.pdf  los archivos
 quimica/index.html          Química                      ← lo genera build.py
 fisica/index.html           Física (por ahora vacía)     ← lo genera build.py
-cursillo/index.html         Cursillo de ingreso (vacío)  ← lo genera build.py
+cursillo/index.html         Cursillo: la semana y los temas ← lo genera build.py
+cursillo/clases/<tema>.html clases del cursillo         ← escritas a mano
+cursillo/pdf/teoria|libro/  teoría y ejercitario en PDF
 omapa/index.html            módulo de olimpiada          ← lo genera build.py
 omapa/clases/bloque-N.html  clases por herramienta       ← escritas a mano
 omapa/fichas/               fichas de alumno OMAPA y Kanguro (sin claves)
@@ -75,6 +77,8 @@ assets/
   img/                      logos
 citas.md                    las citas de las tapas, con su fuente
 contenido.py                EL ÍNDICE DEL SITIO: grados, unidades, material
+cursillo_datos.py           el Cursillo: el horario de cada semana y el banco de temas
+cursillo_generar.py         arma cursillo/index.html (lo llama build.py)
 build.py                    genera las páginas de índice desde contenido.py
 verificacion/               un guion por página de clase, que comprueba sus cuentas
 ```
@@ -709,6 +713,52 @@ impresa a PDF: OpenCV leyó todos sus QR, y medían 40 mm.
 
 ---
 
+## El módulo del Cursillo
+
+El cursillo de ingreso (Politécnica, FIUNA, FCQ, Colegios Técnicos, UPTP) no
+se recorre de principio a fin. Cada jueves Juan carga su disponibilidad; el fin
+de semana le llega la grilla de la semana siguiente (turno mañana 8 a 12, tarde
+14 a 18; grupos como `POLI INT 3` = Politécnica, intensivo 3) y las clases se
+arman **según lo que toque**: si mañana se da divisibilidad, se hace esa.
+
+**La fuente es `cursillo_datos.py`**, no `contenido.py`:
+
+- `TEMAS`, el banco: cada tema con su materia y bloque, su clase para proyectar
+  (`cursillo/clases/<id>.html`, o None mientras no exista), la teoría en PDF y
+  los ejercicios del libro (libro, dónde, PDF o None).
+- `SEMANAS`, el horario: una entrada por semana, identificada por su lunes, con
+  **solo las clases de Juan** (las que dicen «Serafini»). Ni un nombre de otro
+  docente. La consigna va tal como la manda la coordinación; `temas` la enlaza
+  al banco.
+
+`cursillo/index.html` es público y abre con **la semana**: lunes a sábado,
+mañana y tarde, cada clase con su grupo, su consigna y su material. Un guion
+chico elige la semana de hoy (el domingo ya muestra la que viene), marca el día,
+deja ir a otras semanas con flechas y avisa los jueves que hay que cargar la
+disponibilidad (y viernes o sábado, si la grilla de la que viene no está). Sin
+JavaScript se ve la última semana cargada. Para probar otra fecha:
+`cursillo/index.html?hoy=2026-11-26`. Debajo va el banco de temas, con dónde
+se dio cada uno.
+
+**Cómo se carga una semana:** Juan pasa las capturas de la grilla, se agrega la
+semana en `SEMANAS` (solo sus clases) y los temas nuevos en `TEMAS`, y se corre
+`python build.py` y `python verificacion/cursillo.py`. Las clases del cursillo
+son páginas de clase como las demás (el motor de la pizarra, su verificador
+`verificacion/cursillo_<tema>.py`) y se escriben a pedido.
+
+**Los PDF del cursillo se publican**: la teoría y el ejercitario oficial
+(Matemáticas esenciales, Principia), en `cursillo/pdf/`. Es una excepción a
+«material con derechos de autor» decidida por Juan (noviembre de 2026). Las
+claves, no: el verificador falla si encuentra CLAVE o RESPUESTA en un nombre.
+
+El verificador falla además si un lunes no es lunes o se repite, si hay dos
+clases en el mismo día y turno, si un grupo no tiene la forma
+`INSTITUCIÓN INT|EXT N`, si una clase apunta a un tema que no existe, si falta
+un archivo enlazado, si aparece el nombre de otro docente o si la página
+generada no trae lo que dicen los datos.
+
+---
+
 ## Las citas de las tapas
 
 Cada página de clase abre con una cita en vez de una explicación. La lista
@@ -845,7 +895,8 @@ rechaza `.csv`, `.xlsx`, `.opus`, `.ogg` y `.heic`).
 
 **Material con derechos de autor.** Nada de escanear ni reproducir páginas de
 libros de texto. Los problemas de olimpiada son la excepción decidida por Juan:
-se publican con su fuente (ver "El módulo de OMAPA"), nunca sus claves. Si hace falta ejercitación al estilo de un libro, se generan
+se publican con su fuente (ver "El módulo de OMAPA"), nunca sus claves. La otra
+excepción son los PDF del cursillo (ver "El módulo del Cursillo"). Si hace falta ejercitación al estilo de un libro, se generan
 series originales propias.
 
 ---
@@ -938,7 +989,8 @@ geometría a la manera de los griegos, todavía sin ficha) y las tres de 8.º
 verificador; el panel de proyección, el timer de aula y el módulo de
 progreso; y en OMAPA, las siete clases del cuadernillo de herramientas y las
 fichas de alumno de OMAPA y Kanguro; y el módulo del Open House 2026, con
-sus herramientas y su verificador, esperando la lista de alumnos.
+sus herramientas y su verificador, esperando la lista de alumnos; y el Cursillo,
+con la semana del 23 al 28 de noviembre cargada y cuatro temas sin clase todavía.
 
 Pendiente: los bloques B (construcciones) y C (triángulos) de la geometría griega de 7.º
 (la currícula está en `Curricula_Geometria_7mo.md`, fuera del repositorio), el proyecto de estadística compartido por los tres grados (falta

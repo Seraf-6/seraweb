@@ -17,8 +17,9 @@ import os
 import pathlib
 import shutil
 
-from contenido import SITIO, GRADOS, OMAPA, FICHAS, QUIMICA, CURSILLO, FISICA
+from contenido import SITIO, GRADOS, OMAPA, FICHAS, QUIMICA, FISICA
 from open2026 import generar as open2026
+import cursillo_generar
 
 RAIZ = pathlib.Path(__file__).resolve().parent
 
@@ -124,7 +125,8 @@ def portada():
     cuerpo.append("""<a class="tarjeta" href="cursillo/index.html">
       <span class="rotulo">Ingreso a la facultad</span>
       <h3>Cursillo</h3>
-      <p>Preparación para el examen de ingreso: las clases para proyectar, tema por tema.</p></a>""")
+      <p>La semana de clases del cursillo de ingreso y los temas, cada uno con su clase
+        para proyectar, la teoría y los ejercicios.</p></a>""")
     cuerpo.append("""<a class="tarjeta" href="omapa/index.html">
       <span class="rotulo">2.º a 9.º grado</span>
       <h3>OMAPA</h3>
@@ -231,11 +233,8 @@ def indice_fisica():
 
 
 def indice_cursillo():
-    return indice_materia(
-        'Cursillo', CURSILLO, 'Ingreso a la facultad',
-        """La preparación para el examen de ingreso: las clases para proyectar,
-    tema por tema.""",
-        'Cursillo de preparación para el ingreso a la facultad.')
+    """La semana y el banco de temas: ver cursillo_datos.py y cursillo_generar.py."""
+    return cursillo_generar.pagina_cursillo(pagina, barra, pie)
 
 
 def indice_grado(g):

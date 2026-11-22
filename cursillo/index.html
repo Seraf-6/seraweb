@@ -4,13 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Cursillo · SeraWeb</title>
-<meta name="description" content="Cursillo de preparación para el ingreso a la facultad.">
+<meta name="description" content="Cursillo de ingreso: la semana de clases y los temas, con sus clases para proyectar.">
 <link rel="icon" href="../assets/img/seraweb.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,500;0,700;0,800;1,500&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap">
   <link rel="stylesheet" href="../assets/base.css">
   <link rel="stylesheet" href="../assets/sitio.css">
+  <link rel="stylesheet" href="../assets/cursillo.css">
 </head>
 <body>
 <nav class="sitio-nav">
@@ -20,19 +21,124 @@
   </div>
 </nav>
 <div class="envoltura ancha">
-<header class="portada">
+<header class="portada cur-portada">
   <p class="sello">Ingreso a la facultad</p>
   <h1>Cursillo</h1>
-  <p class="bajada">La preparación para el examen de ingreso: las clases para proyectar,
-    tema por tema.</p>
+  <p class="bajada">La semana de clases y, debajo, los temas: cada uno con su clase para
+    proyectar, la teoría y los ejercicios del libro.</p>
 </header>
-<section class="bloque">
-<p class="eyebrow">Preparación para el ingreso</p>
-<h2>Las clases del cursillo</h2>
-<p>Las clases se van a ir sumando acá, una tarjeta por tema.</p>
-<div class="tarjetas">
-<div class="tarjeta vacia"><span class="etiqueta pend">En preparación</span><h3>Primeras clases</h3><p>Los temas del programa de ingreso, con sus diapositivas para proyectar.</p></div>
-</div></section>
+<section class="bloque" id="semana">
+  <p class="eyebrow">Mi semana</p>
+  <div class="cur-encabezado">
+    <h2 id="cur-rotulo">Semana del 23 al 28 de noviembre</h2>
+    <div class="cur-nav"><button class="cur-flecha" type="button" id="cur-ant" aria-label="Semana anterior">←</button><button class="cur-flecha" type="button" id="cur-sig" aria-label="Semana siguiente">→</button></div>
+  </div>
+  <div class="aviso" id="cur-aviso" hidden></div>
+  <div class="cur-semana" data-lunes="2026-11-23" data-rotulo="Semana del 23 al 28 de noviembre">
+    <div class="cur-dia libre" data-fecha="2026-11-23">
+      <h3><span>Lunes</span> <small>23/11</small></h3>
+      <div class="cur-turno vacio">
+        <span class="cur-turno-nom">Mañana <small>8:00 a 12:00</small></span>
+        <span class="cur-libre">libre</span>
+      </div><div class="cur-turno vacio">
+        <span class="cur-turno-nom">Tarde <small>14:00 a 18:00</small></span>
+        <span class="cur-libre">libre</span>
+      </div>
+    </div><div class="cur-dia" data-fecha="2026-11-24">
+      <h3><span>Martes</span> <small>24/11</small></h3>
+      <div class="cur-turno">
+        <span class="cur-turno-nom">Mañana <small>8:00 a 12:00</small></span>
+        <article class="cur-clase">
+          <div class="cur-cab"><span class="cur-grupo inst-poli" title="Politécnica · intensivo 3">POLI INT 3</span>
+            <span class="cur-materia">Matemática 1</span></div>
+          <p class="cur-consigna">Teoría de Sistema Métrico Decimal. Ejemplos.</p><div class="cur-tema"><a class="cur-tema-nom" href="#tema-sistema-metrico">Sistema métrico decimal</a><div class="cur-mats"><span class="cur-mat por-hacer">Clase por hacer</span></div></div>
+        </article>
+      </div><div class="cur-turno vacio">
+        <span class="cur-turno-nom">Tarde <small>14:00 a 18:00</small></span>
+        <span class="cur-libre">libre</span>
+      </div>
+    </div><div class="cur-dia" data-fecha="2026-11-25">
+      <h3><span>Miércoles</span> <small>25/11</small></h3>
+      <div class="cur-turno">
+        <span class="cur-turno-nom">Mañana <small>8:00 a 12:00</small></span>
+        <article class="cur-clase">
+          <div class="cur-cab"><span class="cur-grupo inst-poli" title="Politécnica · intensivo 4">POLI INT 4</span>
+            <span class="cur-materia">Matemática 1</span></div>
+          <p class="cur-consigna">Ejercicios de Sistema métrico decimal. Completar pendientes de aritmética.</p><div class="cur-tema"><a class="cur-tema-nom" href="#tema-sistema-metrico">Sistema métrico decimal</a><div class="cur-mats"><span class="cur-mat por-hacer">Clase por hacer</span></div></div>
+        </article>
+      </div><div class="cur-turno">
+        <span class="cur-turno-nom">Tarde <small>14:00 a 18:00</small></span>
+        <article class="cur-clase">
+          <div class="cur-cab"><span class="cur-grupo inst-poli" title="Politécnica · intensivo 8">POLI INT 8</span>
+            <span class="cur-materia">Matemática 1</span></div>
+          <p class="cur-consigna">Teoría de Operaciones fundamentales. Ejemplos.</p><div class="cur-tema"><a class="cur-tema-nom" href="#tema-operaciones">Operaciones fundamentales</a><div class="cur-mats"><span class="cur-mat por-hacer">Clase por hacer</span><span class="cur-mat ejer">Matemáticas esenciales · Capítulo 1</span></div></div>
+        </article>
+      </div>
+    </div><div class="cur-dia" data-fecha="2026-11-26">
+      <h3><span>Jueves</span> <small>26/11</small></h3>
+      <div class="cur-turno vacio">
+        <span class="cur-turno-nom">Mañana <small>8:00 a 12:00</small></span>
+        <span class="cur-libre">libre</span>
+      </div><div class="cur-turno">
+        <span class="cur-turno-nom">Tarde <small>14:00 a 18:00</small></span>
+        <article class="cur-clase">
+          <div class="cur-cab"><span class="cur-grupo inst-poli" title="Politécnica · intensivo 1">POLI INT 1</span>
+            <span class="cur-materia">Matemática 1</span></div>
+          <p class="cur-consigna">Terminar ejercicios pendientes del libro Matemáticas esenciales. Teoría de Divisibilidad con ejemplos.</p><div class="cur-tema"><a class="cur-tema-nom" href="#tema-divisibilidad">Divisibilidad</a><div class="cur-mats"><span class="cur-mat por-hacer">Clase por hacer</span><span class="cur-mat ejer">Matemáticas esenciales · Capítulo 1</span></div></div>
+        </article>
+      </div>
+    </div><div class="cur-dia" data-fecha="2026-11-27">
+      <h3><span>Viernes</span> <small>27/11</small></h3>
+      <div class="cur-turno">
+        <span class="cur-turno-nom">Mañana <small>8:00 a 12:00</small></span>
+        <article class="cur-clase">
+          <div class="cur-cab"><span class="cur-grupo inst-poli" title="Politécnica · extensivo 3">POLI EXT 3</span>
+            <span class="cur-materia">Analítica</span></div>
+          <p class="cur-consigna">Ejercitario Principia, Capítulo 2: Vectores.</p><div class="cur-tema"><a class="cur-tema-nom" href="#tema-vectores">Vectores</a><div class="cur-mats"><span class="cur-mat por-hacer">Clase por hacer</span><span class="cur-mat ejer">Ejercitario Principia · Capítulo 2</span></div></div>
+        </article>
+      </div><div class="cur-turno vacio">
+        <span class="cur-turno-nom">Tarde <small>14:00 a 18:00</small></span>
+        <span class="cur-libre">libre</span>
+      </div>
+    </div><div class="cur-dia libre" data-fecha="2026-11-28">
+      <h3><span>Sábado</span> <small>28/11</small></h3>
+      <div class="cur-turno vacio">
+        <span class="cur-turno-nom">Mañana <small>8:00 a 12:00</small></span>
+        <span class="cur-libre">libre</span>
+      </div><div class="cur-turno vacio">
+        <span class="cur-turno-nom">Tarde <small>14:00 a 18:00</small></span>
+        <span class="cur-libre">libre</span>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="bloque" id="temas">
+  <p class="eyebrow">El banco</p>
+  <h2>Los temas</h2>
+  <p>No van en orden de programa: se suman a medida que hace falta darlos.</p>
+  <h3 class="cur-banco-materia">Matemática 1</h3>
+<p class="eyebrow">Aritmética</p><div class="tarjetas">
+<div class="tarjeta cur-tarjeta sin-clase" id="tema-operaciones">
+      <span class="etiqueta pend">Clase por hacer</span><h3>Operaciones fundamentales</h3>
+      <div class="cur-mats"><span class="cur-mat por-hacer">Clase por hacer</span><span class="cur-mat ejer">Matemáticas esenciales · Capítulo 1</span></div><p class="cur-dado">Se dio en: POLI INT 8 · mié 25/11</p>
+    </div>
+<div class="tarjeta cur-tarjeta sin-clase" id="tema-divisibilidad">
+      <span class="etiqueta pend">Clase por hacer</span><h3>Divisibilidad</h3>
+      <div class="cur-mats"><span class="cur-mat por-hacer">Clase por hacer</span><span class="cur-mat ejer">Matemáticas esenciales · Capítulo 1</span></div><p class="cur-dado">Se dio en: POLI INT 1 · jue 26/11</p>
+    </div>
+<div class="tarjeta cur-tarjeta sin-clase" id="tema-sistema-metrico">
+      <span class="etiqueta pend">Clase por hacer</span><h3>Sistema métrico decimal</h3>
+      <div class="cur-mats"><span class="cur-mat por-hacer">Clase por hacer</span></div><p class="cur-dado">Se dio en: POLI INT 3 · mar 24/11 / POLI INT 4 · mié 25/11</p>
+    </div>
+</div>
+<h3 class="cur-banco-materia">Analítica</h3>
+<p class="eyebrow">Geometría analítica</p><div class="tarjetas">
+<div class="tarjeta cur-tarjeta sin-clase" id="tema-vectores">
+      <span class="etiqueta pend">Clase por hacer</span><h3>Vectores</h3>
+      <div class="cur-mats"><span class="cur-mat por-hacer">Clase por hacer</span><span class="cur-mat ejer">Ejercitario Principia · Capítulo 2</span></div><p class="cur-dado">Se dio en: POLI EXT 3 · vie 27/11</p>
+    </div>
+</div>
+</section>
 </div>
 <footer class="pie-sitio">
   <div class="envoltura ancha">
@@ -40,6 +146,52 @@
     Las claves de corrección no forman parte de este sitio.
   </div>
 </footer>
+<script>
+(function () {
+  var semanas = [].slice.call(document.querySelectorAll('.cur-semana'));
+  if (!semanas.length) return;
+  function lee(iso) { var p = iso.split('-'); return new Date(+p[0], p[1] - 1, +p[2]); }
+  function iso(d) {
+    return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+  }
+  function mas(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+  var q = /[?&]hoy=(\d{4}-\d\d-\d\d)/.exec(location.search);
+  var hoy = q ? lee(q[1]) : new Date(); hoy = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+  var dow = hoy.getDay();                          // 0 domingo … 6 sábado
+  var lunesHoy = mas(hoy, dow === 0 ? -6 : 1 - dow);
+  var objetivo = dow === 0 ? mas(lunesHoy, 7) : lunesHoy;   // el domingo ya mira la que viene
+  var lunes = semanas.map(function (s) { return s.getAttribute('data-lunes'); });
+  var i = lunes.indexOf(iso(objetivo));
+  if (i < 0) {                                       // la más cercana hacia atrás, o la primera
+    i = 0;
+    for (var k = 0; k < lunes.length; k++) if (lunes[k] <= iso(objetivo)) i = k;
+  }
+  var rot = document.getElementById('cur-rotulo');
+  var ant = document.getElementById('cur-ant'), sig = document.getElementById('cur-sig');
+  function muestra(n) {
+    i = n;
+    semanas.forEach(function (s, k) { s.hidden = k !== i; });
+    rot.textContent = semanas[i].getAttribute('data-rotulo');
+    ant.disabled = i === 0; sig.disabled = i === semanas.length - 1;
+  }
+  ant.addEventListener('click', function () { if (i > 0) muestra(i - 1); });
+  sig.addEventListener('click', function () { if (i < semanas.length - 1) muestra(i + 1); });
+  document.querySelector('.cur-nav').hidden = semanas.length < 2;
+  var d = document.querySelector('.cur-dia[data-fecha="' + iso(hoy) + '"]');
+  if (d) d.classList.add('hoy');
+  muestra(i);
+  // jueves: cargar la disponibilidad; viernes y sábado: ¿llegó la grilla?
+  var prox = mas(lunesHoy, 7), aviso = document.getElementById('cur-aviso');
+  var meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto',
+               'septiembre','octubre','noviembre','diciembre'];
+  var cual = prox.getDate() + ' de ' + meses[prox.getMonth()];
+  var cargada = lunes.indexOf(iso(prox)) >= 0;
+  if (dow === 4) aviso.innerHTML = '<strong>Hoy es jueves:</strong> cargá la disponibilidad para la semana del ' + cual + '.';
+  else if ((dow === 5 || dow === 6) && !cargada)
+    aviso.innerHTML = '<strong>Falta la grilla</strong> de la semana del ' + cual + ': cuando llegue, se carga en cursillo_datos.py.';
+  aviso.hidden = !aviso.innerHTML;
+})();
+</script>
 <script src="../assets/proyeccion.js" defer></script>
 <script src="../assets/timer.js" defer></script>
 </body>

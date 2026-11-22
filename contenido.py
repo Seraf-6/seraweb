@@ -224,18 +224,9 @@ QUIMICA = [
 
 # ══════════════════════════════════════════════════════════════════
 #  Cursillo de ingreso
-#  Preparación para el examen de ingreso a la facultad. Mismo formato
-#  que QUIMICA: cada bloque es una sección del índice. Todavía sin clases.
+#  No está acá: funciona por semana y por tema, no por unidad. Su fuente
+#  es cursillo_datos.py (el horario y el banco de temas).
 # ══════════════════════════════════════════════════════════════════
-CURSILLO = [
-  {'titulo': 'Las clases del cursillo',
-   'eyebrow': 'Preparación para el ingreso',
-   'nota': 'Las clases se van a ir sumando acá, una tarjeta por tema.',
-   'material': [
-     {'tipo': 'pendiente', 'titulo': 'Primeras clases',
-      'desc': 'Los temas del programa de ingreso, con sus diapositivas para proyectar.'},
-   ]},
-]
 
 # ══════════════════════════════════════════════════════════════════
 #  Física

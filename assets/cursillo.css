@@ -1,0 +1,95 @@
+/* SeraWeb · Cursillo: la semana y el banco de temas.
+   Lo usa solo cursillo/index.html (lo genera cursillo_generar.py). */
+
+.cur-portada{padding-block:32px 18px}
+
+.cur-encabezado{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+.cur-encabezado h2{margin:0}
+.cur-nav{display:flex; gap:6px}
+.cur-nav[hidden]{display:none}
+.cur-flecha{
+  font:700 18px/1 var(--sans); min-width:44px; min-height:44px; border-radius:5px;
+  border:1px solid var(--acento); background:none; color:var(--acento); cursor:pointer}
+.cur-flecha:hover,.cur-flecha:focus-visible{background:var(--acento); color:var(--papel)}
+.cur-flecha[disabled]{opacity:.3; cursor:default; background:none; color:var(--acento)}
+
+/* la grilla: seis días en columnas, con los turnos alineados por subgrid */
+.cur-semana{
+  display:grid; grid-template-columns:repeat(6,minmax(0,1fr));
+  grid-template-rows:auto auto auto; gap:0 8px; margin-top:16px}
+.cur-semana[hidden]{display:none}
+.cur-dia{
+  display:grid; grid-row:span 3; grid-template-rows:subgrid; gap:8px;
+  padding:8px; border-radius:6px; border:1px solid transparent}
+.cur-dia h3{
+  margin:0; font-size:1rem; font-weight:700; display:flex; align-items:baseline; gap:6px;
+  padding-bottom:6px; border-bottom:2px solid var(--linea-fuerte)}
+.cur-dia h3 small{font-family:var(--mono); font-size:12px; font-weight:400; color:var(--lapiz)}
+.cur-dia.hoy{border-color:var(--acento); background:var(--acento-suave)}
+.cur-dia.hoy h3{border-bottom-color:var(--acento)}
+.cur-dia.hoy h3::after{
+  content:'hoy'; margin-left:auto; font:700 10.5px var(--mono); letter-spacing:.1em;
+  text-transform:uppercase; color:var(--acento)}
+
+.cur-turno{display:flex; flex-direction:column; gap:6px; min-height:7.5em}
+.cur-turno-nom{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--lapiz)}
+.cur-turno-nom small{font-size:inherit; letter-spacing:0; text-transform:none; opacity:.85}
+.cur-turno.vacio{
+  border:1px dashed var(--linea); border-radius:5px; padding:6px 8px; opacity:.7}
+.cur-libre{font-size:13px; color:var(--lapiz)}
+
+.cur-clase{
+  flex:1; display:flex; flex-direction:column; gap:6px; padding:10px;
+  background:var(--papel); border:1px solid var(--linea-fuerte); border-left:4px solid var(--acento);
+  border-radius:5px}
+.cur-cab{display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px}
+.cur-grupo{
+  font:700 12px var(--sans); letter-spacing:.06em; padding:2px 8px; border-radius:99px;
+  border:1.5px solid currentColor; white-space:nowrap}
+.cur-materia{font-size:13px; font-weight:600; color:var(--lapiz)}
+.cur-consigna{margin:0; font-size:14px; line-height:1.35}
+
+/* color por institución (el grupo y el borde de la tarjeta) */
+.inst-poli{color:var(--acento)}
+.inst-fiuna{color:var(--acento2)}
+.inst-fcq{color:var(--dest)}
+.inst-ct,.inst-uptp{color:var(--tinta)}
+.cur-clase:has(.inst-fiuna){border-left-color:var(--acento2)}
+.cur-clase:has(.inst-fcq){border-left-color:var(--dest)}
+.cur-clase:has(.inst-ct),.cur-clase:has(.inst-uptp){border-left-color:var(--tinta)}
+
+.cur-tema{border-top:1px solid var(--linea); padding-top:6px; display:flex; flex-direction:column; gap:5px}
+.cur-tema-nom{font-weight:700; font-size:14px; color:var(--tinta); text-decoration:none}
+.cur-tema-nom:hover{color:var(--acento); text-decoration:underline}
+
+/* los materiales de un tema */
+.cur-mats{display:flex; flex-wrap:wrap; gap:5px}
+.cur-mat{
+  font-size:12.5px; line-height:1.25; padding:4px 8px; border-radius:4px;
+  border:1px solid var(--linea-fuerte); color:var(--tinta); text-decoration:none}
+a.cur-mat:hover,a.cur-mat:focus-visible{border-color:var(--acento); color:var(--acento)}
+.cur-mat.clase{background:var(--acento); border-color:var(--acento); color:var(--papel); font-weight:700}
+a.cur-mat.clase:hover,a.cur-mat.clase:focus-visible{background:none; color:var(--acento)}
+.cur-mat.por-hacer{border-style:dashed; color:var(--lapiz)}
+.cur-mat.ejer{background:var(--papel-2)}
+
+/* el banco */
+.cur-banco-materia{font-size:1.25rem; margin:22px 0 8px}
+#temas .eyebrow{margin-top:10px}
+.cur-tarjeta{scroll-margin-top:80px}
+.cur-tarjeta.sin-clase{border-style:dashed}
+.cur-tarjeta:target{border-color:var(--acento); box-shadow:0 0 0 3px var(--acento-suave)}
+.cur-tarjeta .cur-dado{font-family:var(--mono); font-size:11.5px; margin-top:auto; padding-top:4px}
+
+/* en pantallas angostas: un día debajo del otro, sin los casilleros vacíos */
+@media (max-width:900px){
+  .cur-semana{grid-template-columns:1fr; gap:10px}
+  .cur-dia{display:flex; flex-direction:column; grid-row:auto}
+  .cur-turno{min-height:0}
+  .cur-turno.vacio{display:none}
+  .cur-dia.libre{flex-direction:row; align-items:baseline; opacity:.65; padding-block:4px}
+  .cur-dia.libre h3{border:none; padding:0}
+  .cur-dia.libre::after{content:'libre'; font-size:13px; color:var(--lapiz); margin-left:auto}
+}
