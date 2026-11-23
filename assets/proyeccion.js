@@ -41,6 +41,22 @@
     ? Array.prototype.slice.call(document.querySelectorAll(selector)) : [];
   diapos.forEach(function(d){ d.classList.add('diapo'); });
 
+  // Las ayudas ([data-ayuda]: los ejemplos resueltos de un tema, aparte del
+  // recorrido) no están en el camino: Av Pág las saltea. Se entra por su
+  // enlace, y al salir de la ayuda por cualquiera de sus dos bordes se
+  // vuelve a la diapositiva que dice data-vuelve (la práctica del tema).
+  function destino(dir){
+    var ay = diapos[estado.i] && diapos[estado.i].closest('[data-ayuda]');
+    var j = estado.i + dir;
+    if (ay){
+      if (j >= 0 && j < diapos.length && ay.contains(diapos[j])) return j;
+      var k = diapos.indexOf(document.getElementById(ay.getAttribute('data-vuelve')));
+      return k >= 0 ? k : estado.i;
+    }
+    while (j >= 0 && j < diapos.length && diapos[j].closest('[data-ayuda]')) j += dir;
+    return (j < 0 || j >= diapos.length) ? estado.i : j;
+  }
+
   // Tapar el dibujo, para que lo hagan ellos a partir del enunciado. No se
   // guarda: al pasar a otra diapositiva el dibujo vuelve.
   var hayDibujos = !!document.querySelector('.lienzo, .concepto-figura, .teoria-figura');
@@ -226,7 +242,7 @@
         window.scrollTo(0, 0); return;
       }
       if (b.dataset.paso !== undefined){
-        estado.i += Number(b.dataset.paso); aplicar(); window.scrollTo(0, 0); return;
+        estado.i = destino(Number(b.dataset.paso)); aplicar(); window.scrollTo(0, 0); return;
       }
       if (b.dataset.zoom !== undefined){
         var d = Number(b.dataset.zoom);
@@ -274,7 +290,7 @@
     if (!dir) return;
     ev.preventDefault();
     if (!directo && window.Pizarra && Pizarra.avanza && Pizarra.avanza(diapos[estado.i], dir)) return;
-    estado.i += dir; aplicar(); window.scrollTo(0, 0);
+    estado.i = destino(dir); aplicar(); window.scrollTo(0, 0);
   });
 
   cargar();

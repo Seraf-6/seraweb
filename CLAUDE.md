@@ -503,7 +503,10 @@ mandan los controles de presentación) avanzan primero los pasos de lo que está
 en pantalla —el ejemplo, la teoría, la próxima respuesta de la práctica— y,
 cuando no queda ninguno, pasan a la diapositiva siguiente; Re Pág y ← vuelven
 igual. ↓ y ↑ cambian de diapositiva sin mirar los pasos. Con un control de dos
-botones alcanza. `proyeccion.js` le pregunta a `Pizarra.avanza(diapo, dir)` si
+botones alcanza. Las ayudas (`[data-ayuda]`) no están en el camino: el recorrido
+las saltea, y desde adentro de una, al pasar su borde, se vuelve a la diapositiva
+de su `data-vuelve`. La clave de una puerta no la muestra el control: se pide con
+su botón. `proyeccion.js` le pregunta a `Pizarra.avanza(diapo, dir)` si
 hay un paso para dar: una página sin la pizarra solo cambia de diapositiva.
 
 **El valor por defecto es el fondo crema.** No es capricho: se probó proyectando
@@ -796,10 +799,32 @@ dice qué temas entran y en qué orden, como el libro en Matemática. **Los
 ejemplos que se proyectan son los problemas del material** (la lectura, los
 ejercitarios, el cuestionario) **con otros números**, y cada uno dice de dónde
 sale (`fte()`, como en OMAPA); los ejemplos chicos son las piezas del problema
-grande del tema. Después de los ejemplos, **tres ejercicios propios** en una
-diapositiva de práctica. Lo pidió Juan (22/11/2026): en el cursillo, a diferencia de
+grande del tema. Lo pidió Juan (22/11/2026): en el cursillo, a diferencia de
 Matemática, los ejemplos siguen los del material. Los números se cambian igual:
-el material no se publica, y el original queda para resolverlo en clase. Los solucionarios son claves y las «Clases síncronas»
+el material no se publica, y el original queda para resolverlo en clase.
+
+**Una clase del cursillo es para practicar, no para mirar** (lo pidió Juan el
+22/11/2026, sobre sistema métrico, que es el modelo). Los cursillistas ya vieron
+el tema: poca explicación y mucha práctica, en papel y con su libro; el pizarrón
+sigue siendo del profesor. El recorrido es: un **diagnóstico** de opción múltiple
+(8 ítems, 1 o 2 por tema, la clave y la regla de ubicación en las Notas: 0 a 3
+bien Nivel 1, 4 a 6 Nivel 2, 7 u 8 Nivel 3), **el mapa** de rutas, y por cada
+tema un «Recordá» corto (el concepto), **la práctica en tres franjas** (A base,
+B tipo examen, C desafío) y **la puerta** (5 ítems al terminar B: 4 de 5 bien
+pasan a C; 3 o menos vuelven a la ayuda y a la franja A). Los niveles son rutas
+por las franjas y salen solas de las listas (`rutas()` en `pizarra.js`). **Los
+ejercicios de las franjas son los del libro**, solo con su referencia
+(`{ libro:'5.2', n:1 }`); se inventan ítems nuevos solo para el diagnóstico,
+las puertas y las franjas donde el libro no alcanza (las A, sobre todo: el
+material del Poli no trae ejercicios de base). **Todo lo nuevo es de opción
+múltiple, como el examen**: cada opción incorrecta sale de un error que los
+alumnos cometen de verdad (multiplicar en vez de dividir, el escalón de 10 en
+superficie, contar mal los escalones al cruzar la unidad principal, no completar
+con ceros…), anotado en `error`; no se proyecta, arma la clave de las Notas. El
+verificador recalcula cada opción desde su error y controla la clasificación
+del libro. **Los ejemplos resueltos son ayuda** (`ayudaAparte:true`): van al
+final, fuera del recorrido; se entra desde «¿Se traban?» y Av Pág vuelve a la
+práctica al terminar. En el texto de la página no van rayas (—). Los solucionarios son claves y las «Clases síncronas»
 llevan el nombre de otra docente: ninguno de los dos sirve ni de cita.
 El verificador falla si en `cursillo/` hay un archivo con CLAVE o RESPUESTA en
 el nombre.

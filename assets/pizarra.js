@@ -836,6 +836,11 @@ Pizarra.inicia = () => {
    Un tema es { n, corto, titulo, pag, ficha?, concepto, ejemplos,
    taller?, preguntas, notas }. Un puente (un bloque que no está en el
    libro) lleva puente:true, un id propio y entre:'el tema 3 y el 4'.
+   Para una clase de práctica (el cursillo): DIAGNOSTICO:{ consigna, notas,
+   items } va en #diagnostico-lugar; cada tema puede traer franjas y
+   puerta:{ items } (la regla, en PUERTA_REGLA); el mapa de rutas va en
+   #mapa-lugar; con ayudaAparte:true los ejemplos de cada tema salen del
+   recorrido y van al final, como ayuda (ver «la práctica por franjas»).
    ═══════════════════════════════════════════════════════════════ */
 function caja(c){
   const cont = c.ec ? M(c.ec) : c.html ? c.html : `<span class="caja-txt">${c.txt}</span>`;
@@ -968,15 +973,138 @@ Pizarra.avanza = (diapo, dir) => {
   return true;
 };
 
+/* ═══ la opción múltiple, como en el examen ═══
+   Un ítem es { cod, enun, opciones:[{ t, ok:true }, { t, error:'…' }, …] }.
+   En pantalla van el enunciado y las opciones con su letra; el error que
+   produce cada opción incorrecta no se proyecta: con él se arma la clave de
+   las Notas (claveDe), que así sale de los mismos datos. Se usa en el
+   diagnóstico, en las puertas de cada tema y en los ítems nuevos de las
+   franjas. Los alumnos responden en papel. */
+const LETRAS = 'ABCDEFGH';
+function opciones(it){
+  return `
+      <li class="mc" id="mc-${it.cod}">
+        <p class="mc-enun"><b class="mc-cod">${it.cod}</b> ${sombrero(it.enun)}</p>
+        <ol class="mc-ops">${it.opciones.map((o, k) =>
+          `<li${o.ok ? ' data-ok="1"' : ''}><b>${LETRAS[k]})</b> ${sombrero(o.t)}</li>`).join('')}</ol>
+      </li>`;
+}
+function claveDe(items){
+  return '<ul class="mc-clave">' + items.map(it => {
+    const k = it.opciones.findIndex(o => o.ok);
+    return `<li><b>${it.cod}</b>: la <b>${LETRAS[k]}</b> (${it.opciones[k].t}).<ul>${it.opciones.map((o, j) =>
+      o.ok ? '' : `<li>${LETRAS[j]}) ${o.t}: ${o.error}</li>`).join('')}</ul></li>`;
+  }).join('') + '</ul>';
+}
+/* una hoja de ítems; con clave, lleva el botón «Ver clave», que marca las
+   letras correctas en pantalla para que cada grupo se corrija. El control
+   remoto no la muestra: se pide con el botón. */
+function hojaMC(o){
+  return `
+  <section class="${o.clase} mc-hoja" id="${o.id}"${o.attrs || ''}>
+    <p class="cinta">${o.cinta}</p>
+    <h4 class="ej-titulo">${o.titulo}</h4>
+    ${o.antes || ''}
+    <ol class="mc-grilla">${o.items.map(opciones).join('')}</ol>
+    ${o.clave ? '<button class="boton mc-ver-btn" type="button" data-accion="mc-clave" aria-pressed="false">Ver clave</button>' : ''}
+  </section>`;
+}
+document.addEventListener('click', ev => {
+  const b = ev.target.closest('[data-accion="mc-clave"]');
+  if (!b) return;
+  const ver = b.getAttribute('aria-pressed') !== 'true';
+  b.closest('.mc-hoja').classList.toggle('mc-ver', ver);
+  b.setAttribute('aria-pressed', String(ver));
+  b.textContent = ver ? 'Ocultar clave' : 'Ver clave';
+});
+
+/* ═══ la práctica por franjas ═══
+   Cada tema puede traer franjas:{ A:[…], B:[…], C:[…] } (A base, B tipo
+   examen, C desafío). Un ejercicio del libro es { libro:'5.2', n:1 } (o
+   libro:'cuest'): en pantalla va solo la referencia, porque lo tienen en
+   papel. Un ítem nuevo es un ítem de opción múltiple, con su código.
+   Los niveles son rutas por las franjas, y salen solas de las listas:
+     Nivel 1: toda A y toda B;
+     Nivel 2: la segunda mitad de A, toda B y la primera mitad de C;
+     Nivel 3: los dos últimos de B, como control, y toda C. */
+const FRANJAS = { A:'base', B:'tipo examen', C:'desafío' };
+/* un ítem nuevo, en la grilla, lleva a su diapositiva */
+const refLarga = it => it.cod ? `<a href="#mc-${it.cod}">Ítem ${it.cod}</a>` :
+  (it.libro === 'cuest' ? `Cuestionario, ej. ${it.n}` : `Ejercitario ${it.libro}, ej. ${it.n}`);
+const refCorta = it => it.cod || (it.libro === 'cuest' ? `Cuest. ${it.n}` : `${it.libro} ej. ${it.n}`);
+function rutas(f){
+  const A = f.A || [], B = f.B || [], C = f.C || [];
+  return { 1:[...A, ...B],
+           2:[...A.slice(Math.floor(A.length / 2)), ...B, ...C.slice(0, Math.ceil(C.length / 2))],
+           3:[...B.slice(-2), ...C] };
+}
+const marcasNivel = (it, R) => `<span class="niveles">${[1, 2, 3].map(n =>
+  R[n].includes(it) ? `<i class="nv nv${n}" title="Nivel ${n}">${n}</i>` : '').join('')}</span>`;
+function columnasFranjas(f, R, ref){
+  return Object.keys(FRANJAS).map(k => `
+      <div class="franja franja-${k}"><h5><b>${k}</b> ${FRANJAS[k]}</h5>
+        <ul>${(f[k] || []).map(it => `<li>${ref(it)}${marcasNivel(it, R)}</li>`).join('') ||
+          '<li class="franja-vacia">ítems nuevos por definir</li>'}</ul></div>`).join('');
+}
+
 Pizarra.unidad = cfg => {
-  const { TEMAS, DESAFIO, PREGUNTA_INICIAL, UNIDAD, LABS = {}, INICIO, grado, temasLibro = TEMAS.length } = cfg;
+  const { TEMAS, DESAFIO, PREGUNTA_INICIAL, UNIDAD, LABS = {}, INICIO, DIAGNOSTICO, PUERTA_REGLA = '',
+          ayudaAparte = false, grado, temasLibro = TEMAS.length } = cfg;
   const idT = t => t.id || String(t.n);
   const etiqueta = t => t.puente ? 'Puente' : `Tema ${t.n}`;
   const cintaT = t => `<b>${etiqueta(t)}</b> · ${t.corto} · caja de herramientas`;
 
+  /* los ejemplos resueltos de un tema; con ayudaAparte van al final, como
+     ayuda que se abre cuando un grupo se traba, fuera del recorrido */
+  const ejemplosDe = t => t.ejemplos.map((ej, i) => (ej.antes || []).map(td => teoria(td, cintaT(t))).join('') +
+      bloque(`${idT(t)}-${i + 1}`, ej, {
+        rotulo:`Ejemplo ${i + 1}.`,
+        cinta:`<b>${etiqueta(t)}</b> · ${t.corto} · ${ayudaAparte ? 'ayuda, ' : ''}ejemplo ${i + 1} de ${t.ejemplos.length}` }) +
+      (ej.practica ? practica(ej.practica, `<b>${etiqueta(t)}</b> · ${t.corto} · después del ejemplo ${i + 1}`) : '')).join('') +
+    (t.practica ? practica(t.practica, `<b>${etiqueta(t)}</b> · ${t.corto} · para practicar`) : '') +
+    (t.despues || []).map(td => teoria(td, cintaT(t))).join('');
+
+  /* la práctica del tema: las tres franjas, las rutas y la puerta */
+  const practicaDe = t => {
+    if (!t.franjas) return '';
+    const R = rutas(t.franjas), id = idT(t);
+    /* los ítems nuevos de cada franja, de a 4 por diapositiva, en el orden
+       de la ruta: A, B, la puerta, C */
+    const hojasDe = k => {
+      const its = (t.franjas[k] || []).filter(it => it.opciones), h = [];
+      for (let i = 0; i < its.length; i += 4) h.push(hojaMC({
+        clase:'franja-mc-diapo', id:`fr-${id}-${k}-${i / 4 + 1}`, clave:true,
+        cinta:`<b>${etiqueta(t)}</b> · ${t.corto} · franja ${k}`,
+        titulo:`Tema ${t.n}, franja ${k}: ${FRANJAS[k]}`, items:its.slice(i, i + 4) }));
+      return h.join('');
+    };
+    return `
+  <section class="franjas-diapo" id="practica-${id}">
+    <p class="cinta"><b>${etiqueta(t)}</b> · ${t.corto} · práctica</p>
+    <h4 class="ej-titulo">Práctica del tema ${t.n}</h4>
+    <div class="franjas">${columnasFranjas(t.franjas, R, refLarga)}</div>
+    <div class="rutas">${[1, 2, 3].map(n => `<p class="ruta"><i class="nv nv${n}">${n}</i> <b>Nivel ${n}:</b> ${
+      R[n].map(refCorta).join(', ') || 'por definir'}</p>`).join('')}</div>
+    ${ayudaAparte ? `<p class="a-ayuda"><a href="#ayuda-${id}">¿Se traban? Ayuda del tema ${t.n}: los ejemplos resueltos →</a></p>` : ''}
+  </section>${hojasDe('A')}${hojasDe('B')}${t.puerta ? hojaMC({
+      clase:'puerta-diapo', id:`puerta-${id}`, clave:true, items:t.puerta.items,
+      cinta:`<b>${etiqueta(t)}</b> · ${t.corto} · puerta`, titulo:`La puerta del tema ${t.n}`,
+      antes:`<p class="puerta-regla">${t.puerta.regla || PUERTA_REGLA}</p>` }) : ''}${hojasDe('C')}`;
+  };
+
+  const ayudas = [];
   document.getElementById('temas').innerHTML = raices(TEMAS.map(t => {
     const c = t.concepto;
-    const total = t.ejemplos.length;
+    if (ayudaAparte) ayudas.push(`
+<article class="tema ayuda" id="ayudas-${idT(t)}" data-tema="${idT(t)}" data-ayuda="${idT(t)}" data-vuelve="${t.franjas ? 'practica-' + idT(t) : 't' + idT(t)}">
+  <section class="ayuda-cab" id="ayuda-${idT(t)}">
+    <p class="cinta"><b>${etiqueta(t)}</b> · ${t.corto} · ayuda</p>
+    <h3>Ayuda del tema ${t.n}: ${t.corto.toLowerCase()}</h3>
+    <p>Los ejemplos resueltos, para cuando un grupo se traba. Al terminar, se vuelve a la práctica.</p>
+    <p class="a-ayuda"><a href="#${t.franjas ? 'practica-' + idT(t) : 't' + idT(t)}">← Volver a la práctica del tema ${t.n}</a></p>
+  </section>
+  ${ejemplosDe(t)}
+</article>`);
     return `
 <article class="tema${t.puente ? ' puente' : ''}" id="tema${idT(t)}" data-tema="${idT(t)}">
   <section class="concepto" id="t${idT(t)}">
@@ -992,15 +1120,8 @@ Pizarra.unidad = cfg => {
     <ul class="puntos">${c.puntos.map(p => `<li>${p}</li>`).join('')}</ul>
   </section>
 
-  <div class="ejemplos">
-    ${t.ejemplos.map((ej, i) => (ej.antes || []).map(td => teoria(td, cintaT(t))).join('') +
-      bloque(`${idT(t)}-${i + 1}`, ej, {
-        rotulo:`Ejemplo ${i + 1}.`,
-        cinta:`<b>${etiqueta(t)}</b> · ${t.corto} · ejemplo ${i + 1} de ${total}` }) +
-      (ej.practica ? practica(ej.practica, `<b>${etiqueta(t)}</b> · ${t.corto} · después del ejemplo ${i + 1}`) : '')).join('')}
-    ${t.practica ? practica(t.practica, `<b>${etiqueta(t)}</b> · ${t.corto} · para practicar`) : ''}
-    ${(t.despues || []).map(td => teoria(td, cintaT(t))).join('')}
-  </div>
+  ${ayudaAparte ? '' : `<div class="ejemplos">${ejemplosDe(t)}</div>`}
+  ${practicaDe(t)}
 
   ${t.taller ? [].concat(t.taller).map(lab => `<section class="taller-diapo">
     <p class="cinta"><b>${etiqueta(t)}</b> · ${t.corto} · taller</p>
@@ -1012,7 +1133,41 @@ Pizarra.unidad = cfg => {
 </article>`;
   }).join('') + (DESAFIO ? bloque('desafio', DESAFIO, {
       cinta:'<b>Desafío final</b> · toda la unidad junta', clase:'desafio', id:'desafio',
-      attrs:'data-tema="desafio"' }) : ''));
+      attrs:'data-tema="desafio"' }) : '') + (ayudas.length ? `<div class="ayudas">${ayudas.join('')}</div>` : ''));
+
+  /* el diagnóstico, antes de la introducción: en hojas de 4 ítems, sin clave
+     en pantalla (la clave y la regla de ubicación van en las Notas) */
+  const lugarDiag = document.getElementById('diagnostico-lugar');
+  if (DIAGNOSTICO && lugarDiag){
+    const its = DIAGNOSTICO.items, n = DIAGNOSTICO.porHoja || 4, hojas = [];
+    for (let i = 0; i < its.length; i += n) hojas.push(hojaMC({
+      clase:'diagnostico-diapo', id:`diagnostico-${i / n + 1}`, attrs:' data-tema="unidad"', items:its.slice(i, i + n),
+      cinta:`<b>Diagnóstico</b> · ítems ${i + 1} a ${Math.min(i + n, its.length)} de ${its.length}`,
+      titulo:i ? 'Diagnóstico (sigue)' : 'Diagnóstico', antes:i ? '' : `<p class="diag-consigna">${DIAGNOSTICO.consigna}</p>` }));
+    lugarDiag.outerHTML = raices(hojas.join(''));
+  }
+
+  /* el mapa de rutas: los temas por las franjas, con qué hace cada nivel */
+  const lugarMapa = document.getElementById('mapa-lugar');
+  if (lugarMapa && TEMAS.some(t => t.franjas)){
+    lugarMapa.outerHTML = raices(`
+  <section class="mapa-diapo" id="mapa" data-tema="unidad">
+    <p class="cinta"><b>El mapa</b> · qué hace cada nivel</p>
+    <h4 class="ej-titulo">El mapa de la práctica</h4>
+    <table class="mapa">
+      <thead><tr><th>Tema</th>${Object.keys(FRANJAS).map(k => `<th><b>${k}</b> ${FRANJAS[k]}</th>`).join('')}</tr></thead>
+      <tbody>${TEMAS.filter(t => t.franjas).map(t => {
+        const R = rutas(t.franjas);
+        return `<tr><th><a href="#practica-${idT(t)}">${t.n}. ${t.corto}</a></th>${Object.keys(FRANJAS).map(k =>
+          `<td>${(t.franjas[k] || []).map(it => `<span class="mapa-it">${refCorta(it)}${marcasNivel(it, R)}</span>`).join('') ||
+            '<span class="franja-vacia">por definir</span>'}</td>`).join('')}</tr>`;
+      }).join('')}</tbody>
+    </table>
+    <p class="mapa-ley"><span><i class="nv nv1">1</i> Nivel 1: A y B</span>
+      <span><i class="nv nv2">2</i> Nivel 2: el final de A, toda B y el principio de C</span>
+      <span><i class="nv nv3">3</i> Nivel 3: dos de B como control, y toda C</span></p>
+  </section>`);
+  }
 
   /* la pregunta de arranque, en la introducción */
   /* si la página le hizo lugar (#arranque-lugar), va en su propia diapositiva */
@@ -1039,9 +1194,14 @@ Pizarra.unidad = cfg => {
 
   /* las notas y el observador viven en los botones flotantes de assets/clase.js */
   window.CLASE = { secciones: [
-    { id:'unidad', titulo:'La unidad', notas:UNIDAD.notas, preguntas:UNIDAD.preguntas },
+    { id:'unidad', titulo:'La unidad', preguntas:UNIDAD.preguntas, notas:UNIDAD.notas + (DIAGNOSTICO ?
+        `<h4>El diagnóstico</h4>${DIAGNOSTICO.notas || ''}<p><b>La clave</b>, con el error que lleva a cada opción incorrecta:</p>${claveDe(DIAGNOSTICO.items)}` : '') },
     ...TEMAS.map(t => ({ id:idT(t), titulo:t.puente ? `Puente · ${t.titulo.toLowerCase()}` : `Tema ${t.n} · ${t.corto}`,
-                          notas:t.notas, preguntas:t.preguntas })),
+                          preguntas:t.preguntas, notas:t.notas + (t.puerta ?
+        `<h4>La clave de la puerta</h4>${claveDe(t.puerta.items)}` : '') + (t.franjas ? Object.keys(FRANJAS).map(k => {
+          const its = (t.franjas[k] || []).filter(it => it.opciones);
+          return its.length ? `<h4>La clave de la franja ${k}</h4>${claveDe(its)}` : '';
+        }).join('') : '') })),
     ...(DESAFIO ? [{ id:'desafio', titulo:'Desafío final', notas:DESAFIO.notas, preguntas:DESAFIO.preguntas }] : []),
   ].map(s => ({ ...s, notas:raices(s.notas || ''),
                 preguntas:(s.preguntas || []).map(q => ({ p:raices(q.p), r:raices(q.r) })) }))};

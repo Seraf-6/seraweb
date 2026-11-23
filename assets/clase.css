@@ -794,7 +794,10 @@ body[data-solo="1"] .recorrido .t{font-size:.95em}
 .pizarra-der .lienzo svg{max-height:calc(100vh - 150px)}
 /* en proyección, la diapositiva de la pizarra usa toda la pantalla */
 body[data-solo="1"] .envoltura:has(.pizarra.activa),
-body[data-solo="1"] .envoltura:has(.practica-diapo.activa){max-width:none}
+body[data-solo="1"] .envoltura:has(.practica-diapo.activa),
+body[data-solo="1"] .envoltura:has(.mc-hoja.activa),
+body[data-solo="1"] .envoltura:has(.franjas-diapo.activa),
+body[data-solo="1"] .envoltura:has(.mapa-diapo.activa){max-width:none}
 body[data-solo="1"] .t-mini{font-size:.85em}
 body[data-solo="1"] .t-mini th{font-size:1em}
 
@@ -891,6 +894,78 @@ body[data-solo="1"] .cajon p{font-size:.9em}
 body[data-solo="1"] .practica-diapo{border-bottom:none; padding-block:12px}
 body[data-solo="1"] .prac-enun{font-size:1.5em}
 body[data-solo="1"] .prac-resp{font-size:1.35em}
+
+/* ═══ la clase de práctica: diagnóstico, mapa, franjas, puertas, ayudas ═══
+   (opciones(), hojaMC() y practicaDe(), en pizarra.js). Los alumnos
+   responden en papel: la pantalla muestra los ítems, no los corrige. */
+.diagnostico-diapo,.mapa-diapo,.franjas-diapo,.franja-mc-diapo,.puerta-diapo,.ayuda-cab{
+  padding-block:28px; border-bottom:1px solid var(--linea-fuerte); scroll-margin-top:72px}
+body[data-solo="1"] :is(.diagnostico-diapo,.mapa-diapo,.franjas-diapo,.franja-mc-diapo,.puerta-diapo,.ayuda-cab){
+  border-bottom:none; padding-block:12px}
+.diag-consigna,.puerta-regla{margin:0 0 14px; padding:10px 14px; border-left:4px solid var(--dest);
+  background:var(--dest-suave); font-size:1.1em; line-height:1.4; max-width:70ch}
+body[data-solo="1"] :is(.diag-consigna,.puerta-regla){max-width:none}
+
+/* los ítems de opción múltiple */
+.mc-grilla{list-style:none; margin:0; padding:0; display:grid; gap:14px;
+  grid-template-columns:repeat(2,minmax(0,1fr))}
+.puerta-diapo .mc-grilla,.franja-mc-diapo .mc-grilla{grid-template-columns:repeat(3,minmax(0,1fr))}
+.mc{padding:12px 16px 14px; border:1.5px solid var(--linea-fuerte); border-radius:6px; background:var(--papel)}
+.mc-enun{margin:0 0 10px; font-family:var(--serif); font-size:1.25rem; line-height:1.35}
+.mc-cod{display:inline-block; margin-right:6px; padding:0 7px; border-radius:4px; background:var(--acento);
+  color:var(--papel); font-family:var(--mono); font-size:.7em; vertical-align:.15em}
+.mc-ops{list-style:none; margin:0; padding:0; display:grid; gap:4px 14px;
+  grid-template-columns:repeat(auto-fill,minmax(8.5em,1fr)); font-size:1.12rem}
+.mc-ops li{padding:2px 6px; border-radius:4px; white-space:nowrap}
+.mc-ops b{color:var(--acento); margin-right:3px}
+.mc-ver .mc-ops li[data-ok]{background:var(--acento2-suave); box-shadow:0 0 0 2px var(--acento2); font-weight:700}
+.mc-ver-btn{margin-top:14px}
+body[data-solo="1"] .mc-enun{font-size:1.15em}
+body[data-solo="1"] .mc-ops{font-size:1.05em}
+/* la puerta y los ítems nuevos traen 5 ítems: más apretados, para que entren
+   enteros en la pantalla con su regla y su botón */
+body[data-solo="1"] :is(.puerta-diapo,.franja-mc-diapo) .mc{padding:8px 12px 10px}
+body[data-solo="1"] :is(.puerta-diapo,.franja-mc-diapo) .mc-enun{font-size:1em; margin-bottom:6px}
+body[data-solo="1"] :is(.puerta-diapo,.franja-mc-diapo) .mc-ops{font-size:.92em; gap:2px 8px;
+  grid-template-columns:repeat(auto-fill,minmax(7.2em,1fr))}
+body[data-solo="1"] :is(.puerta-diapo,.franja-mc-diapo) .mc-grilla{gap:10px}
+body[data-solo="1"] .puerta-regla{margin-bottom:10px; padding:7px 12px; font-size:1em}
+body[data-solo="1"] .mc-ver-btn{margin-top:10px}
+
+/* las franjas de un tema, y las marcas de los niveles */
+.franjas{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px}
+.franja{padding:10px 14px 12px; border:1.5px solid var(--linea-fuerte); border-radius:6px; background:var(--papel)}
+.franja h5{margin:0 0 8px; font-family:var(--serif); font-size:1.15rem; font-weight:700}
+.franja h5 b{display:inline-grid; place-items:center; width:1.6em; height:1.6em; margin-right:6px;
+  border-radius:4px; background:var(--tinta); color:var(--papel)}
+.franja ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; font-size:1.1rem}
+.franja li{display:flex; align-items:center; justify-content:space-between; gap:8px}
+.franja-vacia{color:var(--lapiz); font-style:italic}
+.niveles{display:inline-flex; gap:3px; flex:0 0 auto}
+.nv{display:inline-grid; place-items:center; width:1.35em; height:1.35em; border-radius:50%;
+  font:700 .75em var(--mono); font-style:normal; color:var(--papel)}
+.nv1{background:var(--acento2)} .nv2{background:var(--dest)} .nv3{background:var(--acento)}
+.rutas{margin-top:14px; display:flex; flex-direction:column; gap:6px; font-size:1.05rem}
+.ruta{margin:0; line-height:1.4}
+.a-ayuda{margin:14px 0 0; font-weight:700}
+
+/* el mapa de rutas */
+.mapa{width:100%; border-collapse:collapse; font-size:1rem}
+.mapa th,.mapa td{border:1px solid var(--linea-fuerte); padding:6px 8px; text-align:left; vertical-align:top}
+.mapa thead th{background:var(--papel-2)}
+.mapa tbody th{white-space:nowrap}
+.mapa-it{display:inline-flex; align-items:center; gap:4px; margin:2px 8px 2px 0; white-space:nowrap}
+.mapa-ley{display:flex; flex-wrap:wrap; gap:6px 20px; margin:12px 0 0; font-size:.95rem}
+.mapa-ley span{display:inline-flex; align-items:center; gap:6px}
+
+/* la entrada a la ayuda de un tema */
+.ayuda-cab h3{margin:0 0 8px; font-family:var(--serif); font-size:clamp(1.5rem,4vw,2.1rem)}
+.ayuda-cab p{margin:0 0 6px; font-size:1.1em}
+
+@media (max-width:900px){
+  .mc-grilla,.puerta-diapo .mc-grilla,.franja-mc-diapo .mc-grilla,.franjas{grid-template-columns:1fr}
+  .mapa{font-size:.85rem}
+}
 
 /* el panel de proyección puede tapar el dibujo, para que lo hagan ellos:
    se tapa sin moverse nada, y el lugar queda libre en la pizarra */
