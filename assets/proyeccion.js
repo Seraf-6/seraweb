@@ -199,9 +199,14 @@
     if (estado.solo && diapos.length){
       estado.i = Math.max(0, Math.min(diapos.length - 1, estado.i));
       diapos.forEach(function(d, k){ d.classList.toggle('activa', k === estado.i); });
-      document.getElementById('proy-pos').textContent = (estado.i + 1) + ' / ' + diapos.length;
-      nav.querySelector('[data-paso="-1"]').disabled = (estado.i === 0);
-      nav.querySelector('[data-paso="1"]').disabled = (estado.i === diapos.length - 1);
+      // el contador cuenta el recorrido, sin las ayudas; adentro de una
+      // ayuda, cuenta las de esa ayuda. Un botón sin adónde ir se apaga.
+      var ay = diapos[estado.i].closest('[data-ayuda]');
+      var grupo = diapos.filter(function(d){ return d.closest('[data-ayuda]') === ay; });
+      document.getElementById('proy-pos').textContent = (ay ? 'ayuda ' : '') +
+        (grupo.indexOf(diapos[estado.i]) + 1) + ' / ' + grupo.length;
+      nav.querySelector('[data-paso="-1"]').disabled = (destino(-1) === estado.i);
+      nav.querySelector('[data-paso="1"]').disabled = (destino(1) === estado.i);
     } else {
       diapos.forEach(function(d){ d.classList.remove('activa'); });
     }
@@ -255,10 +260,12 @@
     // a la diapositiva donde está lo que se busca
     var c = ev.target.closest('a[href^="#"]');
     if (c && estado.solo && c.getAttribute('href').length > 1){
-      var destino = document.getElementById(c.getAttribute('href').slice(1));
+      // (no se llama «destino»: taparía a la función destino() en todo el
+      // manejador, y los botones ← → dejaban de andar)
+      var buscado = document.getElementById(c.getAttribute('href').slice(1));
       var k = -1;
-      for (var j = 0; destino && j < diapos.length; j++){
-        if (diapos[j] === destino || diapos[j].contains(destino)){ k = j; break; }
+      for (var j = 0; buscado && j < diapos.length; j++){
+        if (diapos[j] === buscado || diapos[j].contains(buscado)){ k = j; break; }
       }
       if (k >= 0){ estado.i = k; aplicar(); window.scrollTo(0, 0); ev.preventDefault(); }
     }
