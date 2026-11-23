@@ -36,4 +36,6 @@ omapa/Entrenamiento JT Aurea/
 # Material del cursillo (Poli CPA): es la fuente para armar las clases propias,
 # no se publica. Los zip y lo que se descomprima quedan en la computadora.
 cursillo/materiales*/
+# las presentaciones y ejercitarios que pasa el cursillo: fuente, no se publican
+cursillo/Presentaciones*/
 cursillo/**/*.zip

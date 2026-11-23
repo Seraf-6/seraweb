@@ -99,5 +99,5 @@ explicarlo.
 | 9.º | Estadística y probabilidad | «Él no juega a los dados.» |
 | Química | Números cuánticos y configuración | «Él no juega a los dados.» — **en uso** (para 9.º Estadística, buscar otra) |
 | Cursillo | Sistema métrico decimal | «Para todos los tiempos, para todos los pueblos.» — **en uso** |
+| Cursillo | Operaciones fundamentales | «No te preocupes por tus dificultades con la matemática; las mías son mayores.» — **en uso** |
 | — | OMAPA | «Si no podés resolver un problema, hay uno más fácil que sí podés resolver: encontralo.» |
-| — | Para una prueba difícil | «No te preocupes por tus dificultades con la matemática; las mías son mayores.» |

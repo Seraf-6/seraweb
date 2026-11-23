@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="../../assets/img/seraweb.svg" type="image/svg+xml">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Operaciones fundamentales · Cursillo · SeraWeb</title>
+<meta name="description" content="Cursillo de ingreso: las operaciones fundamentales. Adición, sustracción, multiplicación, división entera (por defecto y por exceso) y operaciones combinadas: la teoría y, después de cada parte, los ejercicios del ejercitario con sus opciones.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file: 'unsafe-inline'; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; font-src 'self' file:; media-src 'self' file:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<script src="../../assets/acceso.js"></script>
+<link rel="stylesheet" href="../../assets/base.css">
+<link rel="stylesheet" href="../../assets/sitio.css">
+<link rel="stylesheet" href="../../assets/clase.css">
+<style>
+/* ---------- solo de esta página ---------- */
+/* de qué ejercicio del material sale cada uno */
+.fuente{display:block; margin-top:8px; font-family:var(--mono); font-style:normal; font-size:11px;
+  letter-spacing:.04em; color:var(--lapiz)}
+body[data-solo="1"] .fuente{font-size:.45em}
+/* las afirmaciones I), II)… de un ejercicio, una por renglón */
+.afirm{display:block; margin:.35em 0 .45em 1em}
+.afirm span{display:block}
+/* la fórmula de una definición, sola y grande */
+.forma-grande{margin:.1em 0 .5em; font-size:2em; text-align:center}
+/* las leyes y propiedades: el nombre a la izquierda y la fórmula a la derecha */
+.reglas{border-collapse:collapse; margin:.1em 0 .6em; font-size:1.1em}
+.reglas th{padding:.28em 1.2em .28em 0; text-align:left; vertical-align:baseline;
+  font-family:var(--sans); font-weight:600; font-size:.8em; color:var(--lapiz)}
+.reglas td{padding:.28em 0; vertical-align:baseline}
+.reglas tr + tr :is(th,td){border-top:1px solid var(--linea)}
+.reglas .entonces{margin:0 .5em; font-family:var(--sans); font-size:.75em; color:var(--lapiz)}
+.prioridad{margin:.1em 0 .6em; padding-left:1.5em; font-size:1.2em; line-height:1.55}
+/* la tabla de leyes va a la derecha, como el dibujo de una teoría, y es más ancha que un dibujo */
+@media (min-width:701px){ .teoria-cuerpo.con-figura:has(.reglas){grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)} }
+.teoria-figura .reglas{font-size:1.15em; margin-top:.2em}
+/* las opciones cortas (I, II y IV; Una, Dos…), en fila */
+:is(#mc-E1,#mc-E22) .mc-ops{grid-template-columns:repeat(5,max-content); column-gap:2.2em}
+body[data-solo="1"] .envoltura:has(.teoria-diapo.activa .reglas){max-width:none}
+body[data-solo="1"] .teoria-diapo:has(.reglas) .teoria-enun{font-size:1.25em}
+body[data-solo="1"] .teoria-figura .reglas{font-size:1.25em}
+body[data-solo="1"] .teoria-figura .reglas :is(th,td){padding-block:.18em}
+body[data-solo="1"] .forma-grande{font-size:1.7em; margin:0 0 .3em}
+body[data-solo="1"] .teoria-diapo .teoria-tit{font-size:1.85em; margin-bottom:8px}
+body[data-solo="1"] .teoria-diapo .teoria-enun{margin-bottom:10px}
+body[data-solo="1"] .prioridad{font-size:1.1em; line-height:1.4}
+body[data-solo="1"] .teoria-diapo:is(:has(.reglas),:has(.forma-grande)) .teoria-mas{font-size:1em; margin-bottom:6px}
+@media (max-width:700px){
+  /* en el teléfono, el nombre arriba y la fórmula abajo; una fórmula larga se corre, no ensancha la página */
+  .teoria-cuerpo.con-figura:has(.reglas){grid-template-columns:minmax(0,1fr)}
+  .teoria-figura:has(.reglas){overflow-x:auto}
+  .reglas, body[data-solo="1"] .teoria-figura .reglas{font-size:.95em}
+  .reglas th{display:block; padding:.45em 0 0}
+  .reglas td{display:block; padding:0 0 .3em}
+  .reglas tr + tr td{border-top:0}
+  :is(#mc-E1,#mc-E22) .mc-ops{grid-template-columns:repeat(2,max-content)}
+  .forma-grande{font-size:1.5em}
+}
+</style>
+</head>
+<body data-diapos=".intro, .teoria-diapo, .problema-diapo, .desafio">
+<nav class="sitio-nav">
+  <div class="sitio-nav-int">
+    <a class="sitio-marca" href="../../index.html">Sera<span>Web</span></a>
+    <div class="sitio-ruta">
+      <a href="../../index.html">Inicio</a><span class="sep">/</span>
+      <a href="../index.html">Cursillo</a><span class="sep">/</span>
+      <span>Operaciones fundamentales</span>
+    </div>
+  </div>
+</nav>
+
+<div class="envoltura">
+
+  <header class="tapa">
+    <p class="sello">SeraWeb · Cursillo de ingreso</p>
+    <h1>Operaciones fundamentales</h1>
+    <p class="bajada">«No te preocupes por tus dificultades con la matemática; te aseguro que las mías
+      son mayores.»<span class="firma">Albert Einstein, carta a una alumna, 1943</span></p>
+    <div class="pie-tapa">
+      <span>Aritmética y Álgebra · unidad 3</span>
+      <span>Docente: Juan Serafini</span>
+    </div>
+  </header>
+
+  <nav class="nav" aria-label="Ir a un tema">
+    <div class="nav-int" id="nav"></div>
+  </nav>
+
+  <section class="intro" id="inicio" data-tema="unidad">
+    <p class="cinta">Cursillo de ingreso · Aritmética y Álgebra · unidad 3</p>
+    <h2>Las cuatro operaciones, con sus nombres y sus leyes</h2>
+    <ul class="puntos">
+      <li>Sumar, restar, multiplicar y dividir ya lo saben. El examen pregunta otra cosa: <b>cómo se
+        llaman</b> sus partes y <b>qué pasa</b> cuando una cambia.</li>
+      <li>Una parte de teoría y, enseguida, los ejercicios del ejercitario que la usan.</li>
+      <li>La estrella es la <b>división entera</b>: por defecto, por exceso y el resto.</li>
+    </ul>
+    <div class="recorrido" id="recorrido"></div>
+  </section>
+
+  <main id="temas"></main>
+
+  <footer class="creditos">
+    Material de clase del cursillo de ingreso · Sigue la unidad 3 (Operaciones fundamentales)
+    del programa de Aritmética y Álgebra. Los ejercicios que se proyectan son los del ejercitario
+    del cursillo, transcriptos con sus opciones y su número; la teoría, los ejemplos de la teoría
+    y la resolución del desafío son propios. Cada respuesta y cada opción de esta página están
+    verificadas en <span class="ec">verificacion/cursillo_operaciones.py</span>.
+  </footer>
+</div>
+
+<script src="../../assets/pizarra.js"></script>
+
+<script>
+/* Las letras de las fórmulas (M, S, D, c, r…) van en cursiva; las de una
+   entidad (&lt;, &gt;) no, porque son el signo. */
+Pizarra.letras = /(?<!&[a-z]*)[A-Za-z](?![a-z]*;)/g;
+
+/* de qué ejercicio del material sale */
+const fte = s => `<span class="fuente">${s}</span>`;
+const EJ = n => fte(`Ejercitario del cursillo, ejercicio ${n}`);
+/* las afirmaciones I), II)… de un ejercicio */
+const af = (...xs) => `<span class="afirm">${xs.map(x => `<span>${x}</span>`).join('')}</span>`;
+/* una fórmula sola, grande */
+const grande = s => `<p class="forma-grande">${M(s)}</p>`;
+/* leyes y propiedades: [nombre, fórmula] o [nombre, si…, entonces…] */
+const reglas = (...filas) => `<table class="reglas"><tbody>${filas.map(([n, a, b]) =>
+  `<tr><th>${n}</th><td>${M(a)}${b ? `<span class="entonces">entonces</span>${M(b)}` : ''}</td></tr>`).join('')}</tbody></table>`;
+
+const TEMAS = [
+{
+  n:1, corto:'Adición', titulo:'La adición', pag:'adición',
+  teoria:[
+    { id:'adicion', cajon:'definicion', chip:'Adición', titulo:'La adición',
+      pregunta:'En 25 + 17 = 42, ¿cómo se llama cada número?',
+      enun:'Sumar es reunir varias cantidades en una sola. Los números que se suman son los <b>sumandos</b>; el resultado es la <b>suma</b> o total.',
+      html:grande('A + B + C = S'),
+      revela:{ txt:'25 y 17 son los sumandos; 42 es la suma.' },
+      mas:['El 0 no cambia nada: n + 0 da n. Es el <b>elemento neutro</b> de la suma.'] },
+    { id:'leyes-suma', cajon:'postulado', chip:'Leyes', titulo:'Las leyes de la adición',
+      pregunta:'¿Da lo mismo 38 + 17 + 2 que 38 + 2 + 17? ¿Cuál se hace más fácil de cabeza?',
+      enun:'Las leyes dicen qué se puede hacer con una suma sin cambiar el resultado.',
+      figura:reglas(['Uniformidad', 'a = b', 'a + c = b + c'],
+                  ['Conmutativa', 'a + b = b + a'],
+                  ['Asociativa', '(a + b) + c = a + (b + c)'],
+                  ['Disociativa', '7 + 5 = (4 + 3) + 5'],
+                  ['Monotonía', 'a &lt; b, c &lt; d', 'a + c &lt; b + d']),
+      revela:{ txt:'Da lo mismo: el orden no cambia la suma (conmutativa). Y conviene juntar 38 + 2, que da 40; después, 40 + 17 da 57 (asociativa).' },
+      mas:['La uniformidad vale también al revés: de m + p = n + p se sigue que m y n son iguales. Se tacha lo mismo en los dos miembros.'] },
+    { id:'prop-suma', cajon:'teorema', chip:'Propiedades', titulo:'Las propiedades de la adición',
+      pregunta:'Si 40 + 25 da 65, ¿cuánto da 43 + 25? ¿Y 43 + 22?',
+      enun:'Lo que gana o pierde un sumando, lo gana o lo pierde la suma.',
+      figura:reglas(['1.ª Un sumando aumenta m', 'A + (B + m) + C = S + m'],
+                  ['2.ª Un sumando disminuye m', '(A − m) + B + C = S − m'],
+                  ['3.ª Uno pierde m y otro gana m', '(A − m) + B + (C + m) = S']),
+      revela:{ txt:'43 + 25 da 68: el sumando ganó 3 y la suma también. 43 + 22 da 65 otra vez: lo que ganó uno lo perdió el otro.' },
+      como:'Como dos bolsillos: si paso ₲ 5.000 de uno al otro, la plata que tengo es la misma.' },
+  ],
+  problemas:[
+    { cod:'E1', tras:'leyes-suma', titulo:'Las leyes de la adición',
+      enun:`Las propiedades de la adición de números naturales son:${af('I) (m + n) + p = m + (n + p)', 'II) m + n = n + m',
+        'III) n + 0 = 0 + n = 0', 'IV) Si m + p = n + p, entonces m = n', 'V) Si m = n, entonces m + p = n + p')}De las afirmaciones anteriores son verdaderas:${EJ(1)}`,
+      opciones:[
+        { t:'I, II y IV', error:'dejó afuera la V, que es la uniformidad' },
+        { t:'I, III, IV y V', error:'tomó la III como verdadera (n + 0 da n, no 0) y dejó afuera la conmutativa' },
+        { t:'I, II, III y V', error:'tomó la III como verdadera y dejó afuera la IV' },
+        { t:'I, II, IV y V', ok:true },
+        { t:'II, III, IV y V', error:'dejó afuera la asociativa y tomó la III como verdadera' } ] },
+    { cod:'E6', tras:'prop-suma', titulo:'Uno gana y otro pierde',
+      enun:`Si un sumando aumenta un número cualquiera y otro sumando disminuye el mismo número, la suma:${EJ(6)}`,
+      opciones:[
+        { t:'queda dividida por el mismo número.' },
+        { t:'aumenta el mismo número.', error:'miró solo el sumando que aumenta' },
+        { t:'disminuye el mismo número.', error:'miró solo el sumando que disminuye' },
+        { t:'queda multiplicada por el mismo número.' },
+        { t:'no varía.', ok:true } ] },
+    { cod:'E7', tras:'prop-suma', titulo:'¿Cuál es la falsa?', largo:true,
+      enun:`De las siguientes proposiciones la falsa es:${EJ(7)}`,
+      opciones:[
+        { t:'Si un sumando aumenta o disminuye un número cualquiera, la suma aumenta o disminuye el mismo número.', error:'es verdadera: son la 1.ª y la 2.ª propiedad' },
+        { t:'Si un sumando aumenta un número cualquiera y otro sumando disminuye el mismo número, la suma varía.', ok:true },
+        { t:'Sumando miembro a miembro desigualdades del mismo sentido con igualdades resulta una desigualdad del mismo sentido que las dadas.', error:'es verdadera: es la monotonía' },
+        { t:'La suma de varios números no se altera descomponiendo uno o varios sumandos en dos o más sumandos.', error:'es verdadera: es la disociativa' },
+        { t:'La suma de varios números no varía sustituyendo varios sumandos por su suma.', error:'es verdadera: es la asociativa' } ] },
+  ],
+  preguntas:[
+    { p:'¿Por qué en el ejercicio 1 la III es falsa, si dice n + 0?',
+      r:'Porque termina en «= 0». Sumar 0 deja el número como estaba: 5 + 0 da 5, no 0. El que da 0 es multiplicar por 0.' },
+    { p:'¿La IV y la V no dicen lo mismo?',
+      r:'Dicen lo mismo al revés. La V: si dos números son iguales, sumándoles lo mismo siguen iguales. La IV: si las sumas son iguales, se puede sacar lo que se sumó.' },
+    { p:'¿Para qué sirve la disociativa, si es hacer la cuenta más larga?',
+      r:'Para hacerla más fácil: 47 + 8 es 47 + 3 + 5, que da 50 + 5. Se parte un sumando para redondear el otro.' },
+    { p:'En la monotonía, ¿qué pasa si las desigualdades van para distinto lado?',
+      r:'No se puede decir nada: 1 < 5 y 9 > 2 dan 10 y 7. Por eso la ley pide el mismo sentido.' },
+  ],
+  notas:`<p>Lo que el examen pregunta de la suma no es la cuenta: son los <b>nombres</b> (sumandos,
+      suma), las <b>leyes</b> y las <b>propiedades</b>, casi siempre en ejercicios de «son
+      verdaderas» o «la falsa es». Conviene que cada ley la digan con un ejemplo propio antes de
+      verla escrita en letras.</p>
+    <p><b>Ejercicio 1.</b> La III es la que confunde: dice que sumar 0 da 0. La IV es la
+      uniformidad leída al revés (la cancelación), y no está en la lista de leyes del material:
+      vale la pena decirlo.</p>
+    <p><b>Ejercicios 6 y 7.</b> Son la tercera propiedad, dicha de dos maneras: en el 6 se
+      pregunta qué pasa; en el 7 la B la niega, y es la falsa. Muchos chicos responden el 7 sin
+      leer las cinco: conviene pedir que digan por qué cada una de las otras es verdadera.</p>`
+},
+{
+  n:2, corto:'Sustracción', titulo:'La sustracción', pag:'sustracción',
+  teoria:[
+    { id:'resta', cajon:'definicion', chip:'Sustracción', titulo:'La sustracción',
+      pregunta:'En 50 − 18 = 32, ¿qué cuenta de sumar dice lo mismo?',
+      enun:'Restar es quitar, comparar o ver cuánto falta. Del <b>minuendo</b> M se quita el <b>sustraendo</b> S, y queda la <b>diferencia</b> D.',
+      html:grande('M − S = D'),
+      revela:{ txt:'18 + 32 da 50: el sustraendo más la diferencia es el minuendo. La resta es la operación inversa de la suma.' },
+      mas:[`En letras: ${M('S + D = M')}. Con eso salen casi todos los ejercicios de restas.`] },
+    { id:'prop-resta', cajon:'teorema', chip:'Propiedades', titulo:'Las propiedades de la sustracción',
+      pregunta:'Si 50 − 18 da 32, ¿cuánto da 60 − 18? ¿Y 50 − 28?',
+      enun:'Lo que le pasa al <b>minuendo</b> le pasa a la diferencia. Lo que le pasa al <b>sustraendo</b>, le pasa al revés.',
+      figura:reglas(['1.ª Al minuendo, más k', '(M + k) − S = D + k'],
+                  ['2.ª Al minuendo, menos k', '(M − k) − S = D − k'],
+                  ['3.ª Al sustraendo, más k', 'M − (S + k) = D − k'],
+                  ['4.ª Al sustraendo, menos k', 'M − (S − k) = D + k'],
+                  ['5.ª A los dos, más k', '(M + k) − (S + k) = D'],
+                  ['6.ª A los dos, menos k', '(M − k) − (S − k) = D'],
+                  ['7.ª Al minuendo menos m, al sustraendo más p', '(M − m) − (S + p) = D − (m + p)']),
+      revela:{ txt:'60 − 18 da 42: el minuendo subió 10 y la diferencia también. 50 − 28 da 22: el sustraendo subió 10 y la diferencia bajó 10.' } },
+    { id:'leyes-resta', cajon:'postulado', chip:'Leyes', titulo:'Las leyes de la sustracción',
+      pregunta:'7 &lt; 10. Si a los dos les resto 3, ¿sigue siendo «menor»? ¿Y si a un 10 le resto 7 y a otro 10 le resto 3?',
+      enun:'<b>Uniformidad:</b> la diferencia de dos números es una sola, y restando miembro a miembro dos igualdades sale otra igualdad. <b>Monotonía:</b> qué pasa con el sentido al restar.',
+      figura:reglas(['Desigualdad menos igualdad: el mismo sentido', 'a &lt; b, c = d', 'a − c &lt; b − d'],
+                  ['Igualdad menos desigualdad: el sentido contrario', 'a = b, c &lt; d', 'a − c &gt; b − d'],
+                  ['Desigualdad menos otra contraria: el sentido del minuendo', 'a &lt; b, c &gt; d', 'a − c &lt; b − d']),
+      revela:{ txt:'4 &lt; 7: restar lo mismo no cambia el sentido. Pero 10 − 7 da 3 y 10 − 3 da 7, y 3 &lt; 7: el sentido se dio vuelta, porque al que le restan más le queda menos.' } },
+  ],
+  problemas:[
+    { cod:'E10', tras:'resta', titulo:'Los tres términos, sumados',
+      enun:`Si se suma el minuendo con el sustraendo y la diferencia, se obtiene:${EJ(10)}`,
+      opciones:[
+        { t:'cero', error:'restó en vez de sumar' },
+        { t:'uno' },
+        { t:'el doble de la diferencia' },
+        { t:'el doble del minuendo', ok:true },
+        { t:'el doble del sustraendo' } ] },
+    { cod:'E8', tras:'prop-resta', titulo:'Al minuendo 14, al sustraendo 24',
+      enun:`¿Cómo varía la diferencia de dos números si se suma 14 al minuendo y 24 al sustraendo?${EJ(8)}`,
+      opciones:[
+        { t:'Aumenta en 14', error:'miró solo el minuendo' },
+        { t:'Disminuye en 24', error:'miró solo el sustraendo' },
+        { t:'Aumenta en 10', error:'vio que la diferencia cambia 10, pero para el lado equivocado' },
+        { t:'Disminuye en 10', ok:true },
+        { t:'No varía', error:'creyó que, si a los dos se les suma algo, la diferencia no cambia: eso es solo si se les suma lo mismo' } ] },
+    { cod:'E4', tras:'leyes-resta', titulo:'Minuendo menos diferencia',
+      enun:`Si del minuendo (M) se resta la diferencia (D) y de esta resta se disminuye el sustraendo (S), se obtiene:${EJ(4)}`,
+      opciones:[
+        { t:'M' },
+        { t:'S', error:'se quedó en la primera resta: M − D da S, y faltaba restarle S' },
+        { t:'1', error:'creyó que un número menos sí mismo da 1' },
+        { t:'2M' },
+        { t:'NDA', ok:true } ] },
+    { cod:'E11', titulo:'Un problema con números',
+      enun:`En una resta, la suma del minuendo, el sustraendo y la diferencia es 142. Si la suma del minuendo y el sustraendo es igual a la unidad del tercer orden, hallar la diferencia:${EJ(11)}`,
+      opciones:[ { t:'55' }, { t:'17' }, { t:'45' }, { t:'42', ok:true }, { t:'83' } ] },
+    { cod:'E13', titulo:'Otro problema con números',
+      enun:`En una sustracción, la suma de sus términos es 50 veces el sustraendo. Si la diferencia es 960, entonces la suma de las cifras del minuendo es:${EJ(13)}`,
+      opciones:[
+        { t:'1000', error:'dio el minuendo, y se pedía la suma de sus cifras' },
+        { t:'1', ok:true },
+        { t:'40', error:'dio el sustraendo' },
+        { t:'4', error:'sumó las cifras del sustraendo' },
+        { t:'1040', error:'sumó el minuendo y el sustraendo' } ] },
+  ],
+  preguntas:[
+    { p:'¿Por qué M + S + D da 2M?',
+      r:'Porque S + D ya es M: el sustraendo más la diferencia es el minuendo. Queda M + M.' },
+    { p:'¿Hay algo de la vida real que sea la 5.ª propiedad?',
+      r:'La diferencia de edad entre dos hermanos: pasan los años, los dos cumplen lo mismo, y la diferencia no cambia.' },
+    { p:'En la 7.ª, ¿por qué la diferencia baja m + p y no m − p?',
+      r:'Porque las dos cosas la achican: quitarle al minuendo la baja m, y agregarle al sustraendo la baja p. Se suman.' },
+    { p:'En el 4, ¿por qué la respuesta es NDA si da 0?',
+      r:'M − D da S, y S − S da 0. El 0 no está entre las opciones A a D: es «ninguna de las anteriores».' },
+    { p:'¿Qué es la unidad del tercer orden?',
+      r:'Las unidades son el primer orden, las decenas el segundo y las centenas el tercero. La unidad del tercer orden es 100.' },
+  ],
+  notas:`<p>La clave de todo el tema es una sola: <b>S + D es M</b>. Los ejercicios 10, 4, 11 y 13
+      salen de ahí.</p>
+    <p><b>Ejercicio 10.</b> M + S + D es M + M, el doble del minuendo. El ejercicio 3 del
+      ejercitario es el mismo, con letras.</p>
+    <p><b>Ejercicio 8.</b> Más 14 al minuendo sube la diferencia 14; más 24 al sustraendo la baja
+      24. En total, baja 10. Los que eligen «No varía» se acuerdan de la 5.ª propiedad, pero ahí se
+      suma lo mismo a los dos.</p>
+    <p><b>Ejercicio 4.</b> M − D da S; menos S, da 0. La respuesta es NDA. En la versión de la
+      presentación del cursillo la E es «0»: si alguno la tiene, es la misma respuesta.</p>
+    <p><b>Ejercicio 11.</b> M + S + D es 2M, así que M es 71; M + S es 100, la unidad del tercer
+      orden, así que S es 29 y D es 42. Más corto: D es lo que le falta a M + S para llegar a 142,
+      142 − 100.</p>
+    <p><b>Ejercicio 13.</b> 2M es 50S, así que M es 25S; como D es M − S, 24S es 960 y S es 40. El
+      minuendo es 1000 y la suma de sus cifras es 1. Casi todas las opciones son un número del
+      problema: el que no lee la última línea elige 1000.</p>
+    <p>Las leyes de la resta (la monotonía) no tienen ejercicio en el ejercitario: alcanza con la
+      pregunta de la diapositiva.</p>`
+},
+{
+  n:3, corto:'Multiplicación', titulo:'La multiplicación', pag:'multiplicación',
+  teoria:[
+    { id:'multiplicacion', cajon:'definicion', chip:'Multiplicación', titulo:'La multiplicación',
+      pregunta:'¿Qué suma es lo mismo que 4 · 3?',
+      enun:'Multiplicar es sumar un número varias veces. El <b>multiplicando</b> M se suma tantas veces como dice el <b>multiplicador</b> m; el resultado es el <b>producto</b> P.',
+      html:grande('M · m = P'),
+      revela:{ txt:'4 + 4 + 4: el 4 sumado 3 veces. Da 12.' },
+      mas:['Multiplicando y multiplicador se llaman también <b>factores</b>.',
+           'Lo de «sumar varias veces» sirve con naturales: 0,5 · 0,3 no es sumar 0,5 «tres décimos de vez».'] },
+    { id:'producto', cajon:'teorema', chip:'Propiedades', titulo:'El producto y el multiplicando',
+      pregunta:'¿Multiplicar siempre agranda? Pensá en 10 · 0,5.',
+      enun:'Qué pasa con el producto según cuánto vale el multiplicador:',
+      figura:reglas(['Por 0, da 0', 'n · 0 = 0'],
+                  ['Por 1, queda igual: el 1 es el neutro', 'n · 1 = n'],
+                  ['Por más de 1, agranda', 'm &gt; 1', 'P &gt; M'],
+                  ['Por un número entre 0 y 1, achica', '0 &lt; m &lt; 1', 'P &lt; M']),
+      revela:{ txt:'No: 10 · 0,5 da 5. Multiplicar por un número entre 0 y 1 achica.' } },
+    { id:'leyes-mult', cajon:'postulado', chip:'Leyes', titulo:'Las leyes de la multiplicación',
+      pregunta:'¿Cómo harías 25 · 7 · 4 de cabeza?',
+      enun:'Las leyes de la suma valen también para la multiplicación.',
+      figura:reglas(['Uniformidad', 'a = b', 'a · c = b · c'],
+                  ['Conmutativa', 'a · b = b · a'],
+                  ['Asociativa', '(a · b) · c = a · (b · c)'],
+                  ['Disociativa', '4 · 2 = (2 · 2) · 2'],
+                  ['Monotonía', 'a &lt; b, c &lt; d', 'a · c &lt; b · d']),
+      revela:{ txt:'Juntando 25 · 4, que da 100; después, 100 · 7 da 700. Se cambia el orden (conmutativa) y se agrupa (asociativa).' },
+      mas:['La resta y la división <b>no</b> son conmutativas: 10 − 4 da 6, y 4 − 10 da −6.',
+           `Si un factor aumenta k, el producto aumenta k veces el otro factor: ${M('(a + k) · b = a · b + k · b')}.`] },
+  ],
+  problemas:[
+    { cod:'E15', tras:'producto', titulo:'¿Cuál no se verifica?',
+      enun:`En una multiplicación a · b = p, no se verifica que:${EJ(15)}`,
+      opciones:[
+        { t:'Si b = 1, entonces p = a.', error:'se verifica: el 1 es el neutro' },
+        { t:'Si b > 1, entonces p > a.', error:'se verifica: multiplicar por más de 1 agranda' },
+        { t:'Si b < 1, entonces p = 0.', ok:true },
+        { t:'Si b = 0, entonces p = 0.', error:'se verifica: por 0 da 0' },
+        { t:'Si b = a, entonces p = a².', error:'se verifica: a · a es a²' } ] },
+    { cod:'E16', tras:'leyes-mult', titulo:'La conmutativa',
+      enun:`La ley conmutativa se cumple en:${EJ(16)}`,
+      opciones:[
+        { t:'suma y resta', error:'la resta no es conmutativa' },
+        { t:'suma y multiplicación', ok:true },
+        { t:'multiplicación y división', error:'la división no es conmutativa' },
+        { t:'resta y división', error:'ninguna de las dos es conmutativa' },
+        { t:'adición y división', error:'la división no es conmutativa' } ] },
+    { cod:'E27', tras:'leyes-mult', titulo:'Un problema con números',
+      enun:`En una multiplicación si el multiplicando disminuye en 4 unidades, el producto disminuye en 640; y si el multiplicador aumenta 4 unidades, el producto aumenta en 120. El producto es:${EJ(27)}`,
+      opciones:[
+        { t:'30', error:'dio el multiplicando' },
+        { t:'160', error:'dio el multiplicador' },
+        { t:'480' },
+        { t:'4800', ok:true },
+        { t:'300' } ] },
+  ],
+  preguntas:[
+    { p:'En el 15, ¿la B no falla si a es 0?',
+      r:'Sí: 0 · 5 da 0, que no es mayor que 0. El ejercicio piensa en a positivo; aun así, la que falla siempre es la C: 8 · 0,5 da 4, no 0.' },
+    { p:'¿La monotonía vale con negativos?',
+      r:'No: −3 < 1 y −2 < 1, pero (−3) · (−2) da 6, que no es menor que 1. La ley es para números positivos.' },
+    { p:'En el 27, ¿por qué si el multiplicando baja 4 el producto baja 4 veces el multiplicador?',
+      r:'Porque el multiplicador dice cuántas veces se suma el multiplicando. Si cada una de esas veces se suma 4 menos, en total se pierden 4 veces el multiplicador.' },
+  ],
+  notas:`<p>La definición de multiplicación como suma repetida es la que trae el material. Sirve para
+      naturales; la línea de los decimales está para que nadie la use donde no va.</p>
+    <p><b>Ejercicio 15.</b> La falsa es la C: multiplicar por un número menor que 1 achica, pero
+      no da 0. Ojo con la B: con a igual a 0 tampoco vale, y algún alumno lo va a ver.</p>
+    <p><b>Ejercicio 16.</b> «Adición» en la E es la suma con otro nombre: está para el que no
+      lee con cuidado.</p>
+    <p><b>Ejercicio 27.</b> Si el multiplicando baja 4, el producto baja 4 veces el multiplicador:
+      4b es 640 y b es 160. Si el multiplicador sube 4, el producto sube 4 veces el multiplicando:
+      4a es 120 y a es 30. El producto, 30 · 160, es 4800. Las opciones A y B son los dos factores:
+      los elige el que se olvida de multiplicar al final.</p>
+    <p>El ejercicio 14 y el 17 del ejercitario no se proyectan: en el 14 la clave depende de qué
+      definición se tome, y en el 17 la B y la C son las dos verdaderas.</p>`
+},
+{
+  n:4, corto:'División', titulo:'La división', pag:'división',
+  teoria:[
+    { id:'division', cajon:'definicion', chip:'División', titulo:'La división',
+      pregunta:'Si 12 : 3 da 4, ¿qué multiplicación dice lo mismo?',
+      enun:'Dividir es la operación <b>inversa</b> de multiplicar: se conoce el producto, el <b>dividendo</b> D, y un factor, el <b>divisor</b> d; se busca el otro, el <b>cociente</b> c.',
+      html:grande('D : d = c'),
+      revela:{ txt:'3 · 4 da 12: el divisor por el cociente es el dividendo.' },
+      mas:['La división es <b>exacta</b> si no sobra nada: 39 : 3 da 13, y 3 · 13 da 39 justo.'] },
+    { id:'defecto', cajon:'teorema', chip:'División entera', titulo:'La división inexacta, por defecto',
+      pregunta:'Repartimos 37 caramelos entre 3 chicos, a todos lo mismo. ¿Cuántos le tocan a cada uno? ¿Cuántos sobran?',
+      enun:'Si sobra algo, la división es <b>inexacta</b>. Por defecto, el cociente se queda corto y lo que sobra es el <b>resto</b> r:',
+      html:grande('D = d · c + r'),
+      revela:{ txt:'12 a cada uno, y sobra 1: 37 = 3 · 12 + 1.' },
+      mas:[`El resto es siempre menor que el divisor, ${M('0 &lt; r &lt; d')}: si sobraran 3, alcanzaba para uno más a cada uno. El más grande posible, el <b>resto máximo</b>, es d − 1.`] },
+    { id:'exceso', cajon:'teorema', chip:'División entera', titulo:'Por exceso, y lo que ata a las dos',
+      pregunta:'Con los mismos 37 caramelos: ¿cuántos faltan para darle 13 a cada uno?',
+      enun:'Por exceso, el cociente se pasa en uno, y lo que <b>falta</b> es el resto por exceso r′:',
+      html:grande('D = d · c′ − r′'),
+      figura:reglas(['El cociente por exceso es uno más', 'c′ = c + 1'],
+                    ['Los dos restos suman el divisor', 'r + r′ = d'],
+                    ['El resto más grande posible', 'r = d − 1']),
+      revela:{ txt:'Faltan 2: 37 = 3 · 13 − 2. Y los restos, 1 y 2, suman 3: el divisor.' } },
+  ],
+  problemas:[
+    { cod:'E18', tras:'division', titulo:'¿Cuándo es exacta?',
+      enun:`La división es exacta cuando:${EJ(18)}`,
+      opciones:[
+        { t:'el dividendo es múltiplo del divisor.', ok:true },
+        { t:'el divisor es 1.', error:'por 1 es exacta, pero no es la única: 12 : 3 también' },
+        { t:'el cociente es par.' },
+        { t:'el resto es igual a la unidad.', error:'si el resto es 1, justamente no es exacta' },
+        { t:'el divisor es impar.' } ] },
+    { cod:'E24', tras:'division', titulo:'Un problema con números',
+      enun:`Si en una división exacta, se divide x entre dos decenas y tres unidades, el cociente que resulta es igual a la mitad del cuádruplo del divisor. El valor de x es igual a:${EJ(24)}`,
+      opciones:[
+        { t:'1,500' },
+        { t:'1,800' },
+        { t:'1,058', ok:true },
+        { t:'2,116', error:'tomó el cuádruplo y se olvidó de la mitad' },
+        { t:'1,580' } ] },
+    { cod:'E31', tras:'defecto', titulo:'Los cuatro términos suman 1011',
+      enun:`El cociente de la división de un número entero entre otro número entero es 19 y el resto, 26. Si se suman el dividendo, el divisor, el cociente y el resto, la suma obtenida es 1011. ¿Cuál es el dividendo?${EJ(31)}`,
+      opciones:[ { t:'825' }, { t:'872' }, { t:'919', ok:true }, { t:'966' }, { t:'1013' } ] },
+    { cod:'E33', tras:'defecto', titulo:'Al dividendo, 49 más',
+      enun:`El cociente y el resto de una división inexacta son 17 y 9 respectivamente. Pero si al dividendo se le aumenta 49 unidades, el cociente sería 21 y el resto 6. Hallar la suma de dividendo y divisor primitivos.${EJ(33)}`,
+      opciones:[ { t:'238' }, { t:'240' }, { t:'244' }, { t:'241' }, { t:'243', ok:true } ] },
+    { cod:'E22', tras:'exceso', titulo:'¿Cuántas son falsas?', largo:true,
+      enun:`De las siguientes afirmaciones:${af('I) En una división inexacta, el divisor siempre es menor que el resto.',
+        'II) La suma de los residuos por defecto y por exceso en una división inexacta siempre es igual al cociente.',
+        'III) Si un número divide al dividendo y al divisor de una división inexacta, necesariamente divide al resto.',
+        'IV) Cuando el cociente es igual a la unidad, necesariamente el dividendo es igual al divisor.')}Es/son falsa/s:${EJ(22)}`,
+      opciones:[ { t:'Una' }, { t:'Dos' }, { t:'Tres', ok:true }, { t:'Todas', error:'tomó la III como falsa' }, { t:'Ninguna' } ] },
+    { cod:'E25', tras:'exceso', titulo:'Por defecto 41, por exceso 39',
+      enun:`Al sumar los cuatro términos de una división entera por defecto se obtiene 41, pero si la división es por exceso, la suma es 39. Además, la suma de los cocientes es 7. El divisor es:${EJ(25)}`,
+      opciones:[ { t:'26' }, { t:'5' }, { t:'7', ok:true }, { t:'2' }, { t:'4' } ] },
+    { cod:'E23', tras:'exceso', titulo:'Le faltan 13 para el máximo',
+      enun:`Al resto de una división entera le falta 13 unidades para ser el máximo posible. Si al restarle 131 unidades al dividendo y el divisor no varía, el cociente disminuye en 6 y el residuo se vuelve máximo. Entonces, la suma de las cifras del divisor es:${EJ(23)}`,
+      opciones:[
+        { t:'8', error:'multiplicó las cifras del divisor en vez de sumarlas' },
+        { t:'6', ok:true },
+        { t:'12' },
+        { t:'13' },
+        { t:'16' } ] },
+    { cod:'E34', tras:'exceso', titulo:'Lo más que se puede agregar',
+      enun:`En una división inexacta, el divisor es 23 y el resto 4. ¿Cuál es la máxima cantidad que se le puede agregar al dividendo de manera que el cociente aumente en 3?${EJ(34)}`,
+      opciones:[
+        { t:'65', error:'dio lo mínimo que hay que agregar, no lo máximo' },
+        { t:'42' },
+        { t:'66' },
+        { t:'88', error:'tomó el resto máximo igual al divisor, 23, y no 22' },
+        { t:'87', ok:true } ] },
+  ],
+  preguntas:[
+    { p:'¿Por qué el resto tiene que ser menor que el divisor?',
+      r:'Porque si sobran tantos como el divisor, alcanza para darle uno más a cada uno: el cociente estaba corto.' },
+    { p:'¿Por qué r + r′ da el divisor?',
+      r:'r es lo que sobra con c; r′ es lo que falta para llegar a c + 1. Entre los dos completan una vuelta más del reparto: d.' },
+    { p:'¿Dónde se ve el defecto y el exceso fuera de la matemática?',
+      r:'Comprando alfajores en paquetes de 3 para 37 chicos: con 12 paquetes queda 1 chico sin alfajor (el resto por defecto); con 13, sobran 2 alfajores (el resto por exceso).' },
+    { p:'En el 24, ¿el resultado es 1,058? ¿Uno coma algo?',
+      r:'No: el material escribe los miles con coma, a la inglesa. Es 1058, mil cincuenta y ocho. Nosotros lo escribimos 1.058.' },
+    { p:'En el 34, ¿por qué el resto máximo es 22 y no 23?',
+      r:'Porque con resto 23 alcanza para uno más: el cociente subiría 4. El resto máximo es el divisor menos 1.' },
+    { p:'En el 22, ¿por qué la III es verdadera?',
+      r:'Porque r es D − d · c. Si un número divide a D y a d, divide a los dos términos de esa resta, y entonces divide a r.' },
+  ],
+  notas:`<p>Es el tema que más pesa en el examen. Todo sale de tres fórmulas: <b>D = d · c + r</b>
+      con el resto menor que el divisor, <b>c′ es c + 1</b> y <b>r + r′ es d</b>. Antes de cada
+      problema conviene escribir con ellos qué dice cada dato, en letras.</p>
+    <p><b>Ejercicio 18.</b> La A es la definición. La B es una división exacta, pero no la única.</p>
+    <p><b>Ejercicio 24.</b> Dos decenas y tres unidades: 23. El cociente es la mitad de 4 · 23,
+      46; x es 23 · 46, 1058. El material escribe los miles con coma (1,058): conviene avisar.
+      En el ejercitario dice «cuádrupto»; en la página va «cuádruplo».</p>
+    <p><b>Ejercicio 31.</b> D es 19d + 26; sumando los cuatro, 20d + 71 da 1011, así que d es 47 y
+      D es 919. Las otras opciones están corridas de a 47: son 919 con un divisor de más o de
+      menos.</p>
+    <p><b>Ejercicio 33.</b> D es 17d + 9, y D + 49 es 21d + 6. Restando, 4d es 52: d es 13 y D es 230.
+      La suma, 243.</p>
+    <p><b>Ejercicio 22.</b> La I es falsa (al revés), la II es falsa (los restos suman el divisor,
+      no el cociente), la III es verdadera y la IV es falsa (7 : 5 da cociente 1). Son tres.</p>
+    <p><b>Ejercicio 25.</b> Los cocientes son 3 y 4. Restando las dos sumas, r − r′ da 3; con
+      r + r′ igual a d, d es 2r − 3. Y 3d + r + d + 3 + r da 41: r es 5 y d es 7.</p>
+    <p><b>Ejercicio 23.</b> El resto es d − 14. Quitando 131 al dividendo, el cociente baja 6 (6d
+      menos) y el resto pasa a d − 1: d − 14 − 131 es d − 1 − 6d, así que 6d es 144 y d es 24. Sus
+      cifras suman 6.</p>
+    <p><b>Ejercicio 34.</b> Para que el cociente suba 3 hay que agregar al menos 3 · 23 − 4, 65; y
+      lo máximo es llegar al resto 22: 69 + 22 − 4, 87.</p>
+    <p>El ejercitario tiene muchos más de este tema (del 19 al 40): son buenos para dejar de
+      tarea, con la misma regla de escribir antes qué dice cada dato.</p>`
+},
+{
+  n:5, corto:'Operaciones combinadas', titulo:'Las operaciones combinadas', pag:'operaciones combinadas',
+  teoria:[
+    { id:'prioridad', cajon:'estrategia', chip:'Estrategia', titulo:'Las operaciones combinadas',
+      pregunta:'¿Cuánto da 2 + 3 · 4?',
+      enun:'Cuando hay varias operaciones juntas, se resuelven en este orden:',
+      html:`<ol class="prioridad"><li>Paréntesis, corchetes y llaves, <b>de adentro hacia afuera</b>.</li>
+        <li>Potencias y raíces.</li><li>Multiplicaciones y divisiones.</li><li>Sumas y restas.</li></ol>`,
+      revela:{ txt:'14: primero la multiplicación, 3 · 4 da 12, y después 2 + 12. Si dio 20, se sumó primero.' },
+      mas:[`Un menos delante de un paréntesis cambia el signo de todo lo de adentro: ${M('−(5 − 8)')} es lo mismo que ${M('−5 + 8')}.`] },
+  ],
+  problemas:[
+    { cod:'E30', tras:'prioridad', titulo:'De adentro hacia afuera',
+      enun:`Al efectuar ${M('7 − [−(65 − 56) − [44 − (−24 − 73) − 36] − 30] + 103')} se obtiene:${EJ(30)}`,
+      opciones:[
+        { t:'Un número par', ok:true },
+        { t:'Una cifra no significativa', error:'la cifra no significativa es el 0' },
+        { t:'El módulo de la multiplicación', error:'el módulo (el neutro) de la multiplicación es el 1' },
+        { t:'Un número negativo', error:'no cambió los signos al sacar un paréntesis con un menos adelante' },
+        { t:'Un número primo' } ] },
+  ],
+  preguntas:[
+    { p:'¿Por qué la multiplicación va antes que la suma, si la suma está primero?',
+      r:'Porque es la regla que todos usamos, para que una cuenta tenga un solo resultado. Si se quiere sumar primero, se ponen paréntesis.' },
+    { p:'¿Qué es «el módulo de la multiplicación»?',
+      r:'El número que no cambia nada al multiplicar: el 1. Es otro nombre del elemento neutro.' },
+    { p:'¿Y una cifra no significativa?',
+      r:'El 0: es la única cifra que no tiene valor por sí sola.' },
+  ],
+  notas:`<p><b>Ejercicio 30.</b> De adentro hacia afuera: 65 − 56 da 9; −24 − 73 da −97; 44 − (−97) − 36
+      da 105. El corchete grande queda −9 − 105 − 30, que da −144, y 7 − (−144) + 103 da 254. Es
+      par (y no es primo). El que no cambia los signos al sacar el corchete llega a un negativo.</p>
+    <p>Las opciones hablan de «cifra no significativa» y «módulo de la multiplicación»: son
+      palabras del examen, y conviene repasarlas aunque el ejercicio sea de cuentas.</p>`
+},
+];
+
+/* El ejercicio 39 del ejercitario, resuelto en la pizarra: junta la
+   división por defecto y por exceso. En el ejercitario la respuesta es la D. */
+const DESAFIO = {
+  titulo:'Un número dividido entre 150', prosa:true, fija:1,
+  enun:`«Hallar un número entero que, dividido entre 150, dé un resto por defecto que es el triple del cociente por exceso y un resto por exceso que es el cuádruple del cociente por defecto.»${EJ(39)}`,
+  pasos:[
+    'Lo que se sabe: el divisor es 150; el resto por defecto es el triple del cociente por exceso, y el resto por exceso, el cuádruple del cociente por defecto.',
+    P('Lo que dice el enunciado, en letras.', 'r = 3c′', 'r′ = 4c'),
+    P('Lo que ata las dos divisiones: el cociente por exceso es uno más, y los dos restos suman el divisor.', 'c′ = c + 1', 'r + r′ = 150'),
+    P('Reemplazo r y r′ en la suma de los restos.', '3c′ + 4c = 150'),
+    P('Reemplazo c′ por c + 1.', '3(c + 1) + 4c = 150', '3c + 3 + 4c = 150', '7c + 3 = 150'),
+    P('Resto 3 a los dos miembros.', '7c + 3 − 3 = 150 − 3', '7c = 147'),
+    P('Divido los dos miembros por 7.', '7c : 7 = 147 : 7', 'c = 21'),
+    `Los restos, con c′ igual a 22:${A('r = 3 · 22', ' = 66', 'r′ = 4 · 21', ' = 84')}`,
+    `El número: el divisor por el cociente, más el resto.${A('D = 150 · 21 + 66', ' = 3.150 + 66', ' = 3.216')}`,
+  ],
+  final:'el número es 3.216',
+  control:`Por exceso, 150 · 22 da 3.300, y le faltan 84:${A('3.300 − 84 = 3.216')}y los dos restos suman el divisor:${A('66 + 84 = 150 ✓')}`,
+  preguntas:[
+    { p:'¿Por qué hay que usar que los restos suman 150?',
+      r:'Porque el enunciado da dos datos y hay cuatro incógnitas: c, c′, r y r′. Las dos relaciones entre las divisiones dan las otras dos ecuaciones.' },
+    { p:'¿Se podía probar con las opciones?',
+      r:'Sí: dividir cada una entre 150 y mirar los restos. Es más largo, pero sirve de control.' },
+  ],
+  notas:`<p>El ejercicio 39 del ejercitario, resuelto paso a paso: junta todo lo de la división
+      entera. Las opciones del ejercitario son 3128, 3712, 3648, 3216 y 3526; la correcta es la D.</p>
+    <p>El paso que se traba es el tercero: ver que hacen falta las dos relaciones entre la división
+      por defecto y por exceso. Conviene preguntar antes cuántas incógnitas hay y cuántos datos.</p>`
+};
+
+const UNIDAD = {
+  preguntas:[
+    { p:'¿Para qué estudiar sumar y restar en el cursillo de una facultad?',
+      r:'Porque el examen no pregunta la cuenta: pregunta los nombres, las leyes y los problemas de división entera, y esos sí son difíciles.' },
+    { p:'¿Hay que saberse de memoria las siete propiedades de la resta?',
+      r:'No: salen de una idea. Lo que le pasa al minuendo le pasa a la diferencia; lo que le pasa al sustraendo, le pasa al revés.' },
+  ],
+  notas:`<p>Clase del cursillo de ingreso sobre la <b>unidad 3</b> de Aritmética y Álgebra
+      (operaciones fundamentales). El pizarrón sigue siendo del profesor.</p>
+    <p><b>El recorrido:</b> teoría, ejercicio, teoría, ejercicio. Cada operación tiene su
+      definición (con los nombres de sus términos), sus leyes y sus propiedades, y después de
+      cada parte van los ejercicios del ejercitario que la usan, tal cual y con sus opciones.
+      Al final, el ejercicio 39 resuelto en la pizarra.</p>
+    <p>Cada diapositiva de teoría arranca con una pregunta: que la contesten antes de ver la
+      fórmula. Cada ejercicio tiene «Ver clave», y en las Notas de su tema está la resolución y
+      el porqué de las opciones.</p>
+    <p>Del ejercitario se proyectan 20 de los 40. Los demás (sobre todo los de división entera,
+      del 19 al 40) quedan para trabajar en clase o de tarea.</p>`
+};
+
+Pizarra.unidad({ TEMAS, DESAFIO, UNIDAD, grado:'cursillo', temasLibro:5 });
+</script>
+
+<script src="../../assets/proyeccion.js" defer></script>
+<script src="../../assets/timer.js" defer></script>
+<script src="../../assets/clase.js" defer></script>
+</body>
+</html>

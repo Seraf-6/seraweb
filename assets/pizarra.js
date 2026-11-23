@@ -986,7 +986,7 @@ Pizarra.avanza = (diapo, dir) => {
 const LETRAS = 'ABCDEFGH';
 function opciones(it, conCod = true){
   return `
-      <li class="mc" id="mc-${it.cod}">
+      <li class="mc${it.largo ? ' mc-largo' : ''}" id="mc-${it.cod}">
         <p class="mc-enun">${conCod ? `<b class="mc-cod">${it.cod}</b> ` : ''}${sombrero(it.enun)}</p>
         <ol class="mc-ops">${it.opciones.map((o, k) =>
           `<li${o.ok ? ' data-ok="1"' : ''}><b>${LETRAS[k]})</b> ${sombrero(o.t)}</li>`).join('')}</ol>
@@ -1098,8 +1098,10 @@ Pizarra.unidad = cfg => {
     t.problemas && t.problemas.length ? 'prob-' + t.problemas[t.problemas.length - 1].cod : ancla(t);
   /* los ejercicios del tema: uno por diapositiva, de opción múltiple, como en
      el examen; «Ver clave» marca la correcta. Si el tema tiene ejemplos
-     resueltos aparte, el ejercicio lleva a ellos */
-  const problemasDe = t => (t.problemas || []).map((it, i, todos) => hojaMC({
+     resueltos aparte, el ejercicio lleva a ellos. Un ejercicio con
+     tras:'<id de una teoría>' va justo después de esa diapositiva de teoría
+     (teoría, ejercicio, teoría, ejercicio); los demás, al final del tema */
+  const problemasDe = (t, tras = null) => (t.problemas || []).map((it, i, todos) => (it.tras || null) !== tras ? '' : hojaMC({
     clase:'problema-diapo', id:'prob-' + it.cod, clave:true, sinCod:true, items:[it],
     cinta:`<b>${etiqueta(t)}</b> · ${t.corto} · ejercicio${todos.length > 1 ? ` ${i + 1} de ${todos.length}` : ''}`,
     titulo:it.titulo || 'Ejercicio',
@@ -1171,7 +1173,7 @@ Pizarra.unidad = cfg => {
     ${c.figura ? `<div class="concepto-figura">${c.figura}</div>` : ''}
     <ul class="puntos">${c.puntos.map(p => `<li>${p}</li>`).join('')}</ul>
   </section>` : ''}
-  ${(t.teoria || []).map(td => teoria(td, cintaT(t))).join('')}
+  ${(t.teoria || []).map(td => teoria(td, cintaT(t)) + problemasDe(t, td.id)).join('')}
   ${problemasDe(t)}
 
   ${ayudaAparte || !t.ejemplos ? '' : `<div class="ejemplos">${ejemplosDe(t)}</div>`}

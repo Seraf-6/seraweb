@@ -52,7 +52,9 @@ fisica/index.html           Física (por ahora vacía)     ← lo genera build.p
 cursillo/index.html         Cursillo: la semana y los temas ← lo genera build.py
 cursillo/clases/<tema>.html clases del cursillo         ← escritas a mano
 cursillo/clases/sistema-metrico.html  unidad 6 de Aritmética y Álgebra ← escrita a mano
+cursillo/clases/operaciones.html      unidad 3 de Aritmética y Álgebra ← escrita a mano
 cursillo/materiales…/        el material del Poli (zip): FUENTE, no se publica (.gitignore)
+cursillo/Presentaciones…/    presentaciones y ejercitarios del cursillo: FUENTE, no se publica (.gitignore)
 omapa/index.html            módulo de olimpiada          ← lo genera build.py
 omapa/clases/bloque-N.html  clases por herramienta       ← escritas a mano
 omapa/elementos/libro-1.html  Euclides, libro I (la página) ← lee libro1.js
@@ -458,7 +460,7 @@ correrlo.
 
 Hay uno por cada página de clase (ecuaciones, ángulos, polígonos y el bloque A de la geometría griega de 7.º,
 factoreo, expresiones racionales y sistemas de 8.º, ecuaciones de segundo grado de 9.º), uno para
-las siete clases de OMAPA y uno para el módulo de progreso. El Open House
+las siete clases de OMAPA, uno por clase del cursillo y uno para el módulo de progreso. El Open House
 tiene el suyo: `open2026/verificar.py`.
 
 Las páginas de clase cargan `assets/pizarra.js` (sin `defer`, antes de su
@@ -828,6 +830,23 @@ tema lleva a ellos, y Av Pág vuelve al ejercicio al terminar. El grabado de
 Köbel (`cursillo/clases/img/kobel-1535.png`, dominio público, de Wikimedia
 Commons) se agrega a mano: si no está, la diapositiva se arma sin él.
 
+**Operaciones fundamentales es teoría, ejercicio, teoría, ejercicio** (lo pidió
+Juan el 23/11/2026, sobre la presentación y el ejercitario que pasa el cursillo,
+en `cursillo/Presentaciones…/`). Cinco temas (adición, sustracción,
+multiplicación, división entera y operaciones combinadas); cada tema es una
+serie de diapositivas de teoría (la definición con los nombres de sus términos,
+las leyes, las propiedades) y, **después de cada una, los ejercicios del
+ejercitario que la usan**, tal cual y con sus opciones: en los datos, el
+ejercicio lleva `tras:'<id de la teoría>'` (sin `tras`, va al final del tema).
+No se inventan problemas: son 20 de los 40 del ejercitario (código `E` + su
+número), y el desafío es el 39 resuelto en la pizarra. Las leyes y
+propiedades van en una tabla a la derecha (`figura:reglas(…)`, nombre y
+fórmula). El 14 y el 17 del ejercitario quedaron afuera porque su clave es
+dudosa (en el 17, la B y la C son verdaderas). El verificador
+(`verificacion/cursillo_operaciones.py`) prueba cada afirmación por fuerza
+bruta sobre muchos números y resuelve cada problema numérico por fuerza bruta
+y despejando: de ahí sale cuál opción es la correcta, no se escribe a mano.
+
 El formato por niveles (diagnóstico que ubica, mapa de rutas, franjas A, B y C
 con los ejercicios del libro, puertas de 5 ítems) sigue en el motor (`rutas()`,
 `practicaDe`, `PUERTA_REGLA`) para otra clase que lo quiera; sistema métrico
@@ -1117,7 +1136,8 @@ verificador; el panel de proyección, el timer de aula y el módulo de
 progreso; y en OMAPA, las siete clases del cuadernillo de herramientas y las
 fichas de alumno de OMAPA y Kanguro; y el módulo del Open House 2026, con
 sus herramientas y su verificador, esperando la lista de alumnos; y el Cursillo,
-con la semana del 23 al 28 de noviembre cargada y cuatro temas sin clase todavía.
+con la semana del 23 al 28 de noviembre cargada, las clases de sistema métrico y
+de operaciones fundamentales, y dos temas sin clase todavía.
 
 Pendiente: los bloques B (construcciones) y C (triángulos) de la geometría griega de 7.º
 (la currícula está en `Curricula_Geometria_7mo.md`, fuera del repositorio), el proyecto de estadística compartido por los tres grados (falta

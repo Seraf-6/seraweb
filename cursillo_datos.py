@@ -43,7 +43,7 @@ TEMAS = {
         'titulo': 'Operaciones fundamentales',
         'materia': 'Matemática 1', 'bloque': 'Aritmética',
         'fuente': 'Aritmética y Álgebra · Unidad 3',
-        'clase': None, 'teoria': [],
+        'clase': 'cursillo/clases/operaciones.html', 'teoria': [],
         'ejercicios': [('Ejercitario', '2.1 y 2.2', None),
                        ('Matemáticas esenciales', 'Capítulo 1', None)],
     },

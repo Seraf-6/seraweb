@@ -973,7 +973,10 @@ body[data-solo="1"] .mc-ver-btn{margin-top:10px}
 .problema-diapo .mc{padding:16px 22px 18px}
 .problema-diapo .mc-enun{font-size:1.5rem; line-height:1.5; margin-bottom:16px}
 .problema-diapo .mc-ops{grid-template-columns:1fr; font-size:1.35rem; gap:6px}
-.problema-diapo .mc-ops li{justify-self:start}
+.problema-diapo .mc-ops li{justify-self:start; white-space:normal; padding-left:2em; text-indent:-1.6em}
+/* un ejercicio con opciones que son oraciones (largo:true) va con letra más chica, para entrar entero */
+body[data-solo="1"] .problema-diapo .mc-largo .mc-enun{font-size:1.3em; margin-bottom:10px}
+body[data-solo="1"] .problema-diapo .mc-largo .mc-ops{font-size:1.15em; gap:3px}
 body[data-solo="1"] .problema-diapo{border-bottom:none; padding-block:12px}
 body[data-solo="1"] .problema-diapo .mc-enun{font-size:1.45em}
 body[data-solo="1"] .problema-diapo .mc-ops{font-size:1.3em}
