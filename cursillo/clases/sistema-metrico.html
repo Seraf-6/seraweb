@@ -5,7 +5,7 @@
 <link rel="icon" href="../../assets/img/seraweb.svg" type="image/svg+xml">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sistema métrico decimal · Cursillo · SeraWeb</title>
-<meta name="description" content="Cursillo de ingreso: el sistema métrico decimal con el factor unitario. Longitud, capacidad y masa, superficie, volumen y el agua, y cómo se leen «la décima del km» y «la centena del dL», para practicar: diagnóstico, la práctica del libro en tres franjas por tema, una puerta por tema y los ejemplos resueltos como ayuda.">
+<meta name="description" content="Cursillo de ingreso: el sistema métrico decimal con el factor unitario. Un diagnóstico para entrar en calor; el factor unitario y los números complejos; y la tabla y un ejercicio del material para longitud, masa, superficie, las medidas anglosajonas y capacidad y volumen.">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file: 'unsafe-inline'; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; font-src 'self' file:; media-src 'self' file:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <script src="../../assets/acceso.js"></script>
 <link rel="stylesheet" href="../../assets/base.css">
@@ -21,7 +21,7 @@
 body[data-solo="1"] .fuente{font-size:.45em}
 </style>
 </head>
-<body data-diapos=".diagnostico-diapo, .mapa-diapo, .intro, .concepto, .franjas-diapo, .franja-mc-diapo, .puerta-diapo, .desafio, .ayuda-cab, .teoria-diapo, .ejemplo-diapo">
+<body data-diapos=".diagnostico-diapo, .intro, .teoria-diapo, .problema-diapo, .desafio, .ayuda-cab, .ejemplo-diapo">
 <nav class="sitio-nav">
   <div class="sitio-nav-int">
     <a class="sitio-marca" href="../../index.html">Sera<span>Web</span></a>
@@ -51,7 +51,6 @@ body[data-solo="1"] .fuente{font-size:.45em}
   </nav>
 
   <div id="diagnostico-lugar"></div>
-  <div id="mapa-lugar"></div>
 
   <section class="intro" id="inicio" data-tema="unidad">
     <p class="cinta">Cursillo de ingreso · Aritmética y Álgebra · unidad 6</p>
@@ -59,7 +58,7 @@ body[data-solo="1"] .fuente{font-size:.45em}
     <ul class="puntos">
       <li>Una medida es un número <b>y</b> una unidad: 3,75 solo no dice nada; 3,75 km, sí.</li>
       <li>Para cambiar de unidad se multiplica por un <b>factor unitario</b>: una fracción que vale 1.</li>
-      <li>La unidad que sobra se <b>tacha</b>: lo que queda sin tachar es la unidad de la respuesta.</li>
+      <li>Después, una magnitud por vez: su tabla y un ejercicio del material.</li>
     </ul>
     <div class="recorrido" id="recorrido"></div>
   </section>
@@ -68,10 +67,11 @@ body[data-solo="1"] .fuente{font-size:.45em}
 
   <footer class="creditos">
     Material de clase del cursillo de ingreso · Sigue la unidad 6 (Sistema métrico decimal)
-    del programa de Aritmética y Álgebra. La práctica son los ejercicios de los ejercitarios
-    5.1 y 5.2 y del cuestionario (aquí solo su referencia); el diagnóstico, las puertas y las
-    explicaciones son propios, y los ejemplos de las ayudas son los problemas del material con
-    otros números. Cada respuesta y cada opción de esta página están verificadas en
+    del programa de Aritmética y Álgebra. Los ejercicios que se proyectan son los del material
+    del cursillo, transcriptos con su fuente; el diagnóstico, las tablas, las explicaciones y
+    los dibujos son propios, y los ejemplos resueltos de las ayudas son problemas del material
+    con otros números. El grabado de Jacob Köbel (siglo XVI) es de dominio público. Cada
+    respuesta y cada opción de esta página están verificadas en
     <span class="ec">verificacion/cursillo_sistema_metrico.py</span>.
   </footer>
 </div>
@@ -85,40 +85,134 @@ Pizarra.letras = /(?!)/g;
 /* de qué ejercicio del material sale el ejemplo */
 const fte = s => `<span class="fuente">${s}</span>`;
 
+/* las tablas de unidades: una columna por unidad, de la más grande a la más chica */
+const LONGITUD = {
+  unidad:3, salto:'× 10',
+  cols:[
+    { nombre:'Kilómetro', sim:'km', vale:'10^3 m' }, { nombre:'Hectómetro', sim:'hm', vale:'10^2 m' },
+    { nombre:'Decámetro', sim:'dam', vale:'10 m' }, { nombre:'Metro', sim:'m', vale:'1 m' },
+    { nombre:'Decímetro', sim:'dm', vale:'10^−1 m' }, { nombre:'Centímetro', sim:'cm', vale:'10^−2 m' },
+    { nombre:'Milímetro', sim:'mm', vale:'10^−3 m' },
+  ] };
+const MASA = {
+  unidad:6, salto:'× 10',
+  cols:[
+    { nombre:'Tonelada métrica', sim:'Tm', vale:'10^6 g' }, { nombre:'Quintal métrico', sim:'Qm', vale:'10^5 g' },
+    { nombre:'Miriagramo', sim:'mag', vale:'10^4 g' }, { nombre:'Kilogramo', sim:'kg', vale:'10^3 g' },
+    { nombre:'Hectogramo', sim:'hg', vale:'10^2 g' }, { nombre:'Decagramo', sim:'dag', vale:'10 g' },
+    { nombre:'Gramo', sim:'g', vale:'1 g' }, { nombre:'Decigramo', sim:'dg', vale:'10^−1 g' },
+    { nombre:'Centigramo', sim:'cg', vale:'10^−2 g' }, { nombre:'Miligramo', sim:'mg', vale:'10^−3 g' },
+  ] };
+const SUPERFICIE = {
+  unidad:3, salto:'× 10² = 100', extraAparte:true,
+  cols:[
+    { nombre:'Kilómetro cuadrado', sim:'km²', vale:'10^6 m²' }, { nombre:'Hectómetro cuadrado', sim:'hm²', vale:'10^4 m²' },
+    { nombre:'Decámetro cuadrado', sim:'dam²', vale:'10^2 m²' }, { nombre:'Metro cuadrado', sim:'m²', vale:'1 m²' },
+    { nombre:'Decímetro cuadrado', sim:'dm²', vale:'10^−2 m²' }, { nombre:'Centímetro cuadrado', sim:'cm²', vale:'10^−4 m²' },
+    { nombre:'Milímetro cuadrado', sim:'mm²', vale:'10^−6 m²' },
+  ],
+  extra:[{ rot:'agrarias', en:{ 1:'ha', 2:'a', 3:'ca' } }] };
+const CAPACIDAD = {
+  unidad:3, salto:'× 10',
+  cols:[
+    { nombre:'Kilolitro', sim:'kL', vale:'10^3 L' }, { nombre:'Hectolitro', sim:'hL', vale:'10^2 L' },
+    { nombre:'Decalitro', sim:'daL', vale:'10 L' }, { nombre:'Litro', sim:'L', vale:'1 L' },
+    { nombre:'Decilitro', sim:'dL', vale:'10^−1 L' }, { nombre:'Centilitro', sim:'cL', vale:'10^−2 L' },
+    { nombre:'Mililitro', sim:'mL', vale:'10^−3 L' },
+  ],
+  extra:[{ rot:'volumen', en:{ 0:'m³', 3:'dm³', 6:'cm³' } },
+         { rot:'si es agua, pesa', en:{ 0:'Tm', 3:'kg', 6:'g' } }] };
+
+/* un pie visto desde arriba, para el dibujo de las medidas anglosajonas:
+   el talón a la izquierda, los dedos a la derecha, de largo l */
+const huella = (x, y, l) => {
+  const h = l * .36, P = (a, b) => `${(x + a * l).toFixed(1)} ${(y + b * h).toFixed(1)}`;
+  return `<path d="M ${P(.06, .5)} C ${P(.02, .1)} ${P(.3, .02)} ${P(.5, .12)} C ${P(.68, .2)} ${P(.8, .02)} ${P(.86, .3)}
+      C ${P(.9, .6)} ${P(.84, .9)} ${P(.62, .9)} C ${P(.42, .9)} ${P(.22, 1)} ${P(.1, .84)} C ${P(.04, .76)} ${P(.04, .62)} ${P(.06, .5)} Z"
+      style="fill:var(--acento-suave); stroke:var(--acento); stroke-width:2.5"/>` +
+    [[.93, .2, .13], [.965, .43, .09], [.955, .6, .08], [.93, .75, .07], [.89, .88, .06]].map(([a, b, r]) =>
+      `<circle cx="${(x + a * l).toFixed(1)}" cy="${(y + b * h).toFixed(1)}" r="${(r * h).toFixed(1)}"
+        style="fill:var(--acento-suave); stroke:var(--acento); stroke-width:2"/>`).join('');
+};
+const regla = (x, y, l, n) => `<rect x="${x}" y="${y}" width="${l}" height="30" rx="3"
+    style="fill:var(--ambar-suave); stroke:var(--tinta); stroke-width:1.5"/>` +
+  Array.from({ length:n + 1 }, (_, k) => `<line x1="${x + k * l / n}" y1="${y}" x2="${x + k * l / n}" y2="${y + (k % 3 ? 10 : 16)}"
+    style="stroke:var(--tinta); stroke-width:1.5"/>` + (k ? `<text x="${x + k * l / n - l / n / 2}" y="${y + 25}" text-anchor="middle"
+    font-size="11">${k}</text>` : '')).join('');
+const PIE = '1 pie = 12 pulgadas', YARDA = '1 yarda = 3 pies';
+const EQUIVALENCIAS = ['1 ft = 12 in', '1 yd = 3 ft', '1 in = 2,54 cm', '1 ft = 30,48 cm'];
+const DIBUJO_ANGLO = `<div class="anglo-fig"><svg viewBox="0 0 760 300" role="img"
+    aria-label="Un pie apoyado sobre una regla de 12 pulgadas; abajo, tres pies seguidos forman una yarda">
+  ${huella(20, 6, 240)}
+  ${regla(20, 100, 240, 12)}
+  <text x="290" y="70" font-size="30" font-weight="700">${PIE}</text>
+  <text x="290" y="104" font-size="19" style="fill:var(--lapiz)">un pie es el largo de 12 pulgares de ancho</text>
+  ${huella(20, 160, 240)}${huella(260, 160, 240)}${huella(500, 160, 240)}
+  <path d="M 20 258 V 270 H 740 V 258 M 260 264 V 270 M 500 264 V 270" style="fill:none; stroke:var(--tinta); stroke-width:2"/>
+  <text x="380" y="295" font-size="24" font-weight="700" text-anchor="middle">${YARDA}</text>
+</svg></div>`;
+
 const TEMAS = [
 {
-  n:1, corto:'Longitud y el factor unitario', titulo:'La longitud, y el factor unitario para cambiar de unidad', pag:'longitud',
-  concepto:{
-    formaRot:'el factor unitario',
-    forma:convierte('3,75 km', ['1.000 m', '1 km'], '3.750 m'),
-    serie:[
-      { rot:'arriba', txt:'la unidad a la que voy' },
-      { rot:'abajo', txt:'la unidad que saco' },
-      { rot:'vale', txt:'1: la medida no cambia' },
-    ],
-    puntos:[
-      `La fracción ${Q('1.000 m', '1 km')} vale 1: arriba y abajo está la misma longitud.`,
-      'Multiplicar por 1 no cambia la medida: cambia solo la unidad en que se escribe.',
-      'El número del factor sale de la escalera: km → hm → dam → m son tres escalones de 10, 1.000.',
-    ]
-  },
+  n:1, corto:'El factor unitario', titulo:'El factor unitario y los números complejos', pag:'factor unitario',
+  teoria:[
+    { id:'factor', cajon:'estrategia', chip:'Estrategia', titulo:'El factor unitario',
+      pregunta:`¿Cuánto vale la fracción ${Q('1.000 m', '1 km')}?`,
+      enun:'Un <b>factor unitario</b> es una fracción con la misma medida arriba y abajo, escrita en dos unidades distintas.',
+      revela:{ txt:'Vale 1: 1.000 m y 1 km son la misma longitud.' },
+      mas:['Multiplicar una medida por un factor unitario no la cambia: cambia solo la unidad.',
+           'La unidad a la que voy va <b>arriba</b>; la que quiero sacar, <b>abajo</b>, para que se tache con la de la medida. Lo que queda sin tachar es la unidad de la respuesta.'],
+      como:'Como cambiar un billete de ₲ 100.000 por diez de ₲ 10.000: la plata es la misma, en otros billetes.' },
+    { id:'complejo', cajon:'lenguaje', chip:'Lenguaje', titulo:'Número complejo e incomplejo',
+      pregunta:'¿Cómo escribirías «2 km 4 hm 15 m» con una sola unidad?',
+      enun:'Una medida escrita con varias unidades, como <b>2 km 4 hm 15 m</b>, es un número <b>complejo</b>. Escrita con una sola unidad, como <b>2.415 m</b>, es un número <b>incomplejo</b>.',
+      revela:{ txt:'2.415 m: cada parte se pasa a metros con su factor, y se suman.' },
+      mas:['Acá «complejo» no tiene nada que ver con los números complejos del álgebra: quiere decir «compuesto de partes».'],
+      como:'Como decir «1 hora 20 minutos» o «80 minutos»: la misma duración, escrita de dos maneras.' },
+  ],
+  preguntas:[
+    { p:'¿Puedo multiplicar por esa fracción así nomás? ¿No cambia la medida?',
+      r:'No cambia: la fracción vale 1, porque 1.000 m y 1 km son lo mismo. Multiplicar por 1 deja todo igual; solo cambia cómo se escribe.' },
+    { p:'¿Por qué el km va abajo en el factor?',
+      r:'Para que se tache con el km de la medida. Lo que queda sin tachar es la unidad del resultado: el m de arriba.' },
+    { p:'¿Y si pongo el factor al revés?',
+      r:'Quedaría km por km, dividido m: no se tacha nada. Si las unidades no se tachan, el factor está dado vuelta.' },
+    { p:'En un complejo, ¿puedo sumar 2 km con 15 m directamente?',
+      r:'No: primero todo a la misma unidad. 2 km + 15 m no es 17 de nada; 2.000 m + 15 m son 2.015 m.' },
+  ],
+  notas:`<p>El primer tema de la clase, antes de cualquier tabla. Los ejemplos van en el
+      pizarrón, <b>sacados del diagnóstico</b>: D1 (2 km 3 dam 4 dm a metros) es a la vez un
+      factor unitario por parte y el primer número complejo; D4 y D6 muestran que el método
+      no cambia cuando cambia el salto; D7 encadena dos factores (m³ a dm³ y dm³ a kg de agua).</p>
+    <p>Con el factor unitario no hay que acordarse de si se multiplica o se divide: las
+      unidades lo dicen, porque tienen que tacharse. Es el mismo método que van a usar en
+      Física. En toda la clase se escribe «por 1 m sobre 100 cm», nunca «: 100».</p>
+    <p>La palabra «complejo» confunde a los que vienen del álgebra: conviene decirlo antes de
+      que pregunten.</p>`
+},
+{
+  n:2, corto:'Longitud', titulo:'Las medidas de longitud', pag:'longitud',
+  teoria:[
+    { id:'tabla-longitud', cajon:'definicion', chip:'Longitud', titulo:'Las medidas de longitud',
+      pregunta:'¿Cuántos metros tiene un hectómetro? ¿Y cuántos milímetros tiene un metro?',
+      enun:'La unidad principal es el <b>metro</b>. Cada unidad vale <b>10</b> de la que tiene a su derecha: de una a la siguiente, el salto es de 10.',
+      html:tablaUnidades(LONGITUD),
+      mas:[`El número del factor sale de contar los saltos: de km a m son tres, 10 · 10 · 10 = 1.000, y el factor es ${Q('1.000 m', '1 km')}.`,
+           '<b>kilo</b> es mil, <b>hecto</b> cien, <b>deca</b> diez; <b>deci</b> un décimo, <b>centi</b> un centésimo, <b>mili</b> un milésimo. Los mismos prefijos sirven para el gramo y el litro.'],
+      como:'Como nuestros números: diez unidades forman una decena, diez decenas una centena.' },
+  ],
+  problemas:[
+    { cod:'P1', titulo:'Un ejercicio de longitud',
+      enun:`Un hacendado desea alambrar con 5 hilos un terreno de forma rectangular, cuyo fondo no es necesario alambrar porque limita por un estero. Las medidas del terreno son de 0,75 km ${Q(1, 4)} hm 25 m de frente y de lateral mide el producto de 1 millar por 1${Q(1, 5)} dm 13,5 cm 45 mm. La longitud de alambre a utilizar en m, es:${fte('Ejercitario 5.2, ejercicio 3 (material de lectura, ejemplo 1)')}`,
+      opciones:[
+        { t:'11.000', error:'alambró también el fondo' },
+        { t:'5.500', error:'contó un solo lateral' },
+        { t:'4.001,5', error:'contó un solo lateral y se olvidó del millar' },
+        { t:'7.000', ok:true },
+        { t:'9.500', error:'alambró el fondo y contó un solo lateral' } ] },
+  ],
   ejemplos:[
     { titulo:'bajar en la escalera', enun:`Pasar 0,64 km a metros.${fte('Material de lectura, ejemplo 1 (el frente), con otros números')}`,
-      antes:[
-        { id:'smd', cajon:'definicion', titulo:'Sistema métrico decimal',
-          pregunta:'¿Por qué se llama «decimal»?',
-          enun:'Es un sistema de unidades en el que cada unidad vale <b>10 veces</b> la que está debajo. Los nombres se arman con un prefijo y la unidad principal: <b>kilo</b>metro, <b>centi</b>litro, <b>mili</b>gramo.',
-          mas:['<b>kilo</b> (k) es mil, <b>hecto</b> (h) es cien, <b>deca</b> (da) es diez.',
-               '<b>deci</b> (d) es un décimo, <b>centi</b> (c) un centésimo, <b>mili</b> (m) un milésimo.'],
-          como:'Como nuestros números: diez unidades forman una decena, diez decenas una centena.' },
-        { id:'factor', cajon:'estrategia', chip:'Estrategia', titulo:'El factor unitario',
-          pregunta:`¿Cuánto vale la fracción ${Q('1.000 m', '1 km')}?`,
-          enun:'Un <b>factor unitario</b> es una fracción con la misma medida arriba y abajo, escrita en dos unidades distintas.',
-          revela:{ txt:'Vale 1: 1.000 m y 1 km son la misma longitud.' },
-          mas:['Multiplicar una medida por un factor unitario no la cambia: cambia solo la unidad.',
-               'La unidad a la que voy va <b>arriba</b>; la que quiero sacar, <b>abajo</b>, para que se tache con la de la medida.'],
-          como:'Como cambiar un billete de ₲ 100.000 por diez de ₲ 10.000: la plata es la misma, en otros billetes.' },
-      ],
       pasos:[
         'Voy a metros: el m va arriba en el factor, y el km abajo.',
         P('De km a m hay tres escalones de 10: 1 km son 1.000 m.', convierte('0,64 km', ['1.000 m', '1 km'], '640 m')),
@@ -140,13 +234,6 @@ const TEMAS = [
       final:'18,5 cm = 0,185 m',
       control:`Con el factor dado vuelta:${A(convierte('0,185 m', ['100 cm', '1 m'], '18,5 cm ✓'))}` },
     { titulo:'cambio: una medida con varias unidades', enun:`Pasar ${N(Q(1, 5) + ' dm 16,5 cm 35 mm')} a metros.${fte('Material de lectura, ejemplo 1 (el lateral), con otros números')}`,
-      antes:[
-        { id:'complejo', cajon:'lenguaje', chip:'Lenguaje', titulo:'Número complejo e incomplejo',
-          pregunta:'¿Cómo escribirías «2 km 4 hm 15 m» con una sola unidad?',
-          enun:'Una medida escrita con varias unidades, como <b>2 km 4 hm 15 m</b>, es un número <b>complejo</b>. Escrita con una sola unidad, como <b>2.415 m</b>, es un número <b>incomplejo</b>.',
-          mas:['Acá «complejo» no tiene nada que ver con los números complejos del álgebra: quiere decir «compuesto de partes».'],
-          como:'Como decir «1 hora 20 minutos» o «80 minutos»: la misma duración, escrita de dos maneras.' },
-      ],
       pasos:[
         'Cada parte se pasa a metros con su propio factor, y después se suman.',
         P('Cada parte, a metros.', convierte('1/5 dm', ['1 m', '10 dm'], '0,02 m'), convierte('16,5 cm', ['1 m', '100 cm'], '0,165 m'),
@@ -166,163 +253,51 @@ const TEMAS = [
       final:'hacen falta 4.720 m de alambre',
       control:`Lo que lleva un hilo, sin el frente:${A('4.720 m : 4 = 1.180 m', '1.180 m − 740 m = 440 m')}y 440 m son los dos laterales de 220 m ✓` },
   ],
-  franjas:{
-    A:[
-      { cod:'L-A1', enun:'Pasar 3,2 km a metros.', opciones:[
-        { t:'320 m', error:'contó 2 escalones en vez de 3' },
-        { t:'32.000 m', error:'contó 4 escalones' },
-        { t:'3.200 m', ok:true },
-        { t:'0,0032 m', error:'dividió en vez de multiplicar' },
-        { t:'32 m', error:'contó 1 escalón' } ] },
-      { cod:'L-A2', enun:'Pasar 85 cm a metros.', opciones:[
-        { t:'8.500 m', error:'multiplicó en vez de dividir' },
-        { t:'8,5 m', error:'contó 1 escalón en vez de 2' },
-        { t:'0,085 m', error:'contó 3 escalones' },
-        { t:'85 m', error:'cambió la unidad sin cambiar el número' },
-        { t:'0,85 m', ok:true } ] },
-      { cod:'L-A3', enun:'Pasar 4,7 dam a decímetros.', opciones:[
-        { t:'4.700 dm', error:'contó 3 escalones' },
-        { t:'470 dm', ok:true },
-        { t:'47 dm', error:'contó 1 escalón: no cruzó el metro' },
-        { t:'0,047 dm', error:'dividió en vez de multiplicar' },
-        { t:'4,7 dm', error:'cambió la unidad sin cambiar el número' } ] },
-      { cod:'L-A4', enun:'El complejo 6 hm 4 m, en metros, es:', opciones:[
-        { t:'640 m', error:'tomó los 4 m como 4 dam: el cero quedó del lado equivocado' },
-        { t:'64 m', error:'escribió las cifras seguidas, sin completar con ceros' },
-        { t:'6.004 m', error:'tomó el hm como km' },
-        { t:'604 m', ok:true },
-        { t:'600 m', error:'se olvidó de una parte: los 4 m' } ] },
-    ],
-    B:[{ libro:'5.2', n:1 },
-      { cod:'L-B1', enun:'¿Cuál de estos complejos es igual a 40.506 cm?', opciones:[
-        { t:'4 hm 5 dam 6 cm', error:'no completó con ceros: el 5 quedó en los dam' },
-        { t:'4 km 5 m 6 cm', error:'contó un escalón de más: tomó el hm como km' },
-        { t:'4 hm 5 m 60 cm', error:'completó el cero del lado equivocado en los cm' },
-        { t:'4 hm 5 m 6 mm', error:'corrió la coma un lugar en la parte decimal' },
-        { t:'4 hm 5 m 6 cm', ok:true } ] },
-      { cod:'L-B2', enun:'Un tramo de ruta mide 2 km 8 hm y otro, 950 m. ¿Cuánto miden los dos juntos, en km?', opciones:[
-        { t:'37,5 km', error:'contó 2 escalones al pasar a km' },
-        { t:'3,03 km', error:'tomó los 8 hm como 8 dam' },
-        { t:'952,8 km', error:'sumó km con m sin pasar a la misma unidad' },
-        { t:'0,375 km', error:'contó 4 escalones al pasar a km' },
-        { t:'3,75 km', ok:true } ] },
-      { cod:'L-B3', enun:'Una pista de atletismo mide 0,4 km. Un atleta da 12 vueltas y media. ¿Cuántos hm recorrió?', opciones:[
-        { t:'5 hm', error:'dejó el resultado en km' },
-        { t:'48 hm', error:'se olvidó de la media vuelta' },
-        { t:'50 hm', ok:true },
-        { t:'500 hm', error:'pasó a dam y no a hm: un escalón de más' },
-        { t:'0,5 hm', error:'dividió en vez de multiplicar al pasar de km a hm' } ] },
-    ],
-    C:[{ libro:'5.2', n:3 },
-      { cod:'L-C1', enun:'Una cinta de 2 dam 5 m se corta en trozos de 125 mm. ¿Cuántos trozos salen?', opciones:[
-        { t:'2.000 trozos', error:'corrió la coma un lugar de más al pasar a mm' },
-        { t:'200 trozos', ok:true },
-        { t:'160 trozos', error:'se olvidó de una parte: los 5 m' },
-        { t:'20 trozos', error:'pasó a cm y no a mm' },
-        { t:'0,2 trozos', error:'dividió los metros por 125 sin pasar a la misma unidad' } ] },
-      { cod:'L-C2', enun:`Un productor quiere alambrar con 4 hilos un terreno rectangular cuyo fondo da a un arroyo y no se alambra. El frente mide 0,6 km ${Q(1, 2)} hm 30 m, y cada lateral mide un millar de veces ${Q(1, 4)} dm 12,5 cm 25 mm. ¿Cuántos metros de alambre necesita?`, opciones:[
-        { t:'4.120 m', ok:true },
-        { t:'6.840 m', error:'alambró también el fondo' },
-        { t:'3.420 m', error:'contó un solo lateral' },
-        { t:'1.030 m', error:'se olvidó de los 4 hilos' },
-        { t:'5.920 m', error:'pasó 1/4 dm como 0,25 m: corrió la coma de menos' } ] },
-      { cod:'L-C3', enun:'Una hormiga camina 3 cm por segundo, sin parar. ¿Cuántos hm recorre en 2 horas?', opciones:[
-        { t:'21,6 hm', error:'contó un escalón de menos al pasar a hm' },
-        { t:'0,036 hm', error:'pasó las 2 horas a minutos y no a segundos' },
-        { t:'216 hm', error:'se quedó en el metro' },
-        { t:'2,16 hm', ok:true },
-        { t:'0,216 hm', error:'contó un escalón de más' } ] },
-    ] },
-  puerta:{ items:[
-    { cod:'L-P1', enun:'0,036 hm equivalen a:', opciones:[
-      { t:'36 cm', error:'contó 3 escalones en vez de 4' },
-      { t:'360 cm', ok:true },
-      { t:'3,6 cm', error:'se quedó en el metro: contó 2 escalones' },
-      { t:'3.600 cm', error:'contó 5 escalones' },
-      { t:'0,0000036 cm', error:'dividió en vez de multiplicar' } ] },
-    { cod:'L-P2', enun:'45.800 mm equivalen a:', opciones:[
-      { t:'45,8 dam', error:'se quedó en el metro: contó un escalón de menos al cruzarlo' },
-      { t:'458 dam', error:'contó 2 escalones' },
-      { t:'0,458 dam', error:'contó un escalón de más' },
-      { t:'4,58 dam', ok:true },
-      { t:'458.000.000 dam', error:'multiplicó en vez de dividir' } ] },
-    { cod:'L-P3', enun:'El complejo 5 hm 6 m 8 cm, en metros, es:', opciones:[
-      { t:'568 m', error:'escribió las cifras seguidas, sin completar con ceros' },
-      { t:'506,8 m', error:'no completó con cero los decimales: tomó 8 cm como 8 dm' },
-      { t:'506,08 m', ok:true },
-      { t:'560,08 m', error:'contó mal los escalones: tomó los 6 m como dam' },
-      { t:'500,08 m', error:'se olvidó de una parte: los 6 m' } ] },
-    { cod:'L-P4', enun:'¿Cuál de estos complejos es igual a 7.008,3 m?', opciones:[
-      { t:'7 km 8 m 3 dm', ok:true },
-      { t:'7 km 8 dam 3 dm', error:'no completó con ceros: el 8 quedó en los dam' },
-      { t:'7 km 8 m 3 cm', error:'corrió la coma un lugar en la parte decimal' },
-      { t:'7 hm 8 m 3 dm', error:'contó un escalón de menos: tomó el km como hm' },
-      { t:'7 km 8 hm 3 dm', error:'contó mal los escalones al cruzar el metro' } ] },
-    { cod:'L-P5', enun:'Se quiere alambrar con 3 hilos todo el contorno de un terreno rectangular de 1 hm 2 dam de frente y 0,08 km 5 m de fondo. ¿Cuántos metros de alambre hacen falta?', opciones:[
-      { t:'615 m', error:'sumó el frente y el fondo una sola vez: la mitad del contorno' },
-      { t:'410 m', error:'se olvidó de los 3 hilos' },
-      { t:'798 m', error:'pasó 0,08 km como 8 m: corrió la coma de menos' },
-      { t:'1.230 m', ok:true },
-      { t:'1.122 m', error:'tomó los 2 dam como 2 m' } ] },
-  ] },
   preguntas:[
-    { p:'¿Por qué el km va abajo en el factor?',
-      r:'Para que se tache con el km de la medida. Lo que queda sin tachar es la unidad del resultado: el m de arriba.' },
-    { p:'¿Puedo multiplicar por esa fracción así nomás? ¿No cambia la medida?',
-      r:'No cambia: la fracción vale 1, porque 1.000 m y 1 km son lo mismo. Multiplicar por 1 deja todo igual; solo cambia cómo se escribe.' },
-    { p:'¿Y si pongo el factor al revés?',
-      r:'Quedaría km por km, dividido m: no se tacha nada. Si las unidades no se tachan, el factor está dado vuelta.' },
-    { p:'En el ejemplo 1, ¿por qué el número se agrandó si la distancia es la misma?',
-      r:'Porque el metro es más chico que el kilómetro: hacen falta más metros para la misma distancia. Unidad más chica, número más grande.' },
-    { p:'En el problema, ¿por qué el fondo no se cuenta?',
-      r:'Porque da al arroyo: el enunciado dice que no se alambra. Un hilo recorre tres lados, no cuatro.' },
+    { p:'¿Por qué la tabla tiene al metro en el medio?',
+      r:'Porque es la unidad principal: las de la izquierda son más grandes (múltiplos) y las de la derecha, más chicas (submúltiplos).' },
+    { p:'Si voy hacia la derecha en la tabla, ¿el número se agranda o se achica?',
+      r:'Se agranda: la unidad es más chica, y hacen falta más para la misma distancia. 1 m son 10 dm.' },
+    { p:'En el ejercicio, ¿por qué el fondo no se cuenta?',
+      r:'Porque limita con el estero: el enunciado dice que no se alambra. Un hilo recorre tres lados, no cuatro.' },
+    { p:'¿Qué es «1⅕ dm»?',
+      r:'Un decímetro y un quinto: 1,2 dm. Con el ⅓, ¼, ⅕ el material hace lo mismo que con los decimales.' },
   ],
-  notas:`<p>Todo el tema se hace con el <b>factor unitario</b>: en lugar de «bajar es
-      multiplicar, subir es dividir», cada cambio de unidad es multiplicar por una fracción
-      que vale 1, con la unidad que se quiere arriba y la que se saca abajo. La ventaja es que
-      no hay que acordarse de si se multiplica o se divide: las unidades lo dicen, porque
-      tienen que tacharse. Es el mismo método que van a usar en Física.</p>
-    <p>Los ejemplos 1 a 4 son las piezas del ejemplo 5, que es el ejemplo 1 del material de
-      lectura (el mismo problema es el ejercicio 3 del Ejercitario 5.2) con otros números:
-      allá el frente es 0,75 km ¼ hm 25 m, el lateral un millar de ⅕ dm 13,5 cm 45 mm y son 5
-      hilos (respuesta: 7.000 m). Conviene resolver el original después, en el pizarrón o
-      como tarea.</p>
-    <p>El error más común en el problema es contar el fondo, o contar un solo lateral. La
-      pregunta que lo corta: «¿por dónde pasa un hilo?».</p>
-    <p>En la grilla, el 5.2 ej. 3 va en la franja C: es el mismo problema que el ejemplo 5,
-      con los números del material.</p>`
+  notas:`<p>La tabla es la del material, con las unidades de longitud: el salto de 10 está
+      dibujado debajo, de cada unidad a la siguiente. Antes de mostrarla, conviene que digan
+      ellos cuántos metros tiene un hm.</p>
+    <p><b>El ejercicio</b> es el 3 del Ejercitario 5.2 (el mismo es el ejemplo 1 del material
+      de lectura), tal cual. El frente son 800 m (750 m, 25 m y 25 m). El lateral: 1,2 dm, 1,35 dm y
+      0,45 dm suman 3 dm, que son 0,3 m; por un millar, 300 m. Un hilo va por el frente y los
+      dos laterales, 1.400 m; cinco hilos, 7.000 m.</p>
+    <p>El error más común es contar el fondo, o contar un solo lateral: son las opciones A, B y
+      E. La pregunta que lo corta: «¿por dónde pasa un hilo?».</p>
+    <p>Si un grupo se traba, los ejemplos resueltos del tema arman el mismo problema con otros
+      números, pieza por pieza.</p>`
 },
 {
-  n:2, corto:'Capacidad y masa', titulo:'Capacidad y masa: la misma escalera, los mismos factores', pag:'capacidad y masa',
-  concepto:{
-    formaTxt:'kL → hL → daL → L → dL → cL → mL   y   kg → hg → dag → g → dg → cg → mg',
-    serie:[
-      { rot:'Tm', txt:'tonelada métrica: 1.000 kg' },
-      { rot:'Qm', txt:'quintal métrico: 100 kg' },
-      { rot:'mag', txt:'miriagramo: 10 kg' },
-    ],
-    puntos:[
-      'El <b>litro</b> (capacidad) y el <b>gramo</b> (masa) tienen la misma escalera que el metro: cada escalón, 10.',
-      `El factor se arma igual: ${Q('1 kg', '1.000 g')}, ${Q('10 L', '1 daL')}.`,
-      'La Tm, el Qm y el mag no están en la escalera: su factor se aprende de memoria.',
-    ]
-  },
+  n:3, corto:'Masa', titulo:'Las medidas de masa', pag:'masa',
+  teoria:[
+    { id:'tabla-masa', cajon:'definicion', chip:'Masa', titulo:'Las medidas de masa',
+      pregunta:'¿Cuántos kilogramos tiene una tonelada?',
+      enun:'La unidad principal es el <b>gramo</b>, y la tabla es la misma: cada unidad vale <b>10</b> de la que tiene a su derecha.',
+      html:tablaUnidades(MASA),
+      revela:{ txt:'1 Tm son 1.000 kg: del kg a la Tm hay tres saltos de 10.' },
+      mas:['A la izquierda del kg siguen tres más, para cargas grandes: el <b>miriagramo</b> (10 kg), el <b>quintal métrico</b> (100 kg) y la <b>tonelada métrica</b> (1.000 kg).',
+           `El factor se arma igual que con el metro: ${Q('1 kg', '1.000 g')}, ${Q('1.000 kg', '1 Tm')}.`] },
+  ],
+  problemas:[
+    { cod:'P2', titulo:'Un ejercicio de masa',
+      enun:`Un agricultor ha producido 5 Tm 20 kg 5.000 g de mandioca. El camión que va a recoger dicha producción solo puede cargar con 60 bolsas de 750 hg 500 dag cada bolsa. Si solo se retiró la capacidad del camión, la cantidad de kilogramos de mandioca que se le quedó al agricultor es de:${fte('Ejercitario 5.2, ejercicio 9 (material de lectura, ejemplo 2)')}`,
+      opciones:[
+        { t:'0,225', error:'dejó el resultado en Tm' },
+        { t:'22,5', error:'dejó el resultado en mag' },
+        { t:'225', ok:true },
+        { t:'2.250', error:'dejó el resultado en hg' },
+        { t:'2,25', error:'dejó el resultado en Qm' } ] },
+  ],
   ejemplos:[
-    { titulo:'la misma escalera, con litros', enun:`Pasar 7 hL a litros.${fte('Ejercitario 5.2, ejercicio 4 (los toneles), con otros números')}`,
-      pasos:[
-        'De hL a L hay dos escalones de 10: 1 hL son 100 L.',
-        P('El L arriba, el hL abajo.', convierte('7 hL', ['100 L', '1 hL'], '700 L')),
-      ],
-      final:'7 hL = 700 L',
-      control:`Con el factor dado vuelta:${A(convierte('700 L', ['1 hL', '100 L'], '7 hL ✓'))}` },
-    { titulo:'cambio el sentido: subir', enun:`Pasar ${N('350 L')} a ${N('daL')}.${fte('Ejercitario 5.2, ejercicio 4 (los toneles), con otros números')}`,
-      pasos:[
-        'El daL es más grande que el L: el número se achica.',
-        P('1 daL son 10 L: el L va abajo.', convierte('350 L', ['1 daL', '10 L'], '35 daL')),
-      ],
-      final:'350 L = 35 daL',
-      control:`Con el factor dado vuelta:${A(convierte('35 daL', ['10 L', '1 daL'], '350 L ✓'))}` },
-    { titulo:'cambio la magnitud: masa', enun:`Pasar ${N('700 hg')} a kilogramos.${fte('Material de lectura, ejemplo 2 (las bolsas), con otros números')}`,
+    { titulo:'la misma escalera, con gramos', enun:`Pasar ${N('700 hg')} a kilogramos.${fte('Material de lectura, ejemplo 2 (las bolsas), con otros números')}`,
       pasos:[
         'De hg a kg hay un escalón hacia arriba: 1 kg son 10 hg.',
         P('El kg arriba, el hg abajo.', convierte('700 hg', ['1 kg', '10 hg'], '70 kg')),
@@ -340,51 +315,52 @@ const TEMAS = [
     { titulo:'cambio: el problema entero', prosa:true, fija:1,
       enun:`«Un agricultor de Caaguazú cosechó 4 Tm 30 kg 6.000 g de mandioca. El camión que la busca carga ${N('50 bolsas de 700 hg 500 dag')} cada una. Si el camión se llevó todo lo que puede cargar, ¿cuántos kilogramos le quedaron?»${fte('Material de lectura, ejemplo 2 (Ejercitario 5.2, ej. 9), con otros números')}`,
       pasos:[
-        'Todo en kilogramos: es lo que pide la pregunta. La cosecha está en el ejemplo 4.',
-        P('Una bolsa: 700 hg son 70 kg (ejemplo 3), y los dag, con su factor.', convierte('500 dag', ['1 kg', '100 dag'], '5 kg'), ['bolsa', '70 kg + 5 kg = 75 kg']),
+        'Todo en kilogramos: es lo que pide la pregunta. La cosecha está en el ejemplo 2.',
+        P('Una bolsa: 700 hg son 70 kg (ejemplo 1), y los dag, con su factor.', convierte('500 dag', ['1 kg', '100 dag'], '5 kg'), ['bolsa', '70 kg + 5 kg = 75 kg']),
         P('Lo que carga el camión.', ['camión', '50 · 75 kg = 3.750 kg']),
         P('Lo que queda.', ['quedan', '4.036 kg − 3.750 kg = 286 kg']),
       ],
       final:'quedaron 286 kg',
       control:`Lo que se llevó más lo que quedó es la cosecha:${A('3.750 kg + 286 kg = 4.036 kg ✓')}` },
   ],
-  franjas:{ A:[],
-    B:[{ libro:'5.2', n:4 }, { libro:'5.2', n:9 }],
-    C:[{ libro:'5.1', n:2 }, { libro:'5.1', n:6 }, { libro:'5.1', n:10 }, { libro:'5.2', n:6 }, { libro:'5.2', n:8 }] },
   preguntas:[
     { p:'¿Por qué el kilogramo, que es el que más usamos, no es la unidad principal?',
-      r:'En la escalera, los nombres se arman sobre el gramo: kilo-gramo, hecto-gramo. En física, en cambio, la unidad del sistema internacional es el kilogramo. Las dos cosas son ciertas.' },
-    { p:'En el material el litro se escribe «l», con minúscula. ¿Es lo mismo que «L»?',
-      r:'Sí: las dos son el símbolo del litro. Acá usamos la mayúscula porque, proyectada, la «l» se confunde con un 1.' },
+      r:'En la tabla, los nombres se arman sobre el gramo: kilo-gramo, hecto-gramo. En física, en cambio, la unidad del sistema internacional es el kilogramo. Las dos cosas son ciertas.' },
     { p:'¿La Tm no es lo mismo que la tonelada?',
       r:'Sí: la tonelada métrica son 1.000 kg. Se escribe Tm para no confundirla con otras toneladas (la inglesa, por ejemplo), que pesan distinto.' },
-    { p:'En el problema, ¿por qué no pasé todo a gramos?',
-      r:'Se puede, y da lo mismo, pero con números más largos. Conviene trabajar en la unidad que pide la respuesta.' },
+    { p:'En el ejercicio, ¿por qué todas las opciones tienen las mismas cifras?',
+      r:'Porque son el mismo resultado en otras unidades: 225 kg son 0,225 Tm, 2,25 Qm, 22,5 mag y 2.250 hg. Hay que fijarse en qué unidad pide la respuesta.' },
   ],
-  notas:`<p>El mensaje es que no hay nada nuevo: el factor se arma igual que con el metro. Lo
-      nuevo son la Tm, el Qm y el mag, que no siguen el patrón de los nombres y hay que
-      memorizar.</p>
-    <p>Los ejemplos 3 a 5 arman el ejemplo 2 del material de lectura (el mismo es el
-      ejercicio 9 del Ejercitario 5.2) con otros números: allá son 5 Tm 20 kg 5.000 g de
-      mandioca y 60 bolsas de 750 hg 500 dag (respuesta: 225 kg). Los ejemplos 1 y 2 son las
-      conversiones del ejercicio 4 del Ejercitario 5.2, el de los toneles de vino.</p>
-    <p>Antes del problema conviene preguntar «¿en qué unidad me piden la respuesta?».</p>`
+  notas:`<p>La tabla de masa tiene diez columnas: a las siete de siempre se suman la Tm, el Qm
+      y el mag, que siguen el mismo salto de 10 (es la tabla del material, con su miria).</p>
+    <p><b>El ejercicio</b> es el 9 del Ejercitario 5.2 (el ejemplo 2 del material de lectura),
+      tal cual. La cosecha son 5.025 kg (5.000 kg, 20 kg y 5 kg). Una bolsa, 80 kg (75 kg y
+      5 kg); el camión carga 60 bolsas, 4.800 kg. Quedan 225 kg.</p>
+    <p>Las cuatro opciones incorrectas son la misma respuesta en otra unidad (Tm, mag, hg y
+      Qm): el que la eligió hizo bien la cuenta y se olvidó de la pregunta. Antes de empezar
+      conviene preguntar «¿en qué unidad me piden la respuesta?».</p>`
 },
 {
-  n:3, corto:'Superficie', titulo:'La superficie y las unidades agrarias', pag:'superficie',
-  concepto:{
-    formaTxt:'km² → hm² → dam² → m² → dm² → cm² → mm²: cada escalón, × 100',
-    serie:[
-      { rot:'ha', txt:'hectárea = 1 hm²' },
-      { rot:'a', txt:'área = 1 dam²' },
-      { rot:'ca', txt:'centiárea = 1 m²' },
-    ],
-    puntos:[
-      'Un m² es un cuadrado de 1 m de lado: adentro entran 10 · 10 = 100 dm².',
-      `Por eso el factor de un escalón de superficie es de 100: ${Q('100 dm²', '1 m²')}.`,
-      'Para campos y terrenos se usan las unidades agrarias: ha, a y ca.',
-    ]
-  },
+  n:4, corto:'Superficie', titulo:'Las medidas de superficie', pag:'superficie',
+  teoria:[
+    { id:'tabla-superficie', cajon:'definicion', chip:'Superficie', titulo:'Las medidas de superficie',
+      pregunta:'Un cuadrado de 1 m de lado se parte en cuadraditos de 1 dm de lado. ¿Cuántos entran?',
+      enun:'Las unidades de superficie son cuadrados: el <b>m²</b> es un cuadrado de 1 m de lado. La tabla crece como siempre de 10 en 10, pero ahora cada 10 va <b>al cuadrado</b>.',
+      html:[tablaUnidades(SUPERFICIE) +
+          '<p class="tu-nota">Entran 10 por fila y 10 filas: 10 · 10, que es 10², da 100 dm². Por eso el salto es de <b>100</b>.</p>',
+        tablaUnidades({ ...SUPERFICIE, soloExtra:true }) +
+          '<p class="tu-nota"><b>Una observación importante.</b> Para campos y terrenos se usan las <b>medidas agrarias</b>, que son las mismas unidades con otro nombre: la <b>hectárea</b> (ha) es el hm², el <b>área</b> (a) es el dam² y la <b>centiárea</b> (ca) es el m².</p>'] },
+  ],
+  problemas:[
+    { cod:'P3', titulo:'Un ejercicio de superficie',
+      enun:`Un agente de bienes raíces ha comprado un campo de 2 ha 25 a 60 ca por 48.504 $. Si quiere venderlo con una ganancia de 41.736 $, debe vender cada m² a:${fte('Ejercitario 5.1, ejercicio 7 (material de lectura, ejemplo 3)')}`,
+      opciones:[
+        { t:'1,85 $', error:'repartió solo la ganancia' },
+        { t:'2,15 $', error:'repartió solo lo que pagó' },
+        { t:'4 $', ok:true },
+        { t:'3 $' },
+        { t:'5 $' } ] },
+  ],
   ejemplos:[
     { titulo:'un escalón de superficie', enun:`Pasar 5.208 m² a dam².${fte('Material de lectura, ejemplo 4, proposición III, con otros números')}`,
       pasos:[
@@ -401,14 +377,6 @@ const TEMAS = [
       final:'6.000 cm² = 0,6 m²',
       control:`Escalón por escalón, con dos factores:${A(convierte('6.000 cm²', ['1 dm²', '100 cm²'], '60 dm²'), convierte('60 dm²', ['1 m²', '100 dm²'], '0,6 m² ✓'))}` },
     { titulo:'cambio: unidades agrarias', enun:`Pasar ${N('3 ha 15 a 40 ca')} a m².${fte('Material de lectura, ejemplo 3 (el campo), con otros números')}`,
-      antes:[
-        { id:'agrarias', cajon:'definicion', titulo:'Unidades agrarias',
-          pregunta:'¿Cuántos metros cuadrados tiene una hectárea?',
-          enun:'Para campos y terrenos se usan la <b>hectárea</b> (ha), el <b>área</b> (a) y la <b>centiárea</b> (ca).',
-          revela:{ txt:'1 ha es 1 hm²: un cuadrado de 100 m de lado, 10.000 m².' },
-          mas:['1 a es 1 dam², 100 m²; y 1 ca es 1 m².'],
-          como:'Una cancha de fútbol tiene un poco menos de una hectárea.' },
-      ],
       pasos:[
         P('Cada parte, a m², con su factor.', convierte('3 ha', ['10.000 m²', '1 ha'], '30.000 m²'), convierte('15 a', ['100 m²', '1 a'], '1.500 m²'),
           convierte('40 ca', ['1 m²', '1 ca'], '40 m²')),
@@ -436,43 +404,114 @@ const TEMAS = [
       final:'cada m² a ₲ 3.200',
       control:`Por área: cada área (100 m²) se vende a${A('100 · ₲ 3.200 = ₲ 320.000')}que es lo que costó un área más la ganancia:${A('₲ 75.000.000 : 250 = ₲ 300.000', '₲ 300.000 + ₲ 20.000 = ₲ 320.000 ✓')}` },
   ],
-  franjas:{ A:[],
-    B:[{ libro:'5.1', n:7 }, { libro:'5.2', n:5 }],
-    C:[{ libro:'5.1', n:3 }, { libro:'cuest', n:4 }, { libro:'cuest', n:8 }] },
   preguntas:[
-    { p:'¿Por qué en superficie el escalón es de 100 y no de 10?',
+    { p:'¿Por qué en superficie el salto es de 100 y no de 10?',
       r:'Porque un cuadrado tiene dos dimensiones. Si el lado se hace 10 veces más chico, entran 10 a lo largo y 10 a lo ancho: 100.' },
-    { p:'En el ejemplo 2, ¿puedo usar un solo factor o tengo que usar dos?',
-      r:'Las dos cosas. Un solo factor de 10.000 es más corto; dos factores de 100 muestran de dónde sale el 10.000. El control usa dos.' },
     { p:'¿La hectárea es lo mismo que el hm²?',
-      r:'Sí: es el mismo tamaño con otro nombre. Lo mismo el área y el dam², y la centiárea y el m².' },
-    { p:'En el ejemplo 5, ¿por qué no sumé los ₲ 20.000 una sola vez?',
-      r:'Porque son por área: cada una de las 250 áreas tiene que dejar ₲ 20.000 de ganancia.' },
+      r:'Sí: es el mismo tamaño con otro nombre. Lo mismo el área y el dam², y la centiárea y el m². Por eso en la tabla van en la misma columna.' },
+    { p:'¿Qué tan grande es una hectárea?',
+      r:'Un cuadrado de 100 m de lado. Una cancha de fútbol tiene un poco menos de una hectárea.' },
+    { p:'En 2 ha 25 a 60 ca, ¿por qué cada número tiene dos cifras?',
+      r:'Porque de una unidad agraria a la siguiente el salto es de 100: en m² se escriben de a dos cifras, 2|25|60, y queda 22.560 m².' },
+    { p:'En el ejercicio, ¿por qué se suma lo que pagó y lo que quiere ganar?',
+      r:'Porque al vender tiene que recuperar lo que pagó y además llevarse la ganancia: 48.504 $ + 41.736 $ = 90.240 $.' },
   ],
-  notas:`<p>El error que más se ve: usar un factor de 10 por escalón, como en longitud. Antes
-      del ejemplo 1 conviene dibujar un m² partido en dm² y contar los cuadraditos.</p>
-    <p>Los ejemplos 3 y 4 arman el ejemplo 3 del material de lectura (es el ejercicio 7 del
-      Ejercitario 5.1) con otros números: allá el campo es de 2 ha 25 a 60 ca, costó 48.504 $
-      y se quiere ganar 41.736 $ (respuesta: 4 $ el m²). El ejemplo 5 es el ejercicio 5 del
-      Ejercitario 5.2 con otros números (4 ha 08 a, 612 $, 0,2 $ por área: 0,017 $ el m²).
-      Los ejemplos 1 y 2 salen de la proposición III del ejemplo 4.</p>`
+  notas:`<p>El error que más se ve: usar un salto de 10 por escalón, como en longitud. Antes
+      de la tabla conviene dibujar en el pizarrón un m² partido en dm² y contar los
+      cuadraditos: por eso la pregunta.</p>
+    <p>La tabla aparece por partes: primero con el salto de 10² = 100; después, alineada debajo,
+      la fila de las medidas agrarias (ha bajo el hm², a bajo el dam², ca bajo el m²).</p>
+    <p><b>El ejercicio</b> es el 7 del Ejercitario 5.1 (el ejemplo 3 del material de lectura),
+      tal cual. El campo tiene 22.560 m² (20.000 m², 2.500 m² y 60 m²). Lo que tiene que
+      cobrar, lo que pagó y la ganancia: 90.240 $. Repartido entre los 22.560 m², 4 $ el m².</p>
+    <p>La A y la B son repartir una sola de las dos cantidades. La D y la E no salen de un
+      error claro.</p>`
 },
 {
-  n:4, corto:'Volumen, capacidad y masa', titulo:'El volumen, y su relación con la capacidad y la masa', pag:'volumen',
-  concepto:{
-    formaTxt:'km³ → hm³ → dam³ → m³ → dm³ → cm³ → mm³: cada escalón, × 1.000',
-    serie:[
-      { rot:'1 dm³', txt:'1 L, y 1 kg de agua' },
-      { rot:'1 m³', txt:'1 kL, y 1 Tm de agua' },
-      { rot:'1 cm³', txt:'1 mL, y 1 g de agua' },
-    ],
-    puntos:[
-      'Un m³ es un cubo de 1 m de arista: adentro entran 10 · 10 · 10 = 1.000 dm³.',
-      `<b>1 dm³ = 1 L</b>: con el factor ${Q('1 L', '1 dm³')} se pasa de volumen a capacidad.`,
-      `Y 1 L de <b>agua</b> pesa 1 kg: con ${Q('1 kg', '1 L')}, de capacidad a masa. Solo el agua.`,
-    ]
-  },
+  n:5, corto:'Medidas anglosajonas', titulo:'Las medidas anglosajonas', pag:'medidas anglosajonas',
+  teoria:[
+    { id:'anglo', cajon:'definicion', chip:'Medidas anglosajonas', titulo:'Pulgada, pie y yarda',
+      pregunta:'¿Dónde vieron medidas en pulgadas, acá en Paraguay?',
+      enun:'En Estados Unidos se mide con <b>pulgadas</b> (in), <b>pies</b> (ft) y <b>yardas</b> (yd). No van de 10 en 10.',
+      revela:{ txt:'El televisor de 50 pulgadas, los caños de ½ pulgada de la ferretería, las llantas de 15.' },
+      html:DIBUJO_ANGLO + `<div class="anglo-eq">${EQUIVALENCIAS.map(e => `<span>${e}</span>`).join('')}</div>`,
+      mas:['Para nosotros, 12 y 3 no tienen lógica. Para un carpintero de Estados Unidos, sí: 12 se parte en mitades, tercios, cuartos y sextos sin decimales. Un tercio de pie son 4 pulgadas; un tercio de 10 ya es 3,333…'] },
+    { id:'anglo-historia', cajon:'definicion', chip:'Medidas anglosajonas', titulo:'De dónde salen el pie y la pulgada',
+      pregunta:'¿Por qué una unidad de medida se llamaría «pie»?',
+      enun:'Al principio se midió con el cuerpo: la <b>pulgada</b> era el ancho del pulgar, y el <b>pie</b>, el largo de un pie. El problema: no hay dos pies iguales.',
+      /* si la imagen no está en img/, la columna del dibujo desaparece y el texto ocupa todo */
+      figura:'<figure class="grabado"><img src="img/kobel-1535.png" alt="Grabado antiguo: dieciséis hombres en fila, con los pies uno detrás del otro, a la salida de una iglesia" onerror="var c = this.closest(\'.teoria-cuerpo\'); c.classList.remove(\'con-figura\'); this.closest(\'.teoria-figura\').remove()"><figcaption>Alemania, siglo XVI: para fijar la vara, dieciséis hombres a la salida de misa ponen un pie detrás del otro. La vara es el largo de todos, y la dieciseisava parte es el pie: un promedio, para no depender del pie de uno solo. Grabado de un libro de Jacob Köbel, de dominio público.</figcaption></figure>',
+      mas:['La yarda, según una leyenda que no se puede comprobar, era la distancia de la nariz del rey Enrique I de Inglaterra a la punta de sus dedos, con el brazo estirado.',
+           'Desde 1959 la pulgada mide <b>exactamente 2,54 cm</b>: Estados Unidos y otros países lo acordaron así, y el pie y la yarda quedaron definidos con el metro.',
+           'En 1999 la NASA perdió una sonda en Marte porque un equipo calculaba en unidades inglesas y otro en el sistema métrico.'] },
+  ],
+  problemas:[
+    { cod:'P4', titulo:'Un ejercicio de medidas anglosajonas',
+      enun:`Un jugador de baloncesto mide 7 ft de altura, lo equivalente en cm es:${fte('Ejercicios de clase del cursillo')}`,
+      opciones:[
+        { t:'30,48', error:'pasó un solo pie' },
+        { t:'213,36', ok:true },
+        { t:'2133,6', error:'dejó el resultado en mm' },
+        { t:'231,36' },
+        { t:'236,13' } ] },
+  ],
+  preguntas:[
+    { p:'¿Por qué el pie de la regla es más chico que mi pie?',
+      r:'No es tan distinto: 30,48 cm es un pie grande, de calzado 45 o 46 más o menos. En la Edad Media cada ciudad tenía su pie; el de hoy se fijó en 1959.' },
+    { p:'Entonces, ¿en Estados Unidos no usan el sistema métrico?',
+      r:'En la ciencia, la medicina y el ejército, sí. En la vida diaria (la altura de una persona, una ruta, una receta) siguen con pies, millas y libras.' },
+    { p:'¿El factor unitario sirve también acá?',
+      r:`Igual que siempre: ${Q('30,48 cm', '1 ft')} vale 1, porque un pie son 30,48 cm. Arriba lo que quiero, abajo lo que saco.` },
+    { p:'¿La pulgada del televisor qué mide?',
+      r:'La diagonal de la pantalla: de una esquina a la opuesta. Un televisor de 50 pulgadas tiene 127 cm de diagonal.' },
+  ],
+  notas:`<p>Un tema corto y simpático. La idea: que el sistema métrico no es «el natural», es
+      un acuerdo, y que hay otro que para sus usuarios es tan lógico como el nuestro. El 12 se
+      parte en 2, 3, 4 y 6 partes iguales; el 10, solo en 2 y en 5.</p>
+    <p>La historia: la pulgada y el pie salen del cuerpo; el grabado de Köbel muestra cómo se
+      sacaba un promedio con dieciséis pies. Lo de la yarda y Enrique I es una leyenda y así
+      se dice en la diapositiva. Lo seguro: en 1959 la pulgada se fijó en 2,54 cm exactos. La
+      sonda es la Mars Climate Orbiter.</p>
+    <p><b>El ejercicio</b> es de los ejercicios de clase del cursillo, tal cual. Con el factor
+      unitario: 7 ft por 30,48 cm sobre 1 ft da 213,36 cm. Un jugador de 2,13 m: es alto de
+      verdad, y conviene decirlo para controlar.</p>`
+},
+{
+  n:6, corto:'Capacidad y volumen', titulo:'Capacidad y volumen', pag:'capacidad y volumen',
+  teoria:[
+    { id:'tabla-capacidad', cajon:'definicion', chip:'Capacidad y volumen', titulo:'Capacidad y volumen',
+      pregunta:'A una caja cúbica de 10 cm de lado, ¿cuántos litros de agua le entran?',
+      enun:'La capacidad tiene su tabla, con el <b>litro</b> como unidad principal y el salto de 10. Y se conecta con el volumen: <b>1 L es 1 dm³</b>.',
+      html:tablaUnidades(CAPACIDAD),
+      revela:{ txt:'Le entra 1 L: la caja es un cubo de 1 dm de lado, 1 dm³.' },
+      mas:['1 dm³ = 1 L vale para cualquier cosa: es lugar, no peso. Entre el m³ y el dm³ el salto es de 10³, 1.000: un cubo tiene tres dimensiones.',
+           '<b>Si es agua</b>, además, 1 L pesa 1 kg. Para otra sustancia (aceite, trigo, nafta) eso ya no vale: hay que saber cuánto pesa.'] },
+  ],
+  problemas:[
+    { cod:'P5', titulo:'Un ejercicio de capacidad',
+      enun:`Un almacenero compra en $ 24 el hL dos toneles de vino que tienen un costo de $ 120 entre los dos. Si el primero contiene 280 L, la cantidad de daL que hay en el otro tonel es:${fte('Ejercitario 5.2, ejercicio 4')}`,
+      opciones:[
+        { t:'50', error:'no restó el primer tonel: son los dos' },
+        { t:'22', ok:true },
+        { t:'28', error:'dio el primer tonel' },
+        { t:'18' },
+        { t:'40' } ] },
+  ],
   ejemplos:[
+    { titulo:'la misma escalera, con litros', enun:`Pasar 7 hL a litros.${fte('Ejercitario 5.2, ejercicio 4 (los toneles), con otros números')}`,
+      pasos:[
+        'De hL a L hay dos escalones de 10: 1 hL son 100 L.',
+        P('El L arriba, el hL abajo.', convierte('7 hL', ['100 L', '1 hL'], '700 L')),
+      ],
+      final:'7 hL = 700 L',
+      control:`Con el factor dado vuelta:${A(convierte('700 L', ['1 hL', '100 L'], '7 hL ✓'))}` },
+    { titulo:'cambio el sentido: subir', enun:`Pasar ${N('350 L')} a ${N('daL')}.${fte('Ejercitario 5.2, ejercicio 4 (los toneles), con otros números')}`,
+      pasos:[
+        'El daL es más grande que el L: el número se achica.',
+        P('1 daL son 10 L: el L va abajo.', convierte('350 L', ['1 daL', '10 L'], '35 daL')),
+      ],
+      final:'350 L = 35 daL',
+      control:`Con el factor dado vuelta:${A(convierte('35 daL', ['10 L', '1 daL'], '350 L ✓'))}` },
     { titulo:'un escalón de volumen', enun:`Pasar 0,62 m³ a dm³.${fte('Cuestionario, ejercicio 5, proposición IV, con otros números')}`,
       pasos:[
         'De m³ a dm³ es un escalón hacia abajo, y en volumen el escalón vale 1.000.',
@@ -481,15 +520,6 @@ const TEMAS = [
       final:'0,62 m³ = 620 dm³',
       control:`Con el factor dado vuelta:${A(convierte('620 dm³', ['1 m³', '1.000 dm³'], '0,62 m³ ✓'))}` },
     { titulo:'cambio: de capacidad a volumen, con dos factores', enun:`Pasar ${N('4.200 kL')} a ${N('dam³')}.${fte('Cuestionario, ejercicio 5, proposición II, con otros números')}`,
-      antes:[
-        { id:'agua', cajon:'definicion', titulo:'Volumen, capacidad y masa del agua',
-          pregunta:'Una caja cúbica de 10 cm de lado, llena de agua: ¿cuántos litros tiene? ¿Cuánto pesa el agua?',
-          enun:'<b>1 dm³ = 1 L</b>: un cubo de 1 dm de arista tiene capacidad para un litro.',
-          revela:{ txt:'Tiene un litro, y el agua pesa 1 kg.' },
-          mas:['Para el agua, además, <b>1 L pesa 1 kg</b>.',
-               'Así, 1 m³ son 1.000 L (un kL), y pesan 1.000 kg de agua (una Tm).'],
-          como:'Un cartón de leche de un litro es casi un cubo de 10 cm de lado.' },
-      ],
       pasos:[
         'Un factor no alcanza: primero de kL a m³, después de m³ a dam³.',
         P('1 kL es 1 m³, y 1 dam³ son 1.000 m³. Los factores se encadenan.', convierte('4.200 kL', ['1 m³', '1 kL'], ['1 dam³', '1.000 m³'], '4,2 dam³')),
@@ -525,114 +555,25 @@ const TEMAS = [
       final:'la carga pesa 1.036,8 kg',
       control:`Las 40 cajas, cada cosa por separado:${A(['agua', '40 · 24 kg = 960 kg'], ['botellas', '40 · 0,72 kg = 28,8 kg'], ['cajas', '40 · 1,2 kg = 48 kg'], ['total', '960 kg + 28,8 kg + 48 kg = 1.036,8 kg ✓'])}` },
   ],
-  franjas:{ A:[],
-    B:[{ libro:'cuest', n:2 }, { libro:'cuest', n:5 }, { libro:'5.1', n:5 }, { libro:'5.1', n:8 }, { libro:'5.1', n:9 }],
-    C:[{ libro:'5.1', n:4 }, { libro:'5.2', n:10 }, { libro:'cuest', n:9 }, { libro:'cuest', n:10 }] },
   preguntas:[
-    { p:'¿Por qué en volumen el escalón es de 1.000?',
-      r:'Porque un cubo tiene tres dimensiones: 10 a lo largo, 10 a lo ancho y 10 a lo alto, 1.000 en total.' },
     { p:'¿Un litro de aceite también pesa 1 kg?',
-      r:'No: pesa menos, más o menos 920 g. El factor 1 kg sobre 1 L vale solo para el agua. Por eso los problemas aclaran «de agua».' },
-    { p:'En el ejemplo 2, ¿por qué se tachan dos unidades?',
-      r:'Porque hay dos factores. El primero saca el kL y deja m³; el segundo saca el m³ y deja dam³. Al final queda una sola unidad sin tachar.' },
-    { p:'En el ejemplo 4, ¿cómo resto si una lectura tiene dos decimales y la otra uno?',
-      r:'Se completa con un cero, 1.348,60, y se alinean las comas. Así la resta da 13,65.' },
+      r:'No: pesa menos, más o menos 920 g. Ocupa 1 dm³, como todo litro, pero el factor 1 kg sobre 1 L vale solo para el agua.' },
+    { p:'¿Cómo me imagino un dm³?',
+      r:'Un cartón de leche de un litro es casi un cubo de 10 cm de lado: eso es un dm³.' },
+    { p:'¿Por qué en la tabla el m³ está debajo del kL?',
+      r:'Porque son lo mismo: 1 m³ son 1.000 dm³, y cada dm³ es un litro. Mil litros son un kL.' },
+    { p:'En el ejercicio, ¿qué tiene que ver el precio con los litros?',
+      r:'Con el precio se sabe cuánto vino hay: $ 120 a $ 24 el hL son 5 hL. De ahí se resta el primer tonel.' },
+    { p:'¿Por qué en el ejercicio el litro está con «L» mayúscula?',
+      r:'Es el mismo símbolo: el material usa «l», acá usamos «L» porque, proyectada, la «l» se confunde con un 1.' },
   ],
-  notas:`<p>El corazón del tema: <b>1 dm³ es 1 L, y pesa 1 kg de agua</b>. Con el factor
-      unitario se ve bien, porque son dos factores más (L sobre dm³, kg sobre L) que se
-      encadenan con los de la escalera.</p>
-    <p>Los ejemplos salen del cuestionario (ejercicios 2 y 5), del ejemplo 5 del material de
-      lectura y del ejercicio 9 del Ejercitario 5.1 (que es el 7 del 5.2), con otros números.
-      El del medidor original va de 1.257,3 m³ a 2.742,8 m³ (1.485.500 L); el de las
-      botellas, 50 cajas de 20 botellas de 1,5 L (1.625 kg).</p>
-    <p>El cuidado con el supuesto del agua (1 kg ↔ 1 L) está en las notas del tema 5.</p>`
-},
-{
-  n:5, corto:'Leer las unidades', titulo:'La décima, la centena: cómo se leen las unidades', pag:'el lenguaje',
-  concepto:{
-    formaTxt:'la décima de una unidad es la unidad · 1/10; la centena, la unidad · 100',
-    serie:[
-      { rot:'décima', txt:`· ${Q(1, 10)}` }, { rot:'centésima', txt:`· ${Q(1, 100)}` }, { rot:'milésima', txt:`· ${Q(1, '1.000')}` },
-      { rot:'decena', txt:'· 10' }, { rot:'centena', txt:'· 100' }, { rot:'millar', txt:'· 1.000' },
-    ],
-    puntos:[
-      'Primero se escribe la parte como una medida (0,1 km); después, con un factor, se pasa a la unidad principal y se busca en la escalera.',
-      'Si hay varias palabras encadenadas, se multiplican todas.',
-      'En el examen vienen como proposiciones: verdadera o falsa.',
-    ]
-  },
-  ejemplos:[
-    { titulo:'una décima', enun:`¿Qué unidad es la décima del km?${fte('Material de lectura, ejemplo 4, proposición I')}`,
-      antes:[
-        { id:'decima', cajon:'lenguaje', chip:'Lenguaje', titulo:'La décima y la centena de una unidad',
-          pregunta:'¿Qué quiere decir «la décima del metro»?',
-          enun:'La <b>décima</b> de una unidad es esa unidad partida en 10; la <b>centésima</b>, partida en 100; la <b>milésima</b>, en 1.000.',
-          mas:['Al revés, la <b>decena</b> de una unidad son 10 de ellas; la <b>centena</b>, 100; el <b>millar</b>, 1.000.',
-               'La décima del metro es el decímetro: de ahí sale el nombre.'],
-          como:'La décima de un billete de ₲ 100.000 es uno de ₲ 10.000.' },
-      ],
-      pasos:[
-        P('La décima es multiplicar por un décimo.', `${Q(1, 10)} · 1 km = 0,1 km`),
-        P('A metros, con su factor.', convierte('0,1 km', ['1.000 m', '1 km'], '100 m')),
-        P('En la escalera, 100 m es un escalón:', '100 m = 1 hm'),
-      ],
-      final:'la décima del km es el hm',
-      control:`Diez hm forman un km:${A('10 · 100 m = 1.000 m ✓')}` },
-    { titulo:'cambio: una centésima', enun:`¿Qué unidad es la ${N('centésima')} del ${N('hm')}?${fte('Cuestionario, ejercicio 3, proposición I, con otra unidad')}`,
-      pasos:[
-        P('La centésima es multiplicar por un centésimo.', `${Q(1, 100)} · 1 hm = 0,01 hm`),
-        P('A metros.', convierte('0,01 hm', ['100 m', '1 hm'], '1 m')),
-      ],
-      final:'la centésima del hm es el m',
-      control:`Cien m forman un hm:${A('100 · 1 m = 100 m ✓')}` },
-    { titulo:'cambio: una centena, que agranda', enun:`¿Qué unidad es la ${N('centena')} del ${N('dL')}?${fte('Cuestionario, ejercicio 3, proposición II, con otra unidad')}`,
-      pasos:[
-        P('La centena es multiplicar por 100.', '100 · 1 dL = 100 dL'),
-        P('A litros.', convierte('100 dL', ['1 L', '10 dL'], '10 L')),
-        P('En la escalera:', '10 L = 1 daL'),
-      ],
-      final:'la centena del dL es el daL',
-      control:`Al revés, el daL partido en 100:${A(Q(1, 100) + ' · 1 daL = 0,01 daL', convierte('0,01 daL', ['100 dL', '1 daL'], '1 dL ✓'))}` },
-    { titulo:'cambio: varias palabras encadenadas', enun:`¿Qué unidad son ${N('100 decenas de centenas de milésimas')} del dg?${fte('Cuestionario, ejercicio 3, proposición III, con otros números')}`,
-      pasos:[
-        `Cada palabra multiplica: milésima es · ${Q(1, '1.000')}, centena · 100, decena · 10, y son 100.`,
-        P('Todo junto, en dg.', `100 · 10 · 100 · ${Q(1, '1.000')} · 1 dg = 100 dg`),
-        P('A gramos.', convierte('100 dg', ['1 g', '10 dg'], '10 g')),
-        P('En la escalera:', '10 g = 1 dag'),
-      ],
-      final:'100 decenas de centenas de milésimas del dg son 1 dag',
-      control:`Por los gramos: la milésima del dg es 0,0001 g, y${A('100 · 10 · 100 · 0,0001 g = 10 g ✓')}` },
-    { titulo:'cambio: una proposición del examen', enun:`¿Verdadera o falsa? «La ${N('centésima de la Tm')}, en agua, equivale a 10 L.»${fte('Material de lectura, ejemplo 5, proposición III, con otra parte')}`,
-      pasos:[
-        P('La centésima de la Tm, en kg.', `${Q(1, 100)} · 1 Tm = 0,01 Tm`, convierte('0,01 Tm', ['1.000 kg', '1 Tm'], '10 kg')),
-        P('Es agua: 1 kg de agua ocupa 1 L.', convierte('10 kg', ['1 L', '1 kg'], '10 L')),
-      ],
-      final:'es verdadera: 10 kg de agua son 10 L',
-      control:`Por el volumen: 10 L son 10 dm³, y el agua pesa${A(convierte('10 dm³', ['1 kg', '1 dm³'], '10 kg ✓'))}` },
-  ],
-  franjas:{ A:[],
-    B:[{ libro:'5.1', n:1 }, { libro:'cuest', n:1 }, { libro:'cuest', n:3 }, { libro:'cuest', n:7 }],
-    C:[] },
-  preguntas:[
-    { p:'¿«La décima del km» y «el km por un décimo» es lo mismo?',
-      r:'Sí. «Décima» es la manera de decirlo con palabras: es la parte que resulta de partir en 10.' },
-    { p:'En el ejemplo 4, ¿importa el orden de las palabras?',
-      r:'No para el resultado: todas multiplican, y el orden de los factores no cambia el producto. Leerlas de atrás para adelante ayuda a no saltearse ninguna.' },
-    { p:'¿Por qué en el ejemplo 3 la centena da una unidad más grande?',
-      r:'Porque centena multiplica por 100: 100 dL son más que 1 dL. Décima, centésima y milésima achican; decena, centena y millar agrandan.' },
-    { p:'En el ejemplo 5, ¿por qué hace falta que sea agua?',
-      r:'Porque el factor 1 L sobre 1 kg vale solo para el agua. 10 kg de aceite ocupan más de 10 L.' },
-  ],
-  notas:`<p>Este tema no está como título en el material de lectura, pero los ejemplos 4 y 5
-      del material, el cuestionario (ejercicios 1, 3, 6 y 7) y el Ejercitario 5.2 (ejercicio
-      2) lo preguntan en casi todas las proposiciones. Por eso va aparte, y al final: las
-      proposiciones mezclan longitud, superficie, volumen y el agua.</p>
-    <p>Los ejemplos son proposiciones del material con otra unidad o con otros números. En el
-      original del ejemplo 4, «100 decenas de centenas de milésimas del cg» da el gramo, no el
-      hectogramo: la proposición es falsa.</p>
-    <p>Conviene que en el ejemplo 1 alguien diga, antes de la cuenta, si cree que la décima
-      del km es el hm o el mam (el material dice «mam», y es falso). Casi siempre aparece la
-      confusión, y la cuenta la resuelve.</p>
+  notas:`<p>El corazón del tema: <b>1 dm³ es 1 L</b>, siempre; <b>y pesa 1 kg si es agua</b>.
+      La tabla lo muestra alineado: el m³ bajo el kL, el dm³ bajo el L, el cm³ bajo el mL, y
+      debajo lo que pesan en agua.</p>
+    <p><b>El ejercicio</b> es el 4 del Ejercitario 5.2, tal cual salvo el símbolo del litro (el
+      material escribe «hl», «l» y «dal»). Los dos toneles juntos: $ 120 a $ 24 el hL son
+      5 hL, 500 L. El otro tiene 500 L menos 280 L, 220 L, que son 22 daL. La A es no restar el primero (50 daL son
+      los dos) y la C, dar el primero (28 daL).</p>
     <p><b>Qué se está suponiendo.</b> «La décima de la Tm es equivalente a 100 L» compara una
       masa con una capacidad. Esa equivalencia (1 kg ↔ 1 L) no es del sistema métrico: vale
       solo para el agua. Antes de calcular, conviene enseñar a preguntar «¿qué se está
@@ -641,69 +582,68 @@ const TEMAS = [
       100 L. Si no dice de qué sustancia es, la respuesta depende del criterio que use el
       examen: el material de lectura, en su ejemplo 5, la da por falsa, y el cuestionario
       repite la proposición en los ejercicios 1 y 6. Vale la pena que lo discutan: «¿de qué
-      tendría que ser para que fuera verdadera?». El ejemplo 5 de este tema lo deja explícito:
-      dice «en agua».</p>`
+      tendría que ser para que fuera verdadera?».</p>`
 },
 ];
 
-/* El diagnóstico, antes de empezar. Cada opción incorrecta sale de un error
-   que los alumnos cometen de verdad; el error no se proyecta: arma la clave
-   de las Notas. Todas las opciones se recalculan en el verificador. */
+/* El diagnóstico, para entrar en calor: lo hacen todos. Cada opción
+   incorrecta sale de un error que los alumnos cometen de verdad; el error no
+   se proyecta: arma la clave de las Notas. Todas las opciones se recalculan
+   en el verificador. */
 const DIAGNOSTICO = {
-  consigna:'Respondan en papel, por grupo: el código del ítem y la letra de la opción.',
-  notas:`<p>Se proyecta antes de empezar, en dos hojas de 4 ítems. No se corrige en pantalla:
-      la clave está acá abajo.</p>
-    <p><b>Para ubicar a cada grupo:</b> 0 a 3 bien, Nivel 1. 4 a 6 bien, Nivel 2. 7 u 8 bien,
-      Nivel 3. Si un grupo erró todos los ítems de un tema, ese tema lo arranca un nivel más
-      abajo (nunca menos que el 1).</p>
-    <p>Por tema: longitud D1; capacidad y masa D2 y D3; superficie D4 y D5; volumen D6 y D7;
-      leer las unidades D8.</p>
-    <p>Mirar qué letra eligieron dice más que el puntaje: un grupo que elige la del escalón de
-      10 en superficie necesita la ayuda del tema 3, no más ejercicios.</p>`,
+  clave:true,
+  consigna:'Para entrar en calor. Respondan en papel: el código del ítem y la letra de la opción.',
+  notas:`<p>Lo hacen todos, al empezar: es para entrar en calor, no para ubicar a nadie. Se
+      proyecta en dos hojas de 4 ítems; «Ver clave» marca las correctas.</p>
+    <p>Después, <b>los ejemplos del factor unitario salen de acá</b>, en el pizarrón: D1 es un
+      complejo de longitud, D3 uno de masa, D4 y D6 cambian el salto (100 y 1.000), D7 cruza
+      volumen con el agua.</p>
+    <p>Mirar qué letra eligieron dice más que el puntaje: el que elige la del salto de 10 en
+      superficie todavía no vio por qué es 100.</p>`,
   items:[
-    { cod:'D1', tema:'1', enun:'Pasar 2 km 3 dam 4 dm a metros.', opciones:[
+    { cod:'D1', tema:'2', enun:'Pasar 2 km 3 dam 4 dm a metros.', opciones:[
       { t:'2.034 m', error:'pasó los 4 dm como si fueran 4 m' },
       { t:'2.030,4 m', ok:true },
       { t:'2.300,4 m', error:'contó mal los escalones: tomó el dam como hm' },
       { t:'2.030 m', error:'se olvidó de una parte: los 4 dm' },
       { t:'2.030,04 m', error:'corrió la coma un lugar de más en los dm' } ] },
-    { cod:'D2', tema:'2', enun:'Pasar 2.340 mL a daL.', opciones:[
+    { cod:'D2', tema:'6', enun:'Pasar 2.340 mL a daL.', opciones:[
       { t:'2,34 daL', error:'contó 3 escalones: se quedó en el litro' },
       { t:'23,4 daL', error:'contó 2 escalones' },
       { t:'0,234 daL', ok:true },
       { t:'0,0234 daL', error:'contó 5 escalones: uno de más al cruzar el litro' },
       { t:'23.400.000 daL', error:'multiplicó en vez de dividir' } ] },
-    { cod:'D3', tema:'2', enun:'Pasar 3 Tm 4 Qm 5 kg a kilogramos.', opciones:[
+    { cod:'D3', tema:'3', enun:'Pasar 3 Tm 4 Qm 5 kg a kilogramos.', opciones:[
       { t:'345 kg', error:'escribió las cifras seguidas, sin completar con ceros' },
       { t:'3.045 kg', error:'tomó el Qm como 10 kg, que es el mag' },
       { t:'3.450 kg', error:'completó el cero del lado equivocado: el 5 quedó en las decenas' },
       { t:'3.405 kg', ok:true },
       { t:'3.400 kg', error:'se olvidó de una parte: los 5 kg' } ] },
-    { cod:'D4', tema:'3', enun:'Pasar 6,5 m² a dm².', opciones:[
+    { cod:'D4', tema:'4', enun:'Pasar 6,5 m² a dm².', opciones:[
       { t:'650 dm²', ok:true },
       { t:'65 dm²', error:'usó el escalón de 10, como en longitud' },
       { t:'6.500 dm²', error:'usó el escalón de 1.000, como en volumen' },
       { t:'0,065 dm²', error:'dividió en vez de multiplicar' },
       { t:'65.000 dm²', error:'contó dos escalones' } ] },
-    { cod:'D5', tema:'3', enun:'Pasar 4 ha 7 a 3 ca a m².', opciones:[
+    { cod:'D5', tema:'4', enun:'Pasar 4 ha 7 a 3 ca a m².', opciones:[
       { t:'473 m²', error:'escribió las cifras seguidas, sin completar con ceros' },
       { t:'4.703 m²', error:'tomó la ha como 1.000 m²: escalón equivocado' },
       { t:'40.730 m²', error:'completó el cero de las ca del lado equivocado' },
       { t:'47.003 m²', error:'usó el escalón de 1.000 para el área' },
       { t:'40.703 m²', ok:true } ] },
-    { cod:'D6', tema:'4', enun:'Pasar 2,4 m³ a dm³.', opciones:[
+    { cod:'D6', tema:'6', enun:'Pasar 2,4 m³ a dm³.', opciones:[
       { t:'240 dm³', error:'usó el escalón de 100, como en superficie' },
       { t:'2.400 dm³', ok:true },
       { t:'24 dm³', error:'usó el escalón de 10, como en longitud' },
       { t:'0,0024 dm³', error:'dividió en vez de multiplicar' },
       { t:'24.000 dm³', error:'corrió la coma un lugar de más' } ] },
-    { cod:'D7', tema:'4', enun:'Un tanque de 0,75 m³ está lleno de agua. ¿Cuántos kilogramos de agua tiene?', opciones:[
+    { cod:'D7', tema:'6', enun:'Un tanque de 0,75 m³ está lleno de agua. ¿Cuántos kilogramos de agua tiene?', opciones:[
       { t:'75 kg', error:'pasó de m³ a dm³ con el escalón de 100' },
       { t:'7.500 kg', error:'corrió la coma un lugar de más' },
       { t:'750 kg', ok:true },
       { t:'0,75 kg', error:'creyó que 1 m³ de agua pesa 1 kg: confundió el m³ con el dm³' },
       { t:'7,5 kg', error:'pasó de m³ a dm³ con el escalón de 10' } ] },
-    { cod:'D8', tema:'5', enun:'¿Qué unidad es la centésima del dam?', opciones:[
+    { cod:'D8', tema:'2', enun:'¿Qué unidad es la centésima del dam?', opciones:[
       { t:'km', error:'creyó que «centésima» agranda: multiplicó por 100' },
       { t:'m', error:'dividió por 10: la tomó como décima' },
       { t:'dm', ok:true },
@@ -711,8 +651,6 @@ const DIAGNOSTICO = {
       { t:'hm', error:'multiplicó por 10: la tomó como decena' } ] },
   ],
 };
-
-const PUERTA_REGLA = '<b>4 de 5 bien:</b> pasan a la franja C. <b>3 o menos:</b> vuelven a la ayuda del tema y a la franja A, y después repiten la puerta.';
 
 const DESAFIO = {
   titulo:'El trigo de Itapúa', prosa:true, fija:1,
@@ -745,32 +683,25 @@ const DESAFIO = {
 const UNIDAD = {
   preguntas:[
     { p:'¿Por qué hay que aprender esto si el celular convierte unidades?',
-      r:'Porque en el examen no hay celular, y porque las preguntas no son solo de convertir: son de leer «la centena del dL» o de cruzar volumen con masa.' },
+      r:'Porque en el examen no hay celular, y porque las preguntas no son solo de convertir: son de leer un complejo o de cruzar volumen con masa.' },
     { p:'¿Todo el mundo usa el sistema métrico?',
-      r:'Casi todo. Estados Unidos sigue usando millas, pies y libras en la vida diaria, aunque en ciencia usa el métrico.' },
+      r:'Casi todo. Estados Unidos sigue usando millas, pies y libras en la vida diaria, aunque en ciencia usa el métrico. Está en el tema 5.' },
   ],
-  notas:`<p>Clase de práctica del cursillo de ingreso sobre la <b>unidad 6</b> de Aritmética y
-      Álgebra. Los cursillistas ya vieron el tema: la página explica poco y los pone a
-      trabajar en papel, con su libro. El pizarrón sigue siendo del profesor.</p>
-    <p><b>El recorrido:</b> el diagnóstico, que ubica a cada grupo en un nivel; el mapa de la
-      práctica; y por cada tema, un «Recordá» corto, la práctica en tres franjas (A base, B
-      tipo examen, C desafío) y la puerta. Al final, el desafío.</p>
-    <p><b>Los niveles</b> son rutas por las franjas, y los tres recorren los cinco temas:
-      Nivel 1 hace A y B; Nivel 2, el final de A, toda B y el principio de C; Nivel 3, dos de
-      B como control, y toda C. Los ejercicios del libro van solo con la referencia: los
-      alumnos lo tienen en papel.</p>
-    <p><b>La puerta</b> de cada tema va al terminar la franja B: 4 de 5 bien, pasan a C; 3 o
-      menos, vuelven a la ayuda del tema y a la franja A, y repiten la puerta. Un grupo de
-      Nivel 1 que pasa arranca el tema siguiente en Nivel 2; uno de Nivel 3 que no pasa sigue
-      el tema siguiente en Nivel 2.</p>
-    <p><b>Las ayudas</b> son los ejemplos resueltos de cada tema, con la pizarra. No están en
-      el recorrido: se abren desde «¿Se traban?» en la práctica del tema, y al terminar, Av
-      Pág vuelve a la práctica.</p>
+  notas:`<p>Clase del cursillo de ingreso sobre la <b>unidad 6</b> de Aritmética y Álgebra. El
+      pizarrón sigue siendo del profesor.</p>
+    <p><b>El recorrido:</b> el diagnóstico, que hacen todos para entrar en calor; el factor
+      unitario y los números complejos, con ejemplos del diagnóstico en el pizarrón; y
+      después, una magnitud por vez: la tabla y un ejercicio del material, transcripto tal
+      cual, con sus opciones. Longitud, masa, superficie (con las medidas agrarias), las
+      medidas anglosajonas y capacidad y volumen. Al final, el desafío.</p>
+    <p>Cada ejercicio tiene «Ver clave», y la clave con el porqué de las opciones está en las
+      Notas de su tema. Si un grupo se traba, el ejercicio lleva a los ejemplos resueltos del
+      tema, que no están en el recorrido: Av Pág vuelve al ejercicio al terminar.</p>
     <p>Todos los cambios de unidad se hacen con el <b>factor unitario</b>: la medida por una
       fracción que vale 1, con la unidad nueva arriba y la vieja abajo, que se tacha.</p>`
 };
 
-Pizarra.unidad({ TEMAS, DESAFIO, UNIDAD, DIAGNOSTICO, PUERTA_REGLA, ayudaAparte:true, grado:'cursillo', temasLibro:5 });
+Pizarra.unidad({ TEMAS, DESAFIO, UNIDAD, DIAGNOSTICO, ayudaAparte:true, grado:'cursillo', temasLibro:6 });
 </script>
 
 <script src="../../assets/proyeccion.js" defer></script>

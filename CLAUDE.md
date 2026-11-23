@@ -803,28 +803,38 @@ grande del tema. Lo pidió Juan (22/11/2026): en el cursillo, a diferencia de
 Matemática, los ejemplos siguen los del material. Los números se cambian igual:
 el material no se publica, y el original queda para resolverlo en clase.
 
-**Una clase del cursillo es para practicar, no para mirar** (lo pidió Juan el
-22/11/2026, sobre sistema métrico, que es el modelo). Los cursillistas ya vieron
-el tema: poca explicación y mucha práctica, en papel y con su libro; el pizarrón
-sigue siendo del profesor. El recorrido es: un **diagnóstico** de opción múltiple
-(8 ítems, 1 o 2 por tema, la clave y la regla de ubicación en las Notas: 0 a 3
-bien Nivel 1, 4 a 6 Nivel 2, 7 u 8 Nivel 3), **el mapa** de rutas, y por cada
-tema un «Recordá» corto (el concepto), **la práctica en tres franjas** (A base,
-B tipo examen, C desafío) y **la puerta** (5 ítems al terminar B: 4 de 5 bien
-pasan a C; 3 o menos vuelven a la ayuda y a la franja A). Los niveles son rutas
-por las franjas y salen solas de las listas (`rutas()` en `pizarra.js`). **Los
-ejercicios de las franjas son los del libro**, solo con su referencia
-(`{ libro:'5.2', n:1 }`); se inventan ítems nuevos solo para el diagnóstico,
-las puertas y las franjas donde el libro no alcanza (las A, sobre todo: el
-material del Poli no trae ejercicios de base). **Todo lo nuevo es de opción
-múltiple, como el examen**: cada opción incorrecta sale de un error que los
-alumnos cometen de verdad (multiplicar en vez de dividir, el escalón de 10 en
-superficie, contar mal los escalones al cruzar la unidad principal, no completar
-con ceros…), anotado en `error`; no se proyecta, arma la clave de las Notas. El
-verificador recalcula cada opción desde su error y controla la clasificación
-del libro. **Los ejemplos resueltos son ayuda** (`ayudaAparte:true`): van al
-final, fuera del recorrido; se entra desde «¿Se traban?» y Av Pág vuelve a la
-práctica al terminar. En el texto de la página no van rayas (—). Los solucionarios son claves y las «Clases síncronas»
+**Sistema métrico es una clase lineal, sin saltear nada** (lo pidió Juan el
+23/11/2026, después de probar el formato de niveles). El recorrido: un
+**diagnóstico** de opción múltiple (8 ítems) que hacen todos para entrar en
+calor, con «Ver clave»; **el factor unitario** y **los números complejos**
+(teoría; los ejemplos los hace Juan en el pizarrón, sacados del diagnóstico); y
+por cada magnitud, **su tabla y un ejercicio del material**: longitud, masa,
+superficie (el salto de 10² = 100 y, alineada debajo, la fila de las medidas
+agrarias), las **medidas anglosajonas** (pulgada, pie y yarda, con un dibujo
+propio y la historia) y capacidad y volumen (con la fila del volumen y la del
+agua alineadas). Al final, el desafío. La tabla es la del material (múltiplos,
+unidad, submúltiplos y la potencia de 10), con el salto dibujado entre cada par
+de columnas: `tablaUnidades()` en `pizarra.js`. **Los ejercicios del material
+van tal cual, con sus opciones** (lo pidió Juan: es una excepción a «los
+números se cambian», solo para esos cinco), con su fuente; el único cambio es
+el litro en «L». En los datos, un tema así no tiene `concepto`: trae
+`teoria:[…]` (diapositivas de teoría en el recorrido) y `problemas:[…]` (uno por
+diapositiva, `.problema-diapo`). Una opción del material puede no tener `error`
+cuando no sale de un error claro. El verificador calcula cada respuesta por dos
+caminos, compara las opciones con las del material y controla que el enunciado
+traiga sus datos. Los ejemplos resueltos de antes (con otros números) quedaron
+como **ayuda** (`ayudaAparte:true`), fuera del recorrido: el ejercicio de cada
+tema lleva a ellos, y Av Pág vuelve al ejercicio al terminar. El grabado de
+Köbel (`cursillo/clases/img/kobel-1535.png`, dominio público, de Wikimedia
+Commons) se agrega a mano: si no está, la diapositiva se arma sin él.
+
+El formato por niveles (diagnóstico que ubica, mapa de rutas, franjas A, B y C
+con los ejercicios del libro, puertas de 5 ítems) sigue en el motor (`rutas()`,
+`practicaDe`, `PUERTA_REGLA`) para otra clase que lo quiera; sistema métrico
+ya no lo usa. **Todo lo nuevo es de opción múltiple, como el examen**: cada
+opción incorrecta sale de un error que los alumnos cometen de verdad, anotado
+en `error`; no se proyecta, arma la clave de las Notas, y el verificador
+recalcula cada opción desde su error. En el texto de la página no van rayas (—). Los solucionarios son claves y las «Clases síncronas»
 llevan el nombre de otra docente: ninguno de los dos sirve ni de cita.
 El verificador falla si en `cursillo/` hay un archivo con CLAVE o RESPUESTA en
 el nombre.

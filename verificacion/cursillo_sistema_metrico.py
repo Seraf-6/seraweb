@@ -24,11 +24,13 @@ Después:
 5. Dentro de un tema no se repite una respuesta.
 6. Ningún renglón encadena dos igualdades.
 7. Todo ejemplo tiene su control.
-8. Los ítems de opción múltiple (el diagnóstico y las puertas): cada opción
-   se recalcula desde el error que la produce, y la página tiene que traer
-   esas opciones, en ese orden, con ese error anotado.
-9. Las franjas traen los ejercicios del libro según la clasificación de
-   acá, sin repetir y sin referencias que no existan.
+8. Los ítems de opción múltiple del diagnóstico: cada opción se recalcula
+   desde el error que la produce, y la página tiene que traer esas
+   opciones, en ese orden, con ese error anotado.
+9. Los ejercicios del material, transcriptos tal cual: la correcta se
+   calcula por dos caminos, las opciones son las del material (en ese
+   orden), y la que lleva un error anotado se recalcula desde ese error.
+   El enunciado de la página trae los datos del material.
 10. No hay rayas (—) en la página.
 
     python verificacion/cursillo_sistema_metrico.py
@@ -192,83 +194,65 @@ def c(tema, cant, de, a, txt_de=None, txt_a=None):
 
 
 def main():
-    print('Tema 1 · longitud (lectura, ejemplo 1; ejercitario 5.2, ej. 3)')
-    c('1', '0,64', 'km', 'm')
-    v = conv(F(3, 4), 'hm', 'm');  cuenta('1', v, '${Q(3, 4)} hm = ' + f'{fmt(v)} m')
-    c('1', '18,5', 'cm', 'm')
+    print('Tema 2 · longitud, los ejemplos de la ayuda (lectura, ejemplo 1; ejercitario 5.2, ej. 3)')
+    c('2', '0,64', 'km', 'm')
+    v = conv(F(3, 4), 'hm', 'm');  cuenta('2', v, '${Q(3, 4)} hm = ' + f'{fmt(v)} m')
+    c('2', '18,5', 'cm', 'm')
     lat = suma([(F(1, 5), 'dm'), (num('16,5'), 'cm'), (35, 'mm')], 'm')
-    cuenta('1', lat, '${Q(1, 5)} dm 16,5 cm 35 mm = ' + f'{fmt(lat)} m')
+    cuenta('2', lat, '${Q(1, 5)} dm 16,5 cm 35 mm = ' + f'{fmt(lat)} m')
     frente = suma([(num('0,64'), 'km'), (F(3, 4), 'hm'), (25, 'm')], 'm')
     lateral = 1000 * lat
     alambre = 4 * (frente + 2 * lateral)
-    cuenta('1', alambre, f'hacen falta {fmt(alambre)} m de alambre')
+    cuenta('2', alambre, f'hacen falta {fmt(alambre)} m de alambre')
     # control: un hilo es el frente y los dos laterales, sin el fondo
     if alambre / 4 != conv(F(740), 'm', 'm') + 2 * conv(F(22), 'dam', 'm'):
         mal('el control del alambrado')
 
-    print('Tema 2 · capacidad y masa (ejercitario 5.2, ej. 4 y 9; lectura, ejemplo 2)')
-    c('2', '7', 'hL', 'L')
-    c('2', '350', 'L', 'daL')
-    c('2', '700', 'hg', 'kg')
+    print('Tema 3 · masa, los ejemplos de la ayuda (lectura, ejemplo 2; ejercitario 5.2, ej. 9)')
+    c('3', '700', 'hg', 'kg')
     cosecha = suma([(4, 'Tm'), (30, 'kg'), (6000, 'g')], 'kg')
-    cuenta('2', cosecha, f'4 Tm 30 kg 6.000 g = {fmt(cosecha)} kg')
+    cuenta('3', cosecha, f'4 Tm 30 kg 6.000 g = {fmt(cosecha)} kg')
     bolsa = suma([(700, 'hg'), (500, 'dag')], 'kg')
     quedan = cosecha - 50 * bolsa
-    cuenta('2', quedan, f'quedaron {fmt(quedan)} kg')
+    cuenta('3', quedan, f'quedaron {fmt(quedan)} kg')
     if suma([(50 * 700, 'hg'), (50 * 500, 'dag')], 'g') + conv(quedan, 'kg', 'g') != conv(cosecha, 'kg', 'g'):
         mal('el control de la mandioca')
 
-    print('Tema 3 · superficie (lectura, ejemplos 3 y 4; ejercitario 5.1, ej. 7; 5.2, ej. 5)')
-    c('3', '5.208', 'm²', 'dam²')
-    c('3', '6.000', 'cm²', 'm²')
+    print('Tema 4 · superficie, los ejemplos de la ayuda (lectura, ejemplos 3 y 4; ejercitario 5.1, ej. 7; 5.2, ej. 5)')
+    c('4', '5.208', 'm²', 'dam²')
+    c('4', '6.000', 'cm²', 'm²')
     campo = suma([(3, 'ha'), (15, 'a'), (40, 'ca')], 'm2')
-    cuenta('3', campo, f'3 ha 15 a 40 ca = {fmt(campo)} m²')
+    cuenta('4', campo, f'3 ha 15 a 40 ca = {fmt(campo)} m²')
     precio = (94620000 + 63080000) / campo
-    cuenta('3', precio, f'cada m² a ₲ {fmt(precio)}')
+    cuenta('4', precio, f'cada m² a ₲ {fmt(precio)}')
     if precio * campo - 63080000 != 94620000:
         mal('el control del campo')
     ter = suma([(2, 'ha'), (50, 'a')], 'a')
     precio2 = (75000000 + 20000 * ter) / conv(ter, 'a', 'm2')
-    cuenta('3', precio2, f'cada m² a ₲ {fmt(precio2)}')
+    cuenta('4', precio2, f'cada m² a ₲ {fmt(precio2)}')
     # control: lo que cobra por área, menos la ganancia de esa área, es lo que costó
     if (precio2 * 100 - 20000) * ter != 75000000:
         mal('el control del terreno')
 
-    print('Tema 4 · volumen (cuestionario 2 y 5; lectura, ejemplo 5; ejercitario 5.1, ej. 9)')
-    c('4', '0,62', 'm³', 'dm³')
-    c('4', '4.200', 'kL', 'dam³')
+    print('Tema 6 · capacidad y volumen, los ejemplos de la ayuda (ejercitario 5.2, ej. 4; cuestionario 2 y 5; lectura, ejemplo 5; ejercitario 5.1, ej. 9)')
+    c('6', '7', 'hL', 'L')
+    c('6', '350', 'L', 'daL')
+    c('6', '0,62', 'm³', 'dm³')
+    c('6', '4.200', 'kL', 'dam³')
     v = suma([(3, 'kl'), (25, 'dal'), (400, 'cl')], 'm3')
-    cuenta('4', v, f'3 kL 25 daL 400 cL = {fmt(v)} m³')
+    cuenta('6', v, f'3 kL 25 daL 400 cL = {fmt(v)} m³')
     consumo = num('1.362,25') - num('1.348,6')
     v = conv(consumo, 'm3', 'l')
-    cuenta('4', v, f'se consumieron {fmt(v)} L')
+    cuenta('6', v, f'se consumieron {fmt(v)} L')
     if conv(num('1.348,6'), 'm3', 'l') + v != conv(num('1.362,25'), 'm3', 'l'):
         mal('el control del medidor')
     agua = conv(F(12 * 2), 'l', 'kg')               # 12 botellas de 2 L, de agua
     caja = agua + conv(F(12 * 60), 'g', 'kg') + conv(F(1200), 'g', 'kg')
     carga = 40 * caja
-    cuenta('4', carga, f'la carga pesa {fmt(carga)} kg')
+    cuenta('6', carga, f'la carga pesa {fmt(carga)} kg')
     # control: todo en gramos, sumado por separado
     if conv(F(40 * 12 * 2), 'l', 'g') + 40 * 12 * 60 + 40 * 1200 != conv(carga, 'kg', 'g'):
         mal('el control de las botellas')
-
-    print('Tema 5 · leer las unidades (lectura, ejemplos 4 y 5; cuestionario 3)')
-    casos = [
-        (conv(F(1, 10), 'km', 'm'), 'm', 'hm', 'la décima del km es el hm'),
-        (conv(F(1, 100), 'hm', 'm'), 'm', 'm', 'la centésima del hm es el m'),
-        (conv(F(100), 'dl', 'l'), 'l', 'dal', 'la centena del dL es el daL'),
-        (conv(100 * 10 * 100 * F(1, 1000), 'dg', 'g'), 'g', 'dag',
-         '100 decenas de centenas de milésimas del dg son 1 dag'),
-    ]
-    for valor, en, u, texto in casos:
-        if conv(valor, en, u) != 1:
-            mal(f'{texto}: da {conv(valor, en, u)} {u}, no 1')
-        cuenta('5', valor, texto)
-    # «La centésima de la Tm, en agua, equivale a 10 L»
-    v = conv(F(1, 100), 'Tm', 'l')
-    if v != 10:
-        mal('la centésima de la Tm no son 10 L de agua')
-    cuenta('5', v, 'es verdadera: 10 kg de agua son 10 L')
 
     print('Desafío (ejercitario 5.1, ej. 4)')
     areas = conv(F(6400), 'm2', 'a')
@@ -358,7 +342,6 @@ def main():
         mal(f'la página tiene {html.count("—")} raya(s) (—)')
 
     controla_items(html)
-    controla_franjas(html)
 
 
 # ══ los ítems de opción múltiple ══
@@ -409,7 +392,7 @@ def item(cod, tema, unidad, opciones):
 def items():
     print('Diagnóstico')
     ok = suma([(2, 'km'), (3, 'dam'), (4, 'dm')], 'm')
-    item('D1', '1', 'm', [
+    item('D1', '2', 'm', [
         (suma([(2, 'km'), (3, 'dam'), (4, 'm')], 'm'), 'pasó los 4 dm como si fueran 4 m'),
         (ok, None),
         (suma([(2, 'km'), (3, 'hm'), (4, 'dm')], 'm'), 'contó mal los escalones: tomó el dam como hm'),
@@ -419,14 +402,14 @@ def items():
     ok = conv(F(2340), 'ml', 'dal')
     if ok != esc(2340, -4):
         mal('D2: de mL a daL no son cuatro escalones')
-    item('D2', '2', 'daL', [
+    item('D2', '6', 'daL', [
         (esc(2340, -3), 'contó 3 escalones: se quedó en el litro'),
         (esc(2340, -2), 'contó 2 escalones'),
         (ok, None),
         (esc(2340, -5), 'contó 5 escalones: uno de más al cruzar el litro'),
         (esc(2340, 4), 'multiplicó en vez de dividir')])
 
-    item('D3', '2', 'kg', [
+    item('D3', '3', 'kg', [
         (seguidas(3, 4, 5), 'escribió las cifras seguidas, sin completar con ceros'),
         (conv(F(3), 'Tm', 'kg') + conv(F(4), 'mag', 'kg') + 5, 'tomó el Qm como 10 kg, que es el mag'),
         (conv(F(3), 'Tm', 'kg') + conv(F(4), 'Qm', 'kg') + 5 * 10,
@@ -434,28 +417,28 @@ def items():
         (suma([(3, 'Tm'), (4, 'Qm'), (5, 'kg')], 'kg'), None),
         (suma([(3, 'Tm'), (4, 'Qm')], 'kg'), 'se olvidó de una parte: los 5 kg')])
 
-    item('D4', '3', 'dm²', [
+    item('D4', '4', 'dm²', [
         (conv(num('6,5'), 'm2', 'dm2'), None),
         (esc(num('6,5'), 1), 'usó el escalón de 10, como en longitud'),
         (esc(num('6,5'), 3), 'usó el escalón de 1.000, como en volumen'),
         (esc(num('6,5'), -2), 'dividió en vez de multiplicar'),
         (esc(num('6,5'), 4), 'contó dos escalones')])
 
-    item('D5', '3', 'm²', [
+    item('D5', '4', 'm²', [
         (seguidas(4, 7, 3), 'escribió las cifras seguidas, sin completar con ceros'),
         (4 * 1000 + conv(F(7), 'a', 'm2') + 3, 'tomó la ha como 1.000 m²: escalón equivocado'),
         (conv(F(4), 'ha', 'm2') + conv(F(7), 'a', 'm2') + 30, 'completó el cero de las ca del lado equivocado'),
         (conv(F(4), 'ha', 'm2') + 7 * 1000 + 3, 'usó el escalón de 1.000 para el área'),
         (suma([(4, 'ha'), (7, 'a'), (3, 'ca')], 'm2'), None)])
 
-    item('D6', '4', 'dm³', [
+    item('D6', '6', 'dm³', [
         (esc(num('2,4'), 2), 'usó el escalón de 100, como en superficie'),
         (conv(num('2,4'), 'm3', 'dm3'), None),
         (esc(num('2,4'), 1), 'usó el escalón de 10, como en longitud'),
         (esc(num('2,4'), -3), 'dividió en vez de multiplicar'),
         (esc(num('2,4'), 4), 'corrió la coma un lugar de más')])
 
-    item('D7', '4', 'kg', [
+    item('D7', '6', 'kg', [
         (esc(num('0,75'), 2), 'pasó de m³ a dm³ con el escalón de 100'),
         (esc(num('0,75'), 4), 'corrió la coma un lugar de más'),
         (conv(num('0,75'), 'm3', 'kg'), None),
@@ -463,165 +446,91 @@ def items():
         (esc(num('0,75'), 1), 'pasó de m³ a dm³ con el escalón de 10')])
 
     dam = TABLA['dam']
-    item('D8', '5', '', [
+    item('D8', '2', '', [
         (unidad_de_longitud(dam * 100), 'creyó que «centésima» agranda: multiplicó por 100'),
         (unidad_de_longitud(dam / 10), 'dividió por 10: la tomó como décima'),
         (unidad_de_longitud(dam / 100), None),
         (unidad_de_longitud(F(1, 100)), 'contó los escalones desde el metro y no desde el dam'),
         (unidad_de_longitud(dam * 10), 'multiplicó por 10: la tomó como decena')])
 
-    print('La puerta del tema 1')
-    q = num('0,036')
-    if conv(q, 'hm', 'cm') != esc(q, 4):
-        mal('L-P1: de hm a cm no son cuatro escalones')
-    item('L-P1', '1', 'cm', [
-        (esc(q, 3), 'contó 3 escalones en vez de 4'),
-        (conv(q, 'hm', 'cm'), None),
-        (esc(q, 2), 'se quedó en el metro: contó 2 escalones'),
-        (esc(q, 5), 'contó 5 escalones'),
-        (esc(q, -4), 'dividió en vez de multiplicar')])
+    print('Los ejercicios del material, tal cual')
+    # P1 · Ejercitario 5.2, ej. 3: el hacendado. El fondo no se alambra.
+    frente = suma([(num('0,75'), 'km'), (F(1, 4), 'hm'), (25, 'm')], 'm')
+    parte = suma([(1 + F(1, 5), 'dm'), (num('13,5'), 'cm'), (45, 'mm')], 'm')
+    lateral = 1000 * parte
+    ok = 5 * (frente + 2 * lateral)
+    # otro camino: todo en dm, el lateral con decimales
+    if conv(5 * (conv(frente, 'm', 'dm') + 2 * 1000 * (num('1,2') + num('1,35') + num('0,45'))), 'dm', 'm') != ok:
+        mal('P1: el alambre no da por los dm')
+    item('P1', '2', '', [
+        (5 * (2 * frente + 2 * lateral), 'alambró también el fondo'),
+        (5 * (frente + lateral), 'contó un solo lateral'),
+        (5 * (frente + parte), 'contó un solo lateral y se olvidó del millar'),
+        (ok, None),
+        (5 * (2 * frente + lateral), 'alambró el fondo y contó un solo lateral')])
 
-    q = F(45800)
-    item('L-P2', '1', 'dam', [
-        (esc(q, -3), 'se quedó en el metro: contó un escalón de menos al cruzarlo'),
-        (esc(q, -2), 'contó 2 escalones'),
-        (esc(q, -5), 'contó un escalón de más'),
-        (conv(q, 'mm', 'dam'), None),
-        (esc(q, 4), 'multiplicó en vez de dividir')])
+    # P2 · Ejercitario 5.2, ej. 9: la mandioca
+    cosecha = suma([(5, 'Tm'), (20, 'kg'), (5000, 'g')], 'kg')
+    bolsa = suma([(750, 'hg'), (500, 'dag')], 'kg')
+    q = cosecha - 60 * bolsa
+    if suma([(5, 'Tm'), (20, 'kg'), (5000, 'g')], 'g') - 60 * suma([(750, 'hg'), (500, 'dag')], 'g') != conv(q, 'kg', 'g'):
+        mal('P2: lo que queda no da en gramos')
+    item('P2', '3', '', [
+        (conv(q, 'kg', 'Tm'), 'dejó el resultado en Tm'),
+        (conv(q, 'kg', 'mag'), 'dejó el resultado en mag'),
+        (q, None),
+        (conv(q, 'kg', 'hg'), 'dejó el resultado en hg'),
+        (conv(q, 'kg', 'Qm'), 'dejó el resultado en Qm')])
 
-    item('L-P3', '1', 'm', [
-        (seguidas(5, 6, 8), 'escribió las cifras seguidas, sin completar con ceros'),
-        (suma([(5, 'hm'), (6, 'm'), (8, 'dm')], 'm'), 'no completó con cero los decimales: tomó 8 cm como 8 dm'),
-        (suma([(5, 'hm'), (6, 'm'), (8, 'cm')], 'm'), None),
-        (suma([(5, 'hm'), (6, 'dam'), (8, 'cm')], 'm'), 'contó mal los escalones: tomó los 6 m como dam'),
-        (suma([(5, 'hm'), (8, 'cm')], 'm'), 'se olvidó de una parte: los 6 m')])
+    # P3 · Ejercitario 5.1, ej. 7: el campo
+    campo = suma([(2, 'ha'), (25, 'a'), (60, 'ca')], 'm2')
+    ok = F(48504 + 41736) / campo
+    if ok * campo - 48504 != 41736:
+        mal('P3: vendiendo a ese precio no gana lo que quiere')
+    item('P3', '4', '$', [
+        (F(41736) / campo, 'repartió solo la ganancia'),
+        (F(48504) / campo, 'repartió solo lo que pagó'),
+        (ok, None),
+        (F(3), ''),
+        (F(5), '')])
 
-    meta = num('7.008,3')
-    ops = [('7 km 8 m 3 dm', None),
-           ('7 km 8 dam 3 dm', 'no completó con ceros: el 8 quedó en los dam'),
-           ('7 km 8 m 3 cm', 'corrió la coma un lugar en la parte decimal'),
-           ('7 hm 8 m 3 dm', 'contó un escalón de menos: tomó el km como hm'),
-           ('7 km 8 hm 3 dm', 'contó mal los escalones al cruzar el metro')]
-    valores = [complejo(t) for t, _ in ops]
-    for (t, e), v in zip(ops, valores):
-        if (v == meta) != (e is None):
-            mal(f'L-P4: «{t}» vale {fmt(v)} m')
-    if len(set(valores)) != len(valores):
-        mal('L-P4: dos complejos valen lo mismo')
-    item('L-P4', '1', '', ops)
+    # P4 · el basquetbolista: 1 ft = 30,48 cm; por otro camino, 12 in de 2,54 cm
+    ok = 7 * num('30,48')
+    if 7 * 12 * num('2,54') != ok:
+        mal('P4: el pie no da por las pulgadas')
+    if conv(ok, 'cm', 'mm') != num('2.133,6'):
+        mal('P4: la opción C no es el resultado en mm')
+    item('P4', '5', '', [
+        (num('30,48'), 'pasó un solo pie'),
+        (ok, None),
+        ('2133,6', 'dejó el resultado en mm'),          # así, sin el punto, en el material
+        (num('231,36'), ''),
+        (num('236,13'), '')])
 
-    frente = suma([(1, 'hm'), (2, 'dam')], 'm')
-    fondo = suma([(num('0,08'), 'km'), (5, 'm')], 'm')
-    fondo_mal = suma([(esc(num('0,08'), 2), 'm'), (5, 'm')], 'm')      # 0,08 km leído como 8 m
-    frente_mal = suma([(1, 'hm'), (2, 'm')], 'm')
-    item('L-P5', '1', 'm', [
-        (3 * (frente + fondo), 'sumó el frente y el fondo una sola vez: la mitad del contorno'),
-        (2 * (frente + fondo), 'se olvidó de los 3 hilos'),
-        (3 * 2 * (frente + fondo_mal), 'pasó 0,08 km como 8 m: corrió la coma de menos'),
-        (3 * 2 * (frente + fondo), None),
-        (3 * 2 * (frente_mal + fondo), 'tomó los 2 dam como 2 m')])
-    # el control del problema, por otro camino: el contorno en dam
-    if conv(3 * 2 * (F(12) + num('8,5')), 'dam', 'm') != 3 * 2 * (frente + fondo):
-        mal('L-P5: el contorno no da')
-
-    print('Tema 1, franja A')
-    q = num('3,2')
-    item('L-A1', '1', 'm', [
-        (esc(q, 2), 'contó 2 escalones en vez de 3'),
-        (esc(q, 4), 'contó 4 escalones'),
-        (conv(q, 'km', 'm'), None),
-        (esc(q, -3), 'dividió en vez de multiplicar'),
-        (esc(q, 1), 'contó 1 escalón')])
-
-    item('L-A2', '1', 'm', [
-        (esc(85, 2), 'multiplicó en vez de dividir'),
-        (esc(85, -1), 'contó 1 escalón en vez de 2'),
-        (esc(85, -3), 'contó 3 escalones'),
-        (F(85), 'cambió la unidad sin cambiar el número'),
-        (conv(F(85), 'cm', 'm'), None)])
-
-    q = num('4,7')
-    item('L-A3', '1', 'dm', [
-        (esc(q, 3), 'contó 3 escalones'),
-        (conv(q, 'dam', 'dm'), None),
-        (esc(q, 1), 'contó 1 escalón: no cruzó el metro'),
-        (esc(q, -2), 'dividió en vez de multiplicar'),
-        (q, 'cambió la unidad sin cambiar el número')])
-
-    item('L-A4', '1', 'm', [
-        (suma([(6, 'hm'), (4, 'dam')], 'm'), 'tomó los 4 m como 4 dam: el cero quedó del lado equivocado'),
-        (seguidas(6, 4), 'escribió las cifras seguidas, sin completar con ceros'),
-        (suma([(6, 'km'), (4, 'm')], 'm'), 'tomó el hm como km'),
-        (suma([(6, 'hm'), (4, 'm')], 'm'), None),
-        (suma([(6, 'hm')], 'm'), 'se olvidó de una parte: los 4 m')])
-
-    print('Tema 1, franja B')
-    meta = conv(F(40506), 'cm', 'm')
-    ops = [('4 hm 5 dam 6 cm', 'no completó con ceros: el 5 quedó en los dam'),
-           ('4 km 5 m 6 cm', 'contó un escalón de más: tomó el hm como km'),
-           ('4 hm 5 m 60 cm', 'completó el cero del lado equivocado en los cm'),
-           ('4 hm 5 m 6 mm', 'corrió la coma un lugar en la parte decimal'),
-           ('4 hm 5 m 6 cm', None)]
-    valores = [complejo(t) for t, _ in ops]
-    for (t, e), v in zip(ops, valores):
-        if (v == meta) != (e is None):
-            mal(f'L-B1: «{t}» vale {fmt(v)} m')
-    if len(set(valores)) != len(valores):
-        mal('L-B1: dos complejos valen lo mismo')
-    item('L-B1', '1', '', ops)
-
-    tramo = suma([(2, 'km'), (8, 'hm')], 'm')
-    total = tramo + 950
-    item('L-B2', '1', 'km', [
-        (esc(conv(total, 'm', 'km'), 1), 'contó 2 escalones al pasar a km'),
-        (conv(suma([(2, 'km'), (8, 'dam')], 'm') + 950, 'm', 'km'), 'tomó los 8 hm como 8 dam'),
-        (conv(tramo, 'm', 'km') + 950, 'sumó km con m sin pasar a la misma unidad'),
-        (esc(conv(total, 'm', 'km'), -1), 'contó 4 escalones al pasar a km'),
-        (conv(total, 'm', 'km'), None)])
-    # control: sumado en hm
-    if conv(F(28) + conv(F(950), 'm', 'hm'), 'hm', 'km') != conv(total, 'm', 'km'):
-        mal('L-B2: la suma no da')
-
-    vuelta = num('0,4')
-    item('L-B3', '1', 'hm', [
-        (num('12,5') * vuelta, 'dejó el resultado en km'),
-        (12 * conv(vuelta, 'km', 'hm'), 'se olvidó de la media vuelta'),
-        (num('12,5') * conv(vuelta, 'km', 'hm'), None),
-        (num('12,5') * conv(vuelta, 'km', 'dam'), 'pasó a dam y no a hm: un escalón de más'),
-        (num('12,5') * esc(vuelta, -1), 'dividió en vez de multiplicar al pasar de km a hm')])
-
-    print('Tema 1, franja C')
-    cinta = suma([(2, 'dam'), (5, 'm')], 'm')
-    item('L-C1', '1', 'trozos', [
-        (conv(cinta, 'm', 'mm') * 10 / 125, 'corrió la coma un lugar de más al pasar a mm'),
-        (conv(cinta, 'm', 'mm') / 125, None),
-        (conv(suma([(2, 'dam')], 'm'), 'm', 'mm') / 125, 'se olvidó de una parte: los 5 m'),
-        (conv(cinta, 'm', 'cm') / 125, 'pasó a cm y no a mm'),
-        (cinta / 125, 'dividió los metros por 125 sin pasar a la misma unidad')])
-
-    frente = suma([(num('0,6'), 'km'), (F(1, 2), 'hm'), (30, 'm')], 'm')
-    lateral = 1000 * suma([(F(1, 4), 'dm'), (num('12,5'), 'cm'), (25, 'mm')], 'm')
-    lateral_mal = 1000 * suma([(F(1, 4), 'm'), (num('12,5'), 'cm'), (25, 'mm')], 'm')
-    item('L-C2', '1', 'm', [
-        (4 * (frente + 2 * lateral), None),
-        (4 * (2 * frente + 2 * lateral), 'alambró también el fondo'),
-        (4 * (frente + lateral), 'contó un solo lateral'),
-        (frente + 2 * lateral, 'se olvidó de los 4 hilos'),
-        (4 * (frente + 2 * lateral_mal), 'pasó 1/4 dm como 0,25 m: corrió la coma de menos')])
-    if 4 * (conv(F(68), 'dam', 'm') + 2 * conv(num('1,75'), 'hm', 'm')) != 4 * (frente + 2 * lateral):
-        mal('L-C2: el alambre no da')
-
-    recorre = 3 * 2 * 60 * 60                         # cm, en 2 horas
-    item('L-C3', '1', 'hm', [
-        (esc(recorre, -3), 'contó un escalón de menos al pasar a hm'),
-        (conv(F(3 * 2 * 60), 'cm', 'hm'), 'pasó las 2 horas a minutos y no a segundos'),
-        (esc(recorre, -2), 'se quedó en el metro'),
-        (conv(F(recorre), 'cm', 'hm'), None),
-        (esc(recorre, -5), 'contó un escalón de más')])
+    # P5 · Ejercitario 5.2, ej. 4: los toneles
+    hl = F(120) / 24
+    otro = conv(hl, 'hl', 'l') - 280
+    ok = conv(otro, 'l', 'dal')
+    if conv(hl, 'hl', 'dal') - conv(F(280), 'l', 'dal') != ok:
+        mal('P5: el otro tonel no da en daL')
+    item('P5', '6', '', [
+        (conv(hl, 'hl', 'dal'), 'no restó el primer tonel: son los dos'),
+        (ok, None),
+        (conv(F(280), 'l', 'dal'), 'dio el primer tonel'),
+        (F(18), ''),
+        (F(40), '')])
 
 
 DIAGNOSTICO = [f'D{i}' for i in range(1, 9)]
-PUERTAS = {'1': ['L-P1', 'L-P2', 'L-P3', 'L-P4', 'L-P5']}
+# los datos de cada ejercicio, como están en el material: el enunciado de la página los trae
+FUENTE = {
+    'P1': ['alambrar con 5 hilos', 'fondo no es necesario alambrar porque limita por un estero',
+           '0,75 km ${Q(1, 4)} hm 25 m de frente', '1 millar por 1${Q(1, 5)} dm 13,5 cm 45 mm'],
+    'P2': ['5 Tm 20 kg 5.000 g de mandioca', '60 bolsas de 750 hg 500 dag cada bolsa'],
+    'P3': ['2 ha 25 a 60 ca por 48.504 $', 'ganancia de 41.736 $'],
+    'P4': ['mide 7 ft de altura', 'en cm es'],
+    'P5': ['$ 24 el hL', '$ 120 entre los dos', 'contiene 280 L', 'cantidad de daL'],
+}
 
 
 def controla_items(html):
@@ -629,7 +538,7 @@ def controla_items(html):
     en_pagina = {}
     for cod, cuerpo, ops in re.findall(r"\{\s*cod:'([^']+)'(.*?)opciones:\[(.*?)\]\s*\}", html, flags=re.S):
         lista = []
-        for t, ok, err in re.findall(r"\{\s*t:'([^']*)',\s*(?:(ok:true)|error:'([^']*)')\s*\}", ops):
+        for t, ok, err in re.findall(r"\{\s*t:'([^']*)'(?:,\s*(?:(ok:true)|error:'([^']*)'))?\s*\}", ops):
             lista.append((t, None if ok else err))
         tema = re.search(r"tema:'([^']+)'", cuerpo)
         en_pagina[cod] = (tema.group(1) if tema else None, lista)
@@ -647,83 +556,20 @@ def controla_items(html):
     for cod in en_pagina:
         if cod not in ITEMS:
             mal(f'{cod}: está en la página y no en el verificador')
-    # el diagnóstico: 8 ítems, de 1 a 2 por tema, los cinco temas
-    por_tema = {}
-    for cod in DIAGNOSTICO:
-        por_tema[ITEMS[cod][0]] = por_tema.get(ITEMS[cod][0], 0) + 1
-    if sorted(por_tema) != ['1', '2', '3', '4', '5'] or not all(1 <= v <= 2 for v in por_tema.values()):
-        mal(f'el diagnóstico tiene que tener 1 o 2 ítems de cada tema: {por_tema}')
-    # cada puerta: 5 ítems, en orden, del tema
-    puertas = [html[m.end() - 1:cierra(html, m.end() - 1) + 1] for m in re.finditer(r'puerta:\s*\{', html)]
-    if len(puertas) != len(PUERTAS):
-        mal(f'la página tiene {len(puertas)} puertas y el verificador {len(PUERTAS)}')
-    for (tema, cods), bloque in zip(sorted(PUERTAS.items()), puertas):
-        if len(cods) != 5:
-            mal(f'la puerta del tema {tema} tiene que tener 5 ítems')
-        if re.findall(r"cod:'([^']+)'", bloque) != cods:
-            mal(f'la puerta del tema {tema} no trae {cods}')
+    # el diagnóstico: 8 ítems, y cada tema con tabla tiene al menos uno
+    temas = {ITEMS[cod][0] for cod in DIAGNOSTICO}
+    if len(DIAGNOSTICO) != 8 or not {'2', '3', '4', '6'} <= temas:
+        mal(f'el diagnóstico tiene que tener 8 ítems, de longitud, masa, superficie y capacidad: {temas}')
+    # los ejercicios del material traen sus datos tal cual
+    for cod, datos in FUENTE.items():
+        m = re.search(r"\{\s*cod:'%s'.*?enun:`([^`]*)`" % cod, html, flags=re.S)
+        if not m:
+            mal(f'{cod}: no encuentro su enunciado')
+            continue
+        for d in datos:
+            if d not in m.group(1):
+                mal(f'{cod}: el enunciado no trae «{d}», como el material')
     print(f'  {len(ITEMS)} ítems, con sus {sum(len(o) for _, o in ITEMS.values())} opciones controladas')
-
-
-# ══ las franjas: qué ejercicios del libro van en cada tema y franja ══
-# La clasificación es la del plan (22/11/2026). Un ejercicio que se repite en
-# otra parte del material (cuestionario 6 = 1, ejercitario 5.2 ej. 7 = 5.1 ej. 9)
-# va una sola vez.
-LIBRO = {'5.1': range(1, 11), '5.2': range(1, 11), 'cuest': range(1, 11)}
-CLASIFICACION = {
-    '1': {'A': [], 'B': [('5.2', 1)], 'C': [('5.2', 3)]},
-    '2': {'A': [], 'B': [('5.2', 4), ('5.2', 9)],
-          'C': [('5.1', 2), ('5.1', 6), ('5.1', 10), ('5.2', 6), ('5.2', 8)]},
-    '3': {'A': [], 'B': [('5.1', 7), ('5.2', 5)], 'C': [('5.1', 3), ('cuest', 4), ('cuest', 8)]},
-    '4': {'A': [], 'B': [('cuest', 2), ('cuest', 5), ('5.1', 5), ('5.1', 8), ('5.1', 9)],
-          'C': [('5.1', 4), ('5.2', 10), ('cuest', 9), ('cuest', 10)]},
-    '5': {'A': [], 'B': [('5.1', 1), ('cuest', 1), ('cuest', 3), ('cuest', 7)], 'C': []},
-}
-# los ítems nuevos de cada franja, en orden (van después de los del libro)
-NUEVOS = {
-    '1': {'A': ['L-A1', 'L-A2', 'L-A3', 'L-A4'], 'B': ['L-B1', 'L-B2', 'L-B3'], 'C': ['L-C1', 'L-C2', 'L-C3']},
-}
-
-
-def cierra(s, i):
-    """El índice de la llave o corchete que cierra el que abre en s[i]."""
-    par = {'{': '}', '[': ']'}[s[i]]
-    prof = 0
-    for j in range(i, len(s)):
-        if s[j] == s[i]:
-            prof += 1
-        elif s[j] == par:
-            prof -= 1
-            if not prof:
-                return j
-    raise ValueError('sin cerrar')
-
-
-def controla_franjas(html):
-    print('Las franjas')
-    bloques = [html[m.end() - 1:cierra(html, m.end() - 1) + 1] for m in re.finditer(r'franjas:\s*\{', html)]
-    if len(bloques) != len(CLASIFICACION):
-        mal(f'{len(bloques)} temas con franjas; tienen que ser {len(CLASIFICACION)}')
-    vistos = set()
-    for tema, bloque in zip(sorted(CLASIFICACION), bloques):
-        for k in 'ABC':
-            m = re.search(k + r':\s*\[', bloque)
-            lista = bloque[m.end() - 1:cierra(bloque, m.end() - 1) + 1] if m else '[]'
-            libro = [(a, int(n)) for a, n in re.findall(r"libro:'([^']+)',\s*n:(\d+)", lista)]
-            for a, n in libro:
-                if a not in LIBRO or n not in LIBRO[a]:
-                    mal(f'tema {tema}, franja {k}: {a} ej. {n} no existe en el material')
-                if (a, n) in vistos:
-                    mal(f'{a} ej. {n} está dos veces en la grilla')
-                vistos.add((a, n))
-            if libro != CLASIFICACION[tema][k]:
-                mal(f'tema {tema}, franja {k}: la página trae {libro}, la clasificación dice {CLASIFICACION[tema][k]}')
-            nuevos = re.findall(r"cod:'([^']+)'", lista)
-            if nuevos != NUEVOS.get(tema, {}).get(k, []):
-                mal(f'tema {tema}, franja {k}: la página trae los ítems {nuevos}, tienen que ser {NUEVOS.get(tema, {}).get(k, [])}')
-            if re.search(r"cod:.*libro:", lista, flags=re.S):
-                mal(f'tema {tema}, franja {k}: los ítems nuevos van después de los del libro')
-            print(f'  tema {tema} {k}: {len(libro)} del libro, {len(re.findall(r"cod:", lista))} nuevos')
 
 
 items()

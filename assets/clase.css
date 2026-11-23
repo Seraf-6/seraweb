@@ -967,6 +967,74 @@ body[data-solo="1"] .mc-ver-btn{margin-top:10px}
   .mapa{font-size:.85rem}
 }
 
+/* ═══ un ejercicio por diapositiva, como en el examen (problemasDe) ═══ */
+.problema-diapo{padding-block:28px; border-bottom:1px solid var(--linea-fuerte); scroll-margin-top:72px}
+.problema-diapo .mc-grilla{grid-template-columns:1fr}
+.problema-diapo .mc{padding:16px 22px 18px}
+.problema-diapo .mc-enun{font-size:1.5rem; line-height:1.5; margin-bottom:16px}
+.problema-diapo .mc-ops{grid-template-columns:1fr; font-size:1.35rem; gap:6px}
+.problema-diapo .mc-ops li{justify-self:start}
+body[data-solo="1"] .problema-diapo{border-bottom:none; padding-block:12px}
+body[data-solo="1"] .problema-diapo .mc-enun{font-size:1.45em}
+body[data-solo="1"] .problema-diapo .mc-ops{font-size:1.3em}
+body[data-solo="1"] .envoltura:has(.problema-diapo.activa){max-width:none}
+
+/* ═══ la tabla de unidades (tablaUnidades) ═══
+   Una columna por unidad; el salto entre dos vecinas va abajo, en un arco
+   que va del centro de una al centro de la otra. */
+.tu{display:grid; grid-template-columns:var(--tu-rotw) repeat(var(--tu-n), minmax(0,1fr));
+  margin:4px 0 6px; font-family:var(--sans); text-align:center}
+.tu-c,.tu-g{padding:6px 4px; border:1px solid var(--linea-fuerte); margin:0 -1px -1px 0; line-height:1.2;
+  overflow-wrap:anywhere}
+.tu-g{background:var(--acento-suave); font-weight:700; font-size:1.05rem}
+.tu-sim b{display:block; font-family:var(--serif); font-weight:800; font-size:1.5rem; line-height:1.1}
+.tu-sim small{display:block; margin-top:2px; font-size:.8rem; color:var(--lapiz)}
+.tu-vale{font-family:var(--serif); font-size:1.15rem}
+.tu-vale sup{font-size:.68em}
+.tu-u{box-shadow:inset 0 0 0 2px var(--acento)}
+.tu-rot{align-self:center; padding-right:8px; text-align:right; font-family:var(--mono); font-size:.72rem;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--lapiz)}
+.tu-s{position:relative; height:2.7em}
+.tu-arco{position:absolute; top:4px; left:50%; width:100%; height:16px;
+  border:2.5px solid var(--acento); border-top:0; border-radius:0 0 999px 999px}
+.tu-x{position:absolute; top:22px; left:100%; transform:translateX(-50%); white-space:nowrap;
+  font-family:var(--serif); font-weight:800; font-size:1.15rem; color:var(--acento)}
+.tu-extra{font-family:var(--serif); font-weight:800; font-size:1.35rem; background:var(--dest-suave);
+  border-color:var(--dest)}
+.tu-extra.tu-vacia{background:none; border-color:transparent}
+.tu-extra.tu-u{box-shadow:none}
+.tu-solo-extra{margin-top:-4px}
+.tu-nota{margin:10px 0 0; font-size:1.12em; line-height:1.45; max-width:none}
+body[data-solo="1"] .envoltura:has(.teoria-diapo.activa :is(.tu,.anglo-fig,.grabado)){max-width:none}
+/* en proyección, la teoría con tabla tiene que entrar entera con todas sus partes */
+body[data-solo="1"] .teoria-diapo:has(.tu,.anglo-fig,.grabado) .teoria-tit{font-size:1.7em; margin-bottom:8px}
+body[data-solo="1"] .teoria-diapo:has(.tu,.anglo-fig,.grabado) .teoria-pregunta{font-size:1.2em; margin-bottom:8px}
+body[data-solo="1"] .teoria-diapo:has(.tu,.anglo-fig,.grabado) .teoria-enun{font-size:1.15em; padding:8px 14px; margin-bottom:8px}
+body[data-solo="1"] .teoria-diapo:has(.tu,.anglo-fig,.grabado) :is(.teoria-mas,.tu-nota){font-size:1em; margin-bottom:6px}
+body[data-solo="1"] .teoria-diapo:has(.tu,.anglo-fig,.grabado) .teoria-respuesta{font-size:1.05em; padding:6px 12px; margin-bottom:8px}
+body[data-solo="1"] .teoria-diapo:has(.tu,.anglo-fig,.grabado) .teoria-como{margin-top:8px; padding:6px 12px}
+body[data-solo="1"] .teoria-diapo:has(.tu,.anglo-fig,.grabado) .pasos-nav.teoria-nav{margin-top:8px}
+body[data-solo="1"] .tu :is(.tu-c,.tu-g){padding:4px 4px}
+body[data-solo="1"] .anglo-fig svg{max-height:27vh; width:auto}
+body[data-solo="1"] .anglo-eq{margin-top:8px}
+body[data-solo="1"] .anglo-eq span{font-size:1.1rem; padding:4px 12px}
+body[data-solo="1"] .grabado img{max-height:38vh; width:auto}
+@media (max-width:700px){
+  .tu-sim b{font-size:1.1rem} .tu-sim small{font-size:.62rem} .tu-vale{font-size:.85rem}
+  .tu-x{font-size:.85rem} .tu-g{font-size:.8rem}
+}
+
+/* las medidas anglosajonas: un dibujo propio y, si está, el grabado de Köbel */
+.anglo-fig{margin:6px 0 0}
+.anglo-fig svg{display:block; width:100%; max-width:760px; height:auto}
+.anglo-fig text{font-family:var(--sans); fill:var(--tinta)}
+.anglo-eq{display:flex; flex-wrap:wrap; gap:10px; margin:12px 0 0}
+.anglo-eq span{padding:6px 14px; border:1.5px solid var(--acento); border-radius:6px; background:var(--papel);
+  font-family:var(--serif); font-weight:800; font-size:1.3rem}
+.grabado{margin:0}
+.grabado img{display:block; width:100%; height:auto; border:1px solid var(--linea-fuerte); background:#fff}
+.grabado figcaption{margin-top:6px; font-size:.92em; line-height:1.4; color:var(--lapiz)}
+
 /* el panel de proyección puede tapar el dibujo, para que lo hagan ellos:
    se tapa sin moverse nada, y el lugar queda libre en la pizarra */
 body[data-sin-dibujo="1"] .lienzo,
