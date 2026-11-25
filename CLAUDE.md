@@ -53,6 +53,7 @@ cursillo/index.html         Cursillo: la semana y los temas ← lo genera build.
 cursillo/clases/<tema>.html clases del cursillo         ← escritas a mano
 cursillo/clases/sistema-metrico.html  unidad 6 de Aritmética y Álgebra ← escrita a mano
 cursillo/clases/operaciones.html      unidad 3 de Aritmética y Álgebra ← escrita a mano
+cursillo/clases/divisibilidad.html    unidad 4 de Aritmética y Álgebra ← escrita a mano
 cursillo/materiales…/        el material del Poli (zip): FUENTE, no se publica (.gitignore)
 cursillo/Presentaciones…/    presentaciones y ejercitarios del cursillo: FUENTE, no se publica (.gitignore)
 omapa/index.html            módulo de olimpiada          ← lo genera build.py
@@ -276,7 +277,8 @@ Pizarra.unidad({ TEMAS, DESAFIO, PREGUNTA_INICIAL, UNIDAD, LABS, grado:'7mo', te
 
 Si algo de la pizarra se cambia, se cambia en el motor y cambia en todas
 las clases a la vez. Para escribir, el motor trae además: `x^2` para los
-exponentes (dentro de `M()`, `A()` y `P()`), `S('x + y = 5', 'x − y = 1')`
+exponentes (dentro de `M()`, `A()` y `P()`; uno de varios términos va entre
+paréntesis, que no se dibujan: `3^(m + 3)`), `S('x + y = 5', 'x − y = 1')`
 para un sistema con su llave, y los ángulos con sombrero (Â, B̂) que se
 escriben tal cual y se dibujan bien aunque la letra no exista armada.
 Las raíces se escriben `√25`, `3√3` o `√(x^2 + 9)` y se dibujan como en el
@@ -847,6 +849,21 @@ dudosa (en el 17, la B y la C son verdaderas). El verificador
 bruta sobre muchos números y resuelve cada problema numérico por fuerza bruta
 y despejando: de ahí sale cuál opción es la correcta, no se escribe a mano.
 
+**Divisibilidad tiene el mismo formato** (lo pidió Juan el 24/11/2026, sobre la
+presentación y el ejercitario de `cursillo/Presentaciones…/`): cinco temas en el
+orden de la presentación (múltiplos y divisores, criterios, primos y
+compuestos, factores primos y divisores, MCD y MCM), 24 de los 39 ejercicios y
+el 39 como desafío en la pizarra (un MCM: pisar la raya). La presentación lleva
+los nombres de sus autores: no van en el sitio. Quedaron afuera el 12 (la V
+habla de un «suborden»), el 15 (ambiguo: el total de billetes o el rollo más
+grande) y el 18 (la C y la E son las dos 12). Los criterios del 4, 6, 9, 10 y
+11 no están en la presentación: los pide el ejercicio 16. Las letras en
+cursiva son solo las sueltas (`Pizarra.letras` con lookarounds): MCD, MCM, cm
+y la m de un metro quedan derechas. El verificador
+(`verificacion/cursillo_divisibilidad.py`) cuenta los divisores uno por uno,
+busca el MCD y el MCM recorriendo, y no usa las fórmulas de la clase: las
+fórmulas las prueba contra eso.
+
 El formato por niveles (diagnóstico que ubica, mapa de rutas, franjas A, B y C
 con los ejercicios del libro, puertas de 5 ítems) sigue en el motor (`rutas()`,
 `practicaDe`, `PUERTA_REGLA`) para otra clase que lo quiera; sistema métrico
@@ -1137,7 +1154,7 @@ progreso; y en OMAPA, las siete clases del cuadernillo de herramientas y las
 fichas de alumno de OMAPA y Kanguro; y el módulo del Open House 2026, con
 sus herramientas y su verificador, esperando la lista de alumnos; y el Cursillo,
 con la semana del 23 al 28 de noviembre cargada, las clases de sistema métrico y
-de operaciones fundamentales, y dos temas sin clase todavía.
+de operaciones fundamentales y de divisibilidad, y un tema sin clase todavía (vectores).
 
 Pendiente: los bloques B (construcciones) y C (triángulos) de la geometría griega de 7.º
 (la currícula está en `Curricula_Geometria_7mo.md`, fuera del repositorio), el proyecto de estadística compartido por los tres grados (falta

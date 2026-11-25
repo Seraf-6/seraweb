@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="../../assets/img/seraweb.svg" type="image/svg+xml">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Divisibilidad · Cursillo · SeraWeb</title>
+<meta name="description" content="Cursillo de ingreso: divisibilidad. Múltiplos y divisores, criterios, primos y compuestos, factores primos y cantidad de divisores, MCD y MCM: la teoría y, después de cada parte, los ejercicios del ejercitario con sus opciones.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file: 'unsafe-inline'; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; font-src 'self' file:; media-src 'self' file:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<script src="../../assets/acceso.js"></script>
+<link rel="stylesheet" href="../../assets/base.css">
+<link rel="stylesheet" href="../../assets/sitio.css">
+<link rel="stylesheet" href="../../assets/clase.css">
+<style>
+/* ---------- solo de esta página ---------- */
+/* de qué ejercicio del material sale cada uno */
+.fuente{display:block; margin-top:8px; font-family:var(--mono); font-style:normal; font-size:11px;
+  letter-spacing:.04em; color:var(--lapiz)}
+body[data-solo="1"] .fuente{font-size:.45em}
+/* las afirmaciones I), II)… de un ejercicio, una por renglón */
+.afirm{display:block; margin:.35em 0 .45em 1em}
+.afirm span{display:block}
+/* la fórmula de una definición, sola y grande */
+.forma-grande{margin:.1em 0 .5em; font-size:2em; text-align:center}
+/* el número con la raya arriba (mmm: las tres cifras iguales) */
+.sobre{position:relative}
+.sobre::before{content:""; position:absolute; left:.05em; right:0; top:.28em; border-top:.06em solid currentColor}
+/* las reglas: el nombre a la izquierda y lo que dice a la derecha */
+.reglas{border-collapse:collapse; margin:.1em 0 .6em; font-size:1.1em}
+.reglas th{padding:.28em 1.2em .28em 0; text-align:left; vertical-align:baseline;
+  font-family:var(--sans); font-weight:600; font-size:.8em; color:var(--lapiz)}
+.reglas td{padding:.28em 0; vertical-align:baseline}
+.reglas tr + tr :is(th,td){border-top:1px solid var(--linea)}
+@media (min-width:701px){ .teoria-cuerpo.con-figura:has(.reglas){grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)} }
+.teoria-figura .reglas{font-size:1.05em; margin-top:.2em}
+/* las opciones cortas (I y III; Una, Dos…; los números), en fila */
+:is(#mc-E1,#mc-E6,#mc-E2,#mc-E3,#mc-E4,#mc-E5,#mc-E7,#mc-E8,#mc-E16,#mc-E17,#mc-E19,#mc-E20,#mc-E24,#mc-E26,#mc-E28,#mc-E30,#mc-E33,#mc-E14,#mc-E22,#mc-E10) .mc-ops{grid-template-columns:repeat(5,max-content); column-gap:2.2em}
+body[data-solo="1"] .envoltura:has(.teoria-diapo.activa .reglas){max-width:none}
+body[data-solo="1"] .teoria-diapo:has(.reglas) .teoria-enun{font-size:1.2em}
+body[data-solo="1"] .teoria-figura .reglas{font-size:1.15em}
+body[data-solo="1"] .teoria-figura .reglas :is(th,td){padding-block:.18em}
+body[data-solo="1"] .forma-grande{font-size:1.7em; margin:0 0 .3em}
+body[data-solo="1"] .teoria-diapo .teoria-tit{font-size:1.85em; margin-bottom:8px}
+body[data-solo="1"] .teoria-diapo .teoria-enun{margin-bottom:10px}
+body[data-solo="1"] .teoria-diapo:is(:has(.reglas),:has(.forma-grande)) .teoria-mas{font-size:1em; margin-bottom:6px}
+@media (max-width:700px){
+  .teoria-cuerpo.con-figura:has(.reglas){grid-template-columns:minmax(0,1fr)}
+  .teoria-figura:has(.reglas){overflow-x:auto}
+  .reglas, body[data-solo="1"] .teoria-figura .reglas{font-size:.95em}
+  .reglas th{display:block; padding:.45em 0 0}
+  .reglas td{display:block; padding:0 0 .3em}
+  .reglas tr + tr td{border-top:0}
+  [id^="mc-E"] .mc-ops{grid-template-columns:repeat(2,max-content) !important}
+  .forma-grande{font-size:1.5em}
+}
+</style>
+</head>
+<body data-diapos=".intro, .teoria-diapo, .problema-diapo, .desafio">
+<nav class="sitio-nav">
+  <div class="sitio-nav-int">
+    <a class="sitio-marca" href="../../index.html">Sera<span>Web</span></a>
+    <div class="sitio-ruta">
+      <a href="../../index.html">Inicio</a><span class="sep">/</span>
+      <a href="../index.html">Cursillo</a><span class="sep">/</span>
+      <span>Divisibilidad</span>
+    </div>
+  </div>
+</nav>
+
+<div class="envoltura">
+
+  <header class="tapa">
+    <p class="sello">SeraWeb · Cursillo de ingreso</p>
+    <h1>Divisibilidad</h1>
+    <p class="bajada">«Tenemos que saber. Sabremos.»<span class="firma">David Hilbert, Königsberg, 1930</span></p>
+    <div class="pie-tapa">
+      <span>Aritmética y Álgebra · unidad 4</span>
+      <span>Docente: Juan Serafini</span>
+    </div>
+  </header>
+
+  <nav class="nav" aria-label="Ir a un tema">
+    <div class="nav-int" id="nav"></div>
+  </nav>
+
+  <section class="intro" id="inicio" data-tema="unidad">
+    <p class="cinta">Cursillo de ingreso · Aritmética y Álgebra · unidad 4</p>
+    <h2>Quién divide a quién</h2>
+    <ul class="puntos">
+      <li>Todo sale de una idea: <b>a divide a b</b> cuando la división es exacta.</li>
+      <li>Una parte de teoría y, enseguida, los ejercicios del ejercitario que la usan.</li>
+      <li>La herramienta más fuerte es la <b>descomposición en factores primos</b>: con ella se
+        cuentan los divisores y se sacan el MCD y el MCM.</li>
+    </ul>
+    <div class="recorrido" id="recorrido"></div>
+  </section>
+
+  <main id="temas"></main>
+
+  <footer class="creditos">
+    Material de clase del cursillo de ingreso · Sigue la unidad 4 (Divisibilidad) del programa
+    de Aritmética y Álgebra. Los ejercicios que se proyectan son los del ejercitario del
+    cursillo, transcriptos con sus opciones y su número; la teoría, los ejemplos de la teoría y
+    la resolución del desafío son propios. Cada respuesta y cada opción de esta página están
+    verificadas en <span class="ec">verificacion/cursillo_divisibilidad.py</span>.
+  </footer>
+</div>
+
+<script src="../../assets/pizarra.js"></script>
+
+<script>
+/* En cursiva van solo las letras sueltas (m, n, A, B…): MCD, MCM, cm o
+   NDA quedan derechas, y también la m de un metro (6 m). */
+Pizarra.letras = /(?<![A-Za-zÁ-úñ&])(?<!\d )[A-Za-z](?![A-Za-zÁ-úñ;])/g;
+
+/* de qué ejercicio del material sale */
+const fte = s => `<span class="fuente">${s}</span>`;
+const EJ = n => fte(`Ejercitario del cursillo, ejercicio ${n}`);
+/* las afirmaciones I), II)… de un ejercicio */
+const af = (...xs) => `<span class="afirm">${xs.map(x => `<span>${x}</span>`).join('')}</span>`;
+/* una fórmula sola, grande */
+const grande = s => `<p class="forma-grande">${M(s)}</p>`;
+/* las reglas: [nombre, lo que dice] (lo que dice ya viene escrito, con sus M()) */
+const reglas = (...filas) => `<table class="reglas"><tbody>${filas.map(([n, a]) =>
+  `<tr><th>${n}</th><td>${a}</td></tr>`).join('')}</tbody></table>`;
+
+const TEMAS = [
+{
+  n:1, corto:'Múltiplos y divisores', titulo:'Múltiplos y divisores', pag:'múltiplos y divisores',
+  teoria:[
+    { id:'divisible', cajon:'definicion', chip:'Divisible', titulo:'Divisible',
+      pregunta:'¿84 es divisible por 7? ¿Y por 8?',
+      enun:'Un número es <b>divisible</b> por otro cuando la división es <b>exacta</b>: el resto es 0, y el divisor por el cociente da el dividendo.',
+      html:grande('D = d · c'),
+      revela:{ txt:'84 : 7 da 12 y no sobra nada: sí. 84 : 8 da 10 y sobran 4: no.' },
+      mas:[`Si no es exacta, es la división entera de la clase anterior: ${M('D = d · c + r')}, con el resto entre 1 y d − 1.`] },
+    { id:'multiplo', cajon:'definicion', chip:'Múltiplo y divisor', titulo:'Múltiplo y divisor',
+      pregunta:'¿Cuántos múltiplos tiene 5? ¿Y cuántos divisores?',
+      enun:`Como ${M('90 = 5 · 18')}, <b>90 es múltiplo de 5</b> y <b>5 es divisor de 90</b>. «Múltiplo de» y «divisible por» dicen lo mismo.`,
+      figura:reglas(['Los múltiplos de n', `${M('0, n, 2n, 3n')}… son <b>infinitos</b>`],
+                  ['Los divisores de n', 'ninguno pasa de n: son <b>finitos</b>'],
+                  ['El menor múltiplo de n', 'es n (sin contar el 0)'],
+                  ['El 1', 'divide a todos'],
+                  ['El 0', 'es múltiplo de todos']),
+      revela:{ txt:'Múltiplos, infinitos: 5, 10, 15, 20… Divisores, solo dos: 1 y 5.' } },
+    { id:'principios', cajon:'teorema', chip:'Principios', titulo:'Los principios de la divisibilidad',
+      pregunta:'3 divide a 12 y a 18. ¿Divide a 12 + 18? ¿Y a 18 − 12?',
+      enun:'Si un número divide a otros, divide a lo que se arme con ellos sumando, restando o multiplicando.',
+      figura:reglas(['La suma', `si n divide a A y a B, divide a ${M('A + B')}`],
+                  ['La diferencia', `si n divide a A y a B, divide a ${M('A − B')}`],
+                  ['Los múltiplos', `si n divide a A, divide a ${M('k · A')}`],
+                  ['El resto', 'si n divide al dividendo y al divisor, divide al resto']),
+      revela:{ txt:'Sí a las dos: 30 es 3 · 10, y 6 es 3 · 2.' },
+      mas:[`El del resto sale de los otros: ${M('r = D − d · c')} es una resta de dos múltiplos de n.`] },
+  ],
+  problemas:[
+    { cod:'E1', tras:'principios', titulo:'m, n y k divisibles por t',
+      enun:`Si los números m, n y k son divisibles por t, entonces:${af('I) m + n + k es divisible por t.', 'II) El mayor múltiplo de t es t.',
+        'III) Si m &gt; n, entonces m − n es divisible entre t.', 'IV) t tiene infinitos divisores.')}De las afirmaciones anteriores, es o son falsas:${EJ(1)}`,
+      opciones:[
+        { t:'I y III', error:'tomó por falsas las dos que son principios: la suma y la diferencia' },
+        { t:'Solo IV', error:'no vio que t es el menor múltiplo de t, no el mayor' },
+        { t:'II y IV', ok:true },
+        { t:'Solo II', error:'creyó que un número tiene infinitos divisores: los infinitos son los múltiplos' },
+        { t:'Todas' } ] },
+    { cod:'E13', tras:'principios', titulo:'El divisor del dividendo y del divisor', largo:true,
+      enun:`Si un número es divisor del dividendo y del divisor de una división entera:${EJ(13)}`,
+      opciones:[
+        { t:'No es divisor del resto.' },
+        { t:'También es divisor del resto.', ok:true },
+        { t:'El resto es igual a uno.' },
+        { t:'El resto es siempre negativo.', error:'el resto de una división entera nunca es negativo' },
+        { t:'No está definido.' } ] },
+  ],
+  preguntas:[
+    { p:'¿El 0 es múltiplo de 5?',
+      r:'Sí: 0 es 5 · 0. Por eso el menor múltiplo de un número se cuenta sin el 0: si no, sería siempre 0.' },
+    { p:'¿Por qué los divisores son finitos y los múltiplos no?',
+      r:'Un divisor de n no puede pasar de n: hay un número limitado para probar. Los múltiplos siguen para siempre: n, 2n, 3n…' },
+    { p:'En el 1, ¿por qué la II es falsa?',
+      r:'Porque t es el menor múltiplo de t (sin contar el 0). El mayor no existe: siempre hay uno más, el siguiente.' },
+    { p:'¿Y si n divide a A + B pero no a A?',
+      r:'Entonces tampoco divide a B: si dividiera a B, dividiría a la resta (A + B) − B, que es A.' },
+  ],
+  notas:`<p>El tema arranca por la palabra: <b>divisible</b> es división exacta. Conviene que
+      digan con sus palabras la diferencia entre «múltiplo» y «divisor» con un ejemplo: 90 y 5.</p>
+    <p>Los principios son lo que más se usa después, aunque nadie los nombre: el del resto es el
+      que hace andar el algoritmo de Euclides del MCD, y el de la suma es el de los criterios.</p>
+    <p><b>Ejercicio 1.</b> La I y la III son principios (suma y diferencia), verdaderas. La II es
+      falsa: t es el <b>menor</b> múltiplo. La IV es falsa: los divisores de t son finitos. Son
+      falsas la II y la IV: la C.</p>
+    <p><b>Ejercicio 13.</b> Es el principio del resto: si n divide a D y a d, divide a
+      D − d · c, que es el resto. La B.</p>`
+},
+{
+  n:2, corto:'Criterios', titulo:'Los criterios de divisibilidad', pag:'criterios de divisibilidad',
+  teoria:[
+    { id:'criterios', cajon:'estrategia', chip:'Criterios', titulo:'Por las cifras: 2, 3, 5, 9 y 10',
+      pregunta:'¿Cómo saber, sin dividir, si 2.340 es divisible por 3?',
+      enun:'Un criterio dice si la división es exacta mirando las cifras, sin hacerla.',
+      figura:reglas(['Por 2', 'termina en 0 o en cifra par'],
+                  ['Por 5', 'termina en 0 o en 5'],
+                  ['Por 10', 'termina en 0'],
+                  ['Por 3', 'la suma de sus cifras es múltiplo de 3'],
+                  ['Por 9', 'la suma de sus cifras es múltiplo de 9']),
+      revela:{ txt:'2 + 3 + 4 + 0 da 9, que es múltiplo de 3: sí. Y como 9 es múltiplo de 9, también es divisible por 9.' } },
+    { id:'criterios-2', cajon:'estrategia', chip:'Criterios', titulo:'Por 4, 6, 11 y 7',
+      pregunta:'¿17.820 es divisible por 11?',
+      enun:'Estos piden un poco más de cuenta.',
+      figura:reglas(['Por 4', 'sus dos últimas cifras forman un múltiplo de 4'],
+                  ['Por 6', 'es divisible por 2 y por 3'],
+                  ['Por 11', 'las cifras de lugar impar suman lo mismo que las de lugar par, o la diferencia es múltiplo de 11'],
+                  ['Por 7', 'se separa la última cifra, se la duplica y se resta de lo que queda; si da 0 o múltiplo de 7, lo es']),
+      revela:{ txt:'De derecha a izquierda, las cifras de lugar impar son 0, 8 y 1, y suman 9; las de lugar par, 2 y 7, también 9. La diferencia es 0: sí.' },
+      mas:['El del 7, con 245: separo el 5, lo duplico (10) y lo resto de 24. Queda 14, múltiplo de 7: 245 también.'] },
+  ],
+  problemas:[
+    { cod:'E17', tras:'criterios', titulo:'Entre 120 y 140',
+      enun:`Soy menor que 140 y mayor que 120. Soy también divisible por 9. ¿Cuál número soy?${EJ(17)}`,
+      opciones:[
+        { t:'127' },
+        { t:'144', error:'es múltiplo de 9, pero se pasa de 140' },
+        { t:'135', ok:true },
+        { t:'129' },
+        { t:'162', error:'es múltiplo de 9, pero se pasa de 140' } ] },
+    { cod:'E16', tras:'criterios-2', titulo:'Por todos a la vez',
+      enun:`Al tener los siguientes números:${af('I) 17.820', 'II) 11.880', 'III) 17.560')}¿Cuál de los citados son divisibles por 2; 3; 4; 5; 6; 9 y 11 a la vez?${EJ(16)}`,
+      opciones:[
+        { t:'Solo I', error:'descartó el 11.880 sin probarlo' },
+        { t:'Solo II', error:'descartó el 17.820 sin probarlo' },
+        { t:'Solo III' },
+        { t:'I y II', ok:true },
+        { t:'II y III', error:'tomó el 17.560 como múltiplo de 3: sus cifras suman 19' } ] },
+  ],
+  preguntas:[
+    { p:'En el 17 está también el 126, ¿no?',
+      r:'Sí: 126 es 9 · 14 y está entre 120 y 140. El problema tiene dos respuestas, pero en las opciones solo está el 135.' },
+    { p:'¿Por qué el criterio del 3 es sumar las cifras?',
+      r:'Porque 10, 100, 1000 dejan resto 1 al dividirlos por 3. Entonces 2.340 deja el mismo resto que 2 + 3 + 4 + 0.' },
+    { p:'¿Para ser divisible por 6 alcanza con ser divisible por 2 y por 3? ¿Y para el 12, por 2 y por 6?',
+      r:'Para el 6 sí, porque 2 y 3 no tienen divisores comunes. Para el 12 no: 18 es divisible por 2 y por 6, y no por 12. Hay que pedir 3 y 4.' },
+    { p:'En el 16, ¿hay que probar los siete criterios?',
+      r:'Alcanza con 4, 9, 5 y 11: el que es divisible por 4 lo es por 2, el que lo es por 9 lo es por 3, y con 2 y 3 sale el 6.' },
+  ],
+  notas:`<p>Los criterios del 2, 3, 5 y 7 son los de la presentación del cursillo; los del 4, 6,
+      9, 10 y 11 los pide el ejercicio 16, y por eso están acá.</p>
+    <p><b>Ejercicio 17.</b> Los múltiplos de 9 entre 120 y 140 son 126 y 135; en las opciones
+      está el 135. El 144 y el 162 son múltiplos de 9 pero se pasan.</p>
+    <p><b>Ejercicio 16.</b> Ser divisible por todos esos a la vez es ser múltiplo de su MCM,
+      que es 1.980. 17.820 es 9 veces 1.980 y 11.880 es 6 veces; 17.560 no es divisible por 3
+      (sus cifras suman 19). La D. Este ejercicio se puede volver a mirar después del MCM.</p>`
+},
+{
+  n:3, corto:'Primos y compuestos', titulo:'Primos y compuestos', pag:'primos y compuestos',
+  teoria:[
+    { id:'primos', cajon:'definicion', chip:'Primo y compuesto', titulo:'Primos y compuestos',
+      pregunta:'¿Cuántos divisores tiene 7? ¿Y 9? ¿Y 1?',
+      enun:'Un número es <b>primo</b> si tiene exactamente dos divisores: 1 y él mismo. Es <b>compuesto</b> si tiene más de dos.',
+      figura:reglas(['Primos', '2, 3, 5, 7, 11, 13, 17…'],
+                  ['Compuestos', '4, 6, 8, 9, 10, 12…'],
+                  ['El 1', 'no es primo ni compuesto'],
+                  ['El 2', 'es el único primo par'],
+                  ['Simples', 'la unidad y los primos']),
+      revela:{ txt:'7 tiene dos (1 y 7): es primo. 9 tiene tres (1, 3 y 9): es compuesto. El 1 tiene uno solo.' } },
+    { id:'entre-si', cajon:'definicion', chip:'Primos entre sí', titulo:'Primos entre sí',
+      pregunta:'8 y 15, ¿son primos? ¿Tienen algún divisor común, además del 1?',
+      enun:'Varios números son <b>primos entre sí</b> (o primos relativos) cuando el único divisor común a todos es el 1. Son <b>primos dos a dos</b> cuando cada par lo es.',
+      revela:{ txt:'Ninguno de los dos es primo, pero el único divisor común es el 1: son primos entre sí.' },
+      mas:['Dos a dos dice más: 6, 10 y 15 son primos entre sí (los tres juntos solo comparten el 1), pero no dos a dos, porque 6 y 10 comparten el 2.'] },
+    { id:'es-primo', cajon:'estrategia', chip:'Estrategia', titulo:'¿Es primo o no?',
+      pregunta:'¿317 es primo? ¿Hasta qué número hay que probar?',
+      enun:'Basta probar con los primos <b>cuyo cuadrado no pasa del número</b>. Si ninguno lo divide, es primo.',
+      revela:{ txt:'17² es 289 y 18² es 324: alcanza con 2, 3, 5, 7, 11, 13 y 17. Ninguno divide a 317: es primo.' },
+      mas:['Si un primo no divide a un número, es primo con él: 5 no divide a 14, y 5 y 14 son primos entre sí.'] },
+  ],
+  problemas:[
+    { cod:'E4', tras:'primos', titulo:'¿Cuáles son incorrectas?',
+      enun:`De las siguientes afirmaciones:${af('I) Todo número primo absoluto solamente tiene 1 divisor.', 'II) Los números: 3, 15, 21, 29, son todos primos e impares.',
+        'III) Un número tiene finitos múltiplos.', 'IV) Cualquier número par es divisible por 4.')}Es/son incorrecta/s:${EJ(4)}`,
+      opciones:[
+        { t:'I y II', error:'creyó verdaderas la III y la IV' },
+        { t:'II y IV', error:'creyó verdaderas la I y la III' },
+        { t:'III y IV', error:'creyó verdaderas la I y la II: no vio que 15 y 21 no son primos' },
+        { t:'I y IV', error:'creyó verdaderas la II y la III' },
+        { t:'Todas', ok:true } ] },
+    { cod:'E6', tras:'primos', titulo:'¿Cuáles son correctas?', largo:true,
+      enun:`De las siguientes afirmaciones:${af('I) El menor múltiplo de un número es la unidad.',
+        'II) Si A dividido entre B es una división exacta, entonces A es múltiplo de B y B es submúltiplo o divisor de A.',
+        'III) El resto de dividir un número con un divisor suyo es cero.', 'IV) Todos los números pares son compuestos, excepto el 2.',
+        'V) Todos los números impares son primos.', 'VI) El único número que pertenece a los números pares y primos es el 2.')}Es/son correcta/s:${EJ(6)}`,
+      opciones:[
+        { t:'I, III, V y VI', error:'creyó que el menor múltiplo es la unidad y que todo impar es primo' },
+        { t:'II, III, V y VI', error:'creyó que todo impar es primo: 9 no lo es' },
+        { t:'I, IV, V y VI' },
+        { t:'III, IV, V y VI', error:'creyó que todo impar es primo y dejó afuera la definición (II)' },
+        { t:'II, III, IV y VI', ok:true } ] },
+    { cod:'E7', tras:'entre-si', titulo:'Criterios y primos relativos',
+      enun:`De las siguientes afirmaciones:${af('I) Un número es divisible entre 10, cuando termina en cero.', 'II) Un número es divisible entre 2, cuando termina en cero o cifra impar.',
+        'III) Un número es múltiplo de 3 cuando la suma de sus cifras es múltiplo de 3.', 'IV) Los números 5, 7, 18 son primos relativos de dos a dos.')}Es/son incorrecta/s:${EJ(7)}`,
+      opciones:[
+        { t:'I, II y III' },
+        { t:'II, III y IV' },
+        { t:'III y IV', error:'creyó que 18 no puede ser primo relativo porque no es primo' },
+        { t:'I, III y IV' },
+        { t:'Solo II', ok:true } ] },
+  ],
+  preguntas:[
+    { p:'¿Por qué el 1 no es primo?',
+      r:'Porque tiene un solo divisor, y primo es tener exactamente dos. Además, si fuera primo, la descomposición en primos dejaría de ser única: 6 sería 2 · 3 y también 1 · 2 · 3.' },
+    { p:'Para el 317, ¿por qué no hay que probar con el 19?',
+      r:'Si 19 lo dividiera, el otro factor sería menor que 19, y ese ya lo habríamos encontrado antes. Pasando la raíz, los divisores vienen de a pares con uno chico.' },
+    { p:'¿Qué es un primo absoluto?',
+      r:'Un número primo, a secas. Se dice «absoluto» para no confundirlo con «primo relativo», que habla de varios números juntos.' },
+    { p:'En el 7, ¿por qué la IV es verdadera si 18 no es primo?',
+      r:'Porque «primos relativos» no pide que sean primos: pide que no compartan divisores. 5 y 18, 7 y 18, 5 y 7: ningún par comparte nada además del 1.' },
+  ],
+  notas:`<p>Lo que más se equivoca en este tema son las palabras: <b>primo</b> (un número),
+      <b>primos entre sí</b> (varios números juntos), <b>dos a dos</b> (cada par). Conviene
+      pedirles un ejemplo de cada una antes de los ejercicios: 8 y 15 no son primos y son primos
+      entre sí.</p>
+    <p><b>Ejercicio 4.</b> Las cuatro son falsas: un primo tiene dos divisores, 15 y 21 no son
+      primos, los múltiplos son infinitos y 6 es par sin ser múltiplo de 4. La E.</p>
+    <p><b>Ejercicio 6.</b> La I es falsa (el menor múltiplo de n es n), la V también (9). Las
+      correctas son II, III, IV y VI: la E.</p>
+    <p><b>Ejercicio 7.</b> La única incorrecta es la II: el 2 pide cifra par. La IV confunde:
+      18 no es primo, pero 5, 7 y 18 son primos dos a dos. La E.</p>`
+},
+{
+  n:4, corto:'Factores primos', titulo:'Factores primos y divisores', pag:'factores primos y divisores',
+  teoria:[
+    { id:'descomposicion', cajon:'teorema', chip:'Teorema fundamental', titulo:'La descomposición en factores primos',
+      pregunta:'Escriban 720 como producto de números primos.',
+      enun:'Todo número mayor que 1 se escribe como producto de primos, y de <b>una sola manera</b> (sin contar el orden).',
+      html:grande('n = p^a · q^b · r^c'),
+      revela:{ txt:`Dividiendo por 2 cuatro veces, por 3 dos veces y por 5 una vez: ${M('720 = 2^4 · 3^2 · 5')}.` },
+      mas:['Como es única, sirve para comparar: dos números con distinta descomposición son distintos.'] },
+    { id:'cantidad', cajon:'teorema', chip:'Cantidad de divisores', titulo:'¿Cuántos divisores tiene?',
+      pregunta:'¿Cuántos divisores tiene 720?',
+      enun:'Se suma 1 a cada exponente y se multiplica.',
+      html:grande('(a + 1)(b + 1)(c + 1)'),
+      revela:{ txt:`Con ${M('720 = 2^4 · 3^2 · 5')}: ${M('(4 + 1)(2 + 1)(1 + 1)')}, que da 30.` },
+      mas:['Cada divisor elige cuántos 2 lleva (de 0 a 4: cinco maneras), cuántos 3 (tres maneras) y cuántos 5 (dos).',
+           'Los divisores <b>primos</b> son tantos como primos distintos; los <b>compuestos</b>, el total menos los primos y menos el 1.'] },
+    { id:'suma-producto', cajon:'teorema', chip:'Suma y producto', titulo:'La suma y el producto de los divisores',
+      pregunta:'¿Cuánto suman los divisores de 12?',
+      enun:'Con la descomposición también se suman y se multiplican los divisores, sin escribirlos.',
+      figura:reglas(['La suma', `${M('(1 + p + … + p^a)(1 + q + … + q^b)')}…`],
+                  ['El producto', `${M('n')} elevado a la mitad de la cantidad de divisores`]),
+      revela:{ txt:`Uno por uno, 1 + 2 + 3 + 4 + 6 + 12 da 28. Con la fórmula, como ${M('12 = 2^2 · 3')}: ${M('(1 + 2 + 4)(1 + 3)')}, que es 7 · 4, también 28.` },
+      mas:['El producto: los divisores van de a pares que multiplicados dan n (1 y 12, 2 y 6, 3 y 4). Con 6 divisores hay 3 pares: 12 al cubo.'] },
+  ],
+  problemas:[
+    { cod:'E3', tras:'descomposicion', titulo:'Los exponentes de 8.100',
+      enun:`Si ${M('7^m · 5^n · 3^p · 2^q = 8.100')} con m, n, p y q números enteros, entonces ${M('m · n + p · q')} es:${EJ(3)}`,
+      opciones:[
+        { t:'0' },
+        { t:'8', ok:true },
+        { t:'−8' },
+        { t:'4' },
+        { t:'NDA', error:'creyó que no se puede porque 8.100 no es múltiplo de 7: m es 0' } ] },
+    { cod:'E5', tras:'descomposicion', titulo:'Los exponentes de 540',
+      enun:`Si ${M('2^a · 3^b · 5^c · 7^d = 540')}, con a, b, c y d enteros. Hallar ${M('<i>ab</i> − <i>cd</i>')}, es igual a:${EJ(5)}`,
+      opciones:[
+        { t:'6', ok:true },
+        { t:'5', error:'tomó cd como c: 6 − 1' },
+        { t:'4' },
+        { t:'3' },
+        { t:'NDA', error:'creyó que no se puede porque 540 no es múltiplo de 7: d es 0' } ] },
+    { cod:'E2', tras:'cantidad', titulo:'Lo que se dice de 2.340',
+      enun:`Del número 2.340, se puede afirmar que:${af('I) Posee cinco factores primos.', 'II) El número de divisores es tres decenas y seis unidades.',
+        'III) La suma de sus factores simples es dos decenas.', 'IV) El número diez es su factor simple.')}De las afirmaciones anteriores, es (son) falsa(s):${EJ(2)}`,
+      opciones:[
+        { t:'Una' },
+        { t:'Dos' },
+        { t:'Tres', ok:true },
+        { t:'Todas', error:'no contó los divisores: (2 + 1)(2 + 1)(1 + 1)(1 + 1) da 36' },
+        { t:'Ninguna' } ] },
+    { cod:'E8', tras:'cantidad', titulo:'15 · 18 a la n',
+      enun:`Determinar el valor de «n», si ${M('N = 15 · 18^n')} tiene 144 divisores:${EJ(8)}`,
+      opciones:[ { t:'3' }, { t:'4' }, { t:'5', ok:true }, { t:'6' }, { t:'NDA' } ] },
+    { cod:'E24', tras:'cantidad', titulo:'Los divisores que no son primos',
+      enun:`El número ${M('P = 3^m + 3^(m + 3)')} tiene 33 divisores positivos que no son números primos, entonces el número de divisores primos del número ${M('<i class="sobre">mmm</i>')} es:${EJ(24)}`,
+      opciones:[
+        { t:'5', error:'dio m, y se pedían los divisores primos de mmm' },
+        { t:'36', error:'dio la cantidad total de divisores de P' },
+        { t:'3', ok:true },
+        { t:'7' },
+        { t:'6' } ] },
+    { cod:'E33', tras:'suma-producto', titulo:'Suma 624',
+      enun:`La suma de divisores positivos y el producto de sus divisores positivos de un número son 624 y ${M('3^12 · 5^6 · 7^6')} respectivamente; además, tiene 12 divisores positivos. Entonces, la suma de los divisores que no son múltiplos de 7 es:${EJ(33)}`,
+      opciones:[
+        { t:'13', error:'sumó solo 1, 3 y 9' },
+        { t:'6', error:'sumó solo 1 y 5' },
+        { t:'45', error:'dio el número dividido por 7' },
+        { t:'78', ok:true },
+        { t:'12', error:'dio la cantidad de divisores' } ] },
+  ],
+  preguntas:[
+    { p:'¿Cómo puede ser 7 elevado a algo si 8.100 no es múltiplo de 7?',
+      r:'Con exponente 0: 7 a la 0 es 1, y multiplicar por 1 no cambia nada. Así cualquier número «tiene» todos los primos, con exponente 0.' },
+    { p:'¿Por qué se suma 1 a cada exponente?',
+      r:'Porque el divisor puede no llevar ese primo: el exponente va de 0 hasta a, y de 0 a a hay a + 1 números.' },
+    { p:'En el 2, ¿«cinco factores primos» es falso aunque los cuente repetidos?',
+      r:'Sí: 2.340 es 2² · 3² · 5 · 13. Distintos son cuatro; repetidos, seis. Cinco no da de ninguna manera.' },
+    { p:'En el 24, ¿qué es mmm con la raya arriba?',
+      r:'El número de tres cifras iguales a m. Con m igual a 5 es 555, que es 3 · 5 · 37: tres divisores primos.' },
+    { p:'En el 33, ¿hace falta el producto si ya tengo la suma?',
+      r:'El producto da el número enseguida: es n a la 6 (12 divisores, 6 pares), así que n es 3² · 5 · 7, 315. La suma 624 sirve de control.' },
+  ],
+  notas:`<p>Es el corazón de la unidad: todo lo que sigue (contar divisores, MCD, MCM) se hace
+      con la descomposición. Conviene descomponer 720 en el pizarrón con la columna de divisiones
+      y escribir la tabla de sus 30 divisores: la presentación del cursillo la arma así, fila
+      por fila con las potencias de cada primo.</p>
+    <p><b>Ejercicio 3.</b> 8.100 es 2² · 3⁴ · 5²: m es 0, n es 2, p es 4 y q es 2. m · n + p · q
+      da 0 + 8: la B.</p>
+    <p><b>Ejercicio 5.</b> 540 es 2² · 3³ · 5: a es 2, b es 3, c es 1 y d es 0. ab − cd da 6: la A.
+      En los dos, el 7 con exponente 0 es lo que traba.</p>
+    <p><b>Ejercicio 2.</b> 2.340 es 2² · 3² · 5 · 13. La I es falsa (son cuatro primos), la II
+      verdadera (36 divisores), la III falsa (1 + 2 + 3 + 5 + 13 da 24; sin la unidad, 23) y la IV
+      falsa (10 no es primo). Tres falsas: la C.</p>
+    <p><b>Ejercicio 8.</b> Es el ejemplo 2 de la presentación del cursillo. 15 · 18ⁿ es
+      2ⁿ · 3²ⁿ⁺¹ · 5, que tiene (n + 1)(2n + 2) · 2 divisores, 4(n + 1)². Igual a 144: n + 1 es
+      6 y n es 5. La C.</p>
+    <p><b>Ejercicio 24.</b> P es 3ᵐ(1 + 27), 2² · 7 · 3ᵐ: tiene 6(m + 1) divisores, 3 de ellos
+      primos. 6(m + 1) − 3 es 33: m es 5. 555 es 3 · 5 · 37: tres primos, la C.</p>
+    <p><b>Ejercicio 33.</b> El producto de los 12 divisores es n⁶, así que n es 3² · 5 · 7, 315
+      (y sus divisores suman 13 · 6 · 8, 624: coincide). Los que no son múltiplos de 7 son los
+      divisores de 45, que suman 13 · 6, 78: la D.</p>`
+},
+{
+  n:5, corto:'MCD y MCM', titulo:'El MCD y el MCM', pag:'MCD y MCM',
+  teoria:[
+    { id:'mcd', cajon:'definicion', chip:'MCD', titulo:'El máximo común divisor',
+      pregunta:'Con dos cintas de 12 m y 18 m, ¿cuál es el pedazo más largo que se puede cortar, todos iguales, sin que sobre nada?',
+      enun:'El <b>MCD</b> de varios números es el mayor número que los divide a todos. Se descomponen y se toman los factores <b>comunes</b>, con el <b>menor</b> exponente.',
+      revela:{ txt:`6 m: es el mayor número que divide a 12 y a 18. Con ${M('12 = 2^2 · 3')} y ${M('18 = 2 · 3^2')}, lo común con el menor exponente es 2 · 3.` },
+      mas:['Si uno divide al otro, el MCD es el menor. Si no, el MCD del mayor y el menor es el MCD del menor y el resto de dividirlos.'] },
+    { id:'mcm', cajon:'definicion', chip:'MCM', titulo:'El mínimo común múltiplo',
+      pregunta:'Un colectivo pasa cada 12 minutos y otro cada 18. Si pasan juntos a las 7:00, ¿cuándo vuelven a coincidir?',
+      enun:'El <b>MCM</b> de varios números es el menor número que es múltiplo de todos. Se toman <b>todos</b> los factores, con el <b>mayor</b> exponente.',
+      revela:{ txt:`A las 7:36: 36 es el menor múltiplo de 12 y de 18. Todos los factores con el mayor exponente: ${M('2^2 · 3^2')}.` },
+      mas:['Para reconocerlos en un problema: si se reparte o se corta en partes iguales, es MCD; si algo se repite hasta coincidir, es MCM.'] },
+    { id:'mcd-mcm', cajon:'teorema', chip:'Propiedades', titulo:'El MCD y el MCM juntos',
+      pregunta:'MCD(12, 18) es 6 y MCM(12, 18) es 36. ¿Qué tienen que ver 6 · 36 y 12 · 18?',
+      enun:`Para dos números ${M('A')} y ${M('B')}:`,
+      figura:reglas(['El producto', M('A · B = MCD(A, B) · MCM(A, B)')],
+                  ['Si son primos entre sí', `el MCD es 1 y el MCM es ${M('A · B')}`],
+                  ['Si A es múltiplo de B', `el MCD es ${M('B')} y el MCM es ${M('A')}`],
+                  ['Divididos por el MCD', 'los cocientes son primos entre sí']),
+      revela:{ txt:'Dan lo mismo, 216: el producto de dos números es el producto de su MCD y su MCM.' } },
+    { id:'restos', cajon:'estrategia', chip:'Estrategia', titulo:'Mismo resto, varios divisores',
+      pregunta:'¿Cuál es el menor número, mayor que 2, que dividido por 3 y por 4 da resto 2?',
+      enun:`Si al dividir por a, b y c sobra siempre lo mismo, r, el número es un múltiplo común más r: ${M('N = k · MCM(a, b, c) + r')}.`,
+      revela:{ txt:'El MCM de 3 y 4 es 12: el número es 12 + 2, 14.' },
+      mas:['Si en cada división <b>falta</b> lo mismo para completar otra vuelta, es un múltiplo común <b>menos</b> eso.'] },
+  ],
+  problemas:[
+    { cod:'E10', tras:'mcd', titulo:'Dos cintas',
+      enun:`Dos cintas de 36 m y 48 m se quieren dividir en pedazos iguales y de la mayor longitud posible. La longitud de cada pedazo es el doble de:${EJ(10)}`,
+      opciones:[
+        { t:'12 m', error:'dio el pedazo, 12 m, y no el número del que es el doble' },
+        { t:'6 m', ok:true },
+        { t:'24 m' },
+        { t:'2 m' },
+        { t:'NDA' } ] },
+    { cod:'E19', tras:'mcd', titulo:'Bolillas sin mezclar',
+      enun:`Un jugador desea colocar 5.400 bolillas rojas, 2.400 azules, 1.560 blancas en el menor número de bolilleros, que contengan igual número de bolillas sin mezclar los colores. La cantidad de bolilleros necesarios son:${EJ(19)}`,
+      opciones:[
+        { t:'120', error:'dio cuántas bolillas van en cada bolillero, no cuántos bolilleros' },
+        { t:'349' },
+        { t:'280.800', error:'usó el MCM en vez del MCD' },
+        { t:'180' },
+        { t:'78', ok:true } ] },
+    { cod:'E21', tras:'mcd', titulo:'El mayor divisor primo común', largo:true,
+      enun:`Hallar los cocientes que resultan de dividir los números 117.975 y 2.574 por su mayor divisor primo común respectivamente:${EJ(21)}`,
+      opciones:[
+        { t:'9.075 y 19' },
+        { t:'9.075 y 198', ok:true },
+        { t:'9.075', error:'dio solo el primer cociente' },
+        { t:'198', error:'dio solo el segundo cociente' },
+        { t:'NDA' } ] },
+    { cod:'E14', tras:'mcd', titulo:'Bloques de jabón',
+      enun:`Se tienen 3 cajas que contienen 1.600 kg, 2.000 kg y 3.392 kg de jabón respectivamente. El jabón de cada caja está dividido en bloques del mismo peso y el mayor posible. Hallar el MCM entre las cantidades de bloques en cada cajón.${EJ(14)}`,
+      opciones:[ { t:'2.650' }, { t:'265' }, { t:'256' }, { t:'26.500', ok:true }, { t:'NDA' } ] },
+    { cod:'E9', tras:'mcm', titulo:'Todas dicen lo mismo',
+      enun:`Si ${M('2^a · 5^b · 9^d = 8.100')}. Hallar el cociente del ${M('mcm(a, 3b, 4d)')} entre ${M('mcd(5b, 7d)')}:${EJ(9)}`,
+      opciones:[
+        { t:'El doble de 6', error:'es verdadera, pero no es la única' },
+        { t:'El séxtuplo de 2', error:'es verdadera, pero no es la única' },
+        { t:'Triple de 4', error:'es verdadera, pero no es la única' },
+        { t:'Suma de 10 y 2', error:'es verdadera, pero no es la única' },
+        { t:'TLA', ok:true } ] },
+    { cod:'E26', tras:'mcd-mcm', titulo:'MCM 330, diferencia 7',
+      enun:`Dos números primos entre sí son tales que su mínimo común múltiplo es 330 y su diferencia 7. Si al mayor se le aumenta 18 y al menor 40, entonces el máximo común divisor de los nuevos números es:${EJ(26)}`,
+      opciones:[ { t:'12' }, { t:'15' }, { t:'10' }, { t:'5', ok:true }, { t:'20' } ] },
+    { cod:'E28', tras:'mcd-mcm', titulo:'B y C',
+      enun:`Dados dos números enteros positivos B y C, entonces:${af('I) Si B y C tienen los mismos divisores primos, entonces B = C.', 'II) Si C divide a B, entonces todo divisor de C es divisor de B.',
+        'III) Si MCD(B, C) = 1, entonces MCM(B, C) = B × C.', 'IV) Si B es menor que C, entonces la cantidad de divisores de B es menor que la de C.')}La cantidad de opciones verdaderas es:${EJ(28)}`,
+      opciones:[
+        { t:'Una' },
+        { t:'Dos', ok:true },
+        { t:'Tres', error:'tomó la I como verdadera: 2 y 4 tienen el mismo primo y no son iguales' },
+        { t:'Cuatro' },
+        { t:'Cero' } ] },
+    { cod:'E11', tras:'mcd-mcm', titulo:'¿Cuál es la falsa?', largo:true,
+      enun:`De las siguientes afirmaciones, la falsa es:${EJ(11)}`,
+      opciones:[
+        { t:'Para que dos números sean primos entre sí, necesariamente deben ser primos absolutos.', ok:true },
+        { t:'Si dos o más números son primos dos a dos, el m.c.m. es su producto.', error:'es verdadera: no comparten ningún factor' },
+        { t:'El número 2 es el único número par primo.', error:'es verdadera' },
+        { t:'Todo número compuesto tiene por lo menos tres divisores.', error:'es verdadera: 1, él mismo y algún otro' },
+        { t:'Si dos o más números son primos dos a dos, necesariamente son primos entre sí.', error:'es verdadera: lo contrario es lo que no vale' } ] },
+    { cod:'E20', tras:'restos', titulo:'Resto 3',
+      enun:`Hallar la suma de las cifras del menor número que al dividirlo por 5; 6; 7 o 15 dé por resto 3:${EJ(20)}`,
+      opciones:[
+        { t:'231' },
+        { t:'213', error:'dio el número, y se pedía la suma de sus cifras' },
+        { t:'21' },
+        { t:'6', ok:true },
+        { t:'1' } ] },
+    { cod:'E22', tras:'restos', titulo:'Resto 11',
+      enun:`Hallar el menor número que dividido por 17, 38 y 115 dé resto 11:${EJ(22)}`,
+      opciones:[ { t:'7.430' }, { t:'74.301', ok:true }, { t:'743' }, { t:'74.300' }, { t:'NDA' } ] },
+    { cod:'E30', tras:'restos', titulo:'Los tornillos',
+      enun:`Un mecánico compra un número de tornillos que es mayor que 700 pero menor que 800; si los cuenta de 15 en 15 sobran 10; si los cuenta de 20 en 20 sobran 15 y si los cuenta de 24 en 24 sobran 19, entonces el número de tornillos es:${EJ(30)}`,
+      opciones:[ { t:'705' }, { t:'715', ok:true }, { t:'825' }, { t:'785' }, { t:'935' } ] },
+  ],
+  preguntas:[
+    { p:'¿Cómo sé si un problema es de MCD o de MCM?',
+      r:'Si se corta o se reparte en partes iguales y lo más grande posible, MCD. Si algo se repite (pasos, vueltas, horarios) hasta coincidir, MCM.' },
+    { p:'En el 19, ¿el menor número de bolilleros sale del MCD?',
+      r:'Sí: menos bolilleros es más bolillas en cada uno, y lo más que se puede poner, sin que sobre, es el MCD: 120. Después se cuentan los bolilleros.' },
+    { p:'En el 9, ¿por qué la respuesta es TLA si todas dan 12?',
+      r:'Por eso mismo: las cuatro primeras son verdaderas, y «todas las anteriores» es la única que las nombra a todas.' },
+    { p:'En los tornillos sobra distinto en cada cuenta. ¿Cómo se usa el MCM?',
+      r:'Mirando lo que falta: a 10 le faltan 5 para 15, a 15 le faltan 5 para 20 y a 19 le faltan 5 para 24. Con 5 tornillos más, las tres cuentas serían exactas.' },
+    { p:'En el 28, ¿por qué la IV es falsa?',
+      r:'Porque 7 es menor que 8 y tiene menos divisores, pero 6 es menor que 7 y tiene más: 4 contra 2.' },
+  ],
+  notas:`<p>Lo difícil no es calcularlos: es <b>reconocer</b> cuál pide cada problema. Antes
+      de cada ejercicio conviene preguntar «¿se reparte o se repite?».</p>
+    <p><b>Ejercicio 10.</b> El MCD de 36 y 48 es 12: el pedazo es el doble de 6. La B.</p>
+    <p><b>Ejercicio 19.</b> El MCD de 5.400, 2.400 y 1.560 es 120 (2³ · 3 · 5). Los bolilleros
+      son 45 + 20 + 13, 78: la E.</p>
+    <p><b>Ejercicio 21.</b> 2.574 es 2 · 3² · 11 · 13 y 117.975 es 3 · 5² · 11² · 13: el mayor
+      primo común es 13. Los cocientes, 9.075 y 198: la B.</p>
+    <p><b>Ejercicio 14.</b> El MCD de 1.600, 2.000 y 3.392 es 16: los bloques son 100, 125 y 212,
+      y su MCM es 2² · 5³ · 53, 26.500. La D.</p>
+    <p><b>Ejercicio 9.</b> 8.100 es 2² · 3⁴ · 5², y 9ᵈ es 3²ᵈ: a, b y d valen 2. El MCM de 2, 6 y
+      8 es 24; el MCD de 10 y 14, 2. El cociente es 12, y las cuatro primeras dicen 12: la E.</p>
+    <p><b>Ejercicio 26.</b> Primos entre sí con MCM 330: su producto es 330. Con diferencia 7,
+      son 15 y 22. Los nuevos, 40 y 55, tienen MCD 5: la D. Es el mismo que el 35.</p>
+    <p><b>Ejercicio 28.</b> La I es falsa (2 y 4), la II y la III verdaderas, la IV falsa (6 y 7).
+      Dos: la B.</p>
+    <p><b>Ejercicio 11.</b> La falsa es la A: 8 y 15 son primos entre sí sin ser primos.</p>
+    <p><b>Ejercicio 20.</b> El MCM de 5, 6, 7 y 15 es 210; más 3, 213. Sus cifras suman 6: la D.</p>
+    <p><b>Ejercicio 22.</b> 17, 38 y 115 son primos dos a dos: el MCM es su producto, 74.290; más
+      11, 74.301. La B.</p>
+    <p><b>Ejercicio 30.</b> En las tres cuentas faltan 5: el número es un múltiplo de 120 (el MCM
+      de 15, 20 y 24) menos 5. Entre 700 y 800, 715: la B.</p>
+    <p>El 23 (restos iguales, 397) y el 35 (el mismo que el 26) quedan para la casa.</p>`
+},
+];
+
+/* El ejercicio 39 del ejercitario, resuelto en la pizarra: un problema de
+   MCM disfrazado de caminata. En el ejercitario la respuesta es la B. */
+const DESAFIO = {
+  titulo:'Pisar la raya', prosa:true, fija:1,
+  enun:`«La distancia entre dos líneas de una vereda es 1,2 m. Si se empieza a caminar pisando la raya con velocidad de 3 m/s y 75 cm de longitud de paso, ¿cuánto tiempo se debe caminar hasta pisar la raya por 34ava vez?»${EJ(39)}`,
+  pasos:[
+    'Lo que se sabe: hay una raya cada 1,2 m, cada paso mide 75 cm, se camina a 3 m por segundo y se empieza pisando una raya.',
+    P('Todo en centímetros.', '1,2 m = 120 cm'),
+    'Se pisa una raya cuando lo caminado es a la vez múltiplo de 120 (las rayas) y de 75 (los pasos): un múltiplo común.',
+    P('Descompongo.', '120 = 2^3 · 3 · 5', '75 = 3 · 5^2'),
+    P('El MCM: todos los factores, con el mayor exponente.', 'MCM(120, 75) = 2^3 · 3 · 5^2', ' = 600'),
+    'Cada 600 cm, que son 6 m, se vuelve a pisar una raya. La primera vez es al empezar, sin haber caminado nada.',
+    P('La vez 34 llega después de 33 tramos de 6 m.', 'd = 33 · 6 m', ' = 198 m'),
+    P('A 3 m por segundo.', 't = 198 : 3', ' = 66'),
+  ],
+  final:'hay que caminar 66 segundos',
+  control:`En 66 segundos se caminan 198 m, y cada 6 m hay una raya pisada:${A('66 · 3 = 198', '198 : 6 = 33')}33 tramos, más la raya del principio: 34 ✓`,
+  preguntas:[
+    { p:'¿Por qué 33 tramos y no 34?',
+      r:'Porque la primera raya se pisa al empezar, sin caminar. Es como los postes de un alambrado: entre 34 postes hay 33 espacios.' },
+    { p:'¿Por qué no se pisa una raya en cada paso de 120 cm?',
+      r:'Porque los pasos miden 75 cm, no 120. Hay que esperar a que los dos coincidan, y eso es el MCM.' },
+    { p:'¿Qué opción elige el que cuenta 34 tramos?',
+      r:'34 · 6 da 204 m, que son 68 segundos: no está entre las opciones. Las opciones del ejercitario son 85, 66, 100, 60 y 70.' },
+  ],
+  notas:`<p>El ejercicio 39 del ejercitario, resuelto paso a paso: un MCM que no dice «MCM» en
+      ningún lado. Las opciones del ejercitario son 85, 66, 100, 60 y 70 segundos; la correcta es
+      la B.</p>
+    <p>Lo que traba es el conteo: la primera raya está en el 0. Conviene dibujar la vereda con
+      las rayas y los pasos para los primeros 6 m: se ven los 5 pasos y las 5 rayas, y que
+      coinciden al principio y al final.</p>`
+};
+
+const UNIDAD = {
+  preguntas:[
+    { p:'¿Para qué sirve todo esto fuera del examen?',
+      r:'Para simplificar fracciones (el MCD), para sumarlas (el MCM del denominador) y para cualquier problema de repartir o de coincidir.' },
+    { p:'¿Hay que saberse las fórmulas de la suma y el producto de los divisores?',
+      r:'La de la cantidad, sí: sale en casi todo el ejercitario. Las otras dos salen de entender la primera.' },
+  ],
+  notas:`<p>Clase del cursillo de ingreso sobre la <b>unidad 4</b> de Aritmética y Álgebra
+      (divisibilidad). El pizarrón sigue siendo del profesor.</p>
+    <p><b>El recorrido:</b> teoría, ejercicio, teoría, ejercicio, en el orden de la presentación
+      del cursillo (múltiplos y divisores, criterios, primos y compuestos, factores primos, MCD y
+      MCM). Después de cada parte van los ejercicios del ejercitario que la usan, tal cual y con
+      sus opciones. Al final, el ejercicio 39 resuelto en la pizarra.</p>
+    <p>Cada diapositiva de teoría arranca con una pregunta: que la contesten antes de ver la
+      regla. Cada ejercicio tiene «Ver clave», y en las Notas de su tema está la resolución y el
+      porqué de las opciones.</p>
+    <p>Del ejercitario se proyectan 24 de los 39. Quedaron afuera el 12 (la V habla de un
+      «suborden», que no se entiende), el 15 (no queda claro si pide el total de billetes o el
+      rollo más grande) y el 18 (la C y la E son las dos 12). Los demás (25, 27, 29, 31, 32,
+      34, 36, 37 y 38, casi todos de cantidad de divisores) quedan para practicar en clase o de
+      tarea.</p>`
+};
+
+Pizarra.unidad({ TEMAS, DESAFIO, UNIDAD, grado:'cursillo', temasLibro:5 });
+</script>
+
+<script src="../../assets/proyeccion.js" defer></script>
+<script src="../../assets/timer.js" defer></script>
+<script src="../../assets/clase.js" defer></script>
+</body>
+</html>

@@ -51,7 +51,7 @@ TEMAS = {
         'titulo': 'Divisibilidad',
         'materia': 'Matemática 1', 'bloque': 'Aritmética',
         'fuente': 'Aritmética y Álgebra · Unidad 4',
-        'clase': None, 'teoria': [],
+        'clase': 'cursillo/clases/divisibilidad.html', 'teoria': [],
         'ejercicios': [('Ejercitario', '3.1 y 3.2', None),
                        ('Cuestionario', 'Unidad 4', None)],
     },
