@@ -848,6 +848,17 @@ dudosa (en el 17, la B y la C son verdaderas). El verificador
 (`verificacion/cursillo_operaciones.py`) prueba cada afirmación por fuerza
 bruta sobre muchos números y resuelve cada problema numérico por fuerza bruta
 y despejando: de ahí sale cuál opción es la correcta, no se escribe a mano.
+**Primero las leyes, después las propiedades** (lo pidió Juan el 24/11/2026):
+en la resta, que no sea conmutativa ni asociativa (las filas `noVale(…)`,
+resaltadas) es lo que explica sus siete propiedades. Las leyes de la
+multiplicación dicen que la monotonía es solo con positivos (con el
+contraejemplo −5 < −1, −3 < 2), y la distributiva, el neutro, el absorbente y
+el inverso van en su propia diapositiva. Después de «por exceso», la división
+entera en la recta (37 entre 3, `recta()`: por defecto, al múltiplo de abajo;
+por exceso, al de arriba) y dos ejemplos en la pizarra, pedidos por Juan
+aunque no son del ejercitario: la demostración de r + r′ = d y 58 entre 7, con
+r′ por los dos caminos. Un ejemplo con `tras:'<id de una teoría>'` va justo
+después de esa teoría y antes de sus ejercicios (`ejemplosTras` en el motor).
 
 **Divisibilidad tiene el mismo formato** (lo pidió Juan el 24/11/2026, sobre la
 presentación y el ejercitario de `cursillo/Presentaciones…/`): cinco temas en el

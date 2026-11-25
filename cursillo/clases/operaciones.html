@@ -29,13 +29,30 @@ body[data-solo="1"] .fuente{font-size:.45em}
 .reglas td{padding:.28em 0; vertical-align:baseline}
 .reglas tr + tr :is(th,td){border-top:1px solid var(--linea)}
 .reglas .entonces{margin:0 .5em; font-family:var(--sans); font-size:.75em; color:var(--lapiz)}
+/* una ley que la operación no cumple: con fondo, porque el proyector lava los colores */
+.reglas tr:has(.no-vale) :is(th,td){background:var(--dest-suave)}
+.no-vale{color:var(--dest); font-weight:700}
+/* la división entera en la recta */
+.recta-div{display:block; width:100%; max-width:620px; height:auto; margin:0 auto}
+.recta-div text{font-family:var(--sans); font-size:27px; fill:var(--tinta); text-anchor:middle}
+.recta-div .rd-m{font-size:21px; fill:var(--lapiz)}
+.recta-div .rd-b{font-weight:700}
+.recta-div .rd-eje{stroke:var(--lapiz); stroke-width:2}
+.recta-div .rd-r{fill:none; stroke:var(--acento2); stroke-width:3.5; stroke-linecap:round}
+.recta-div .rd-rp{fill:none; stroke:var(--dest); stroke-width:3.5; stroke-linecap:round}
+.recta-div .rd-rt{fill:var(--acento2); font-weight:700}
+.recta-div .rd-rpt{fill:var(--dest); font-weight:700}
+.recta-div .rd-pt{fill:var(--acento)}
+.recta-div .rd-d{fill:none; stroke:var(--lapiz); stroke-width:2}
 .prioridad{margin:.1em 0 .6em; padding-left:1.5em; font-size:1.2em; line-height:1.55}
 /* la tabla de leyes va a la derecha, como el dibujo de una teoría, y es más ancha que un dibujo */
 @media (min-width:701px){ .teoria-cuerpo.con-figura:has(.reglas){grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)} }
 .teoria-figura .reglas{font-size:1.15em; margin-top:.2em}
 /* las opciones cortas (I, II y IV; Una, Dos…), en fila */
 :is(#mc-E1,#mc-E22) .mc-ops{grid-template-columns:repeat(5,max-content); column-gap:2.2em}
-body[data-solo="1"] .envoltura:has(.teoria-diapo.activa .reglas){max-width:none}
+body[data-solo="1"] .envoltura:has(.teoria-diapo.activa :is(.reglas,.recta-div)){max-width:none}
+@media (min-width:701px){ .teoria-cuerpo.con-figura:has(.recta-div){grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)} }
+body[data-solo="1"] .recta-div{max-width:none}
 body[data-solo="1"] .teoria-diapo:has(.reglas) .teoria-enun{font-size:1.25em}
 body[data-solo="1"] .teoria-figura .reglas{font-size:1.25em}
 body[data-solo="1"] .teoria-figura .reglas :is(th,td){padding-block:.18em}
@@ -57,7 +74,7 @@ body[data-solo="1"] .teoria-diapo:is(:has(.reglas),:has(.forma-grande)) .teoria-
 }
 </style>
 </head>
-<body data-diapos=".intro, .teoria-diapo, .problema-diapo, .desafio">
+<body data-diapos=".intro, .teoria-diapo, .ejemplo-diapo, .problema-diapo, .desafio">
 <nav class="sitio-nav">
   <div class="sitio-nav-int">
     <a class="sitio-marca" href="../../index.html">Sera<span>Web</span></a>
@@ -126,6 +143,32 @@ const grande = s => `<p class="forma-grande">${M(s)}</p>`;
 /* leyes y propiedades: [nombre, fórmula] o [nombre, si…, entonces…] */
 const reglas = (...filas) => `<table class="reglas"><tbody>${filas.map(([n, a, b]) =>
   `<tr><th>${n}</th><td>${M(a)}${b ? `<span class="entonces">entonces</span>${M(b)}` : ''}</td></tr>`).join('')}</tbody></table>`;
+/* una ley que esta operación no cumple: la fila va resaltada */
+const noVale = s => `<span class="no-vale">✗ ${s}</span>`;
+/* la división entera en la recta: 37 entre 3, con los dos restos y el divisor */
+const rot = (l, v, p = '') => `<tspan font-style="italic">${l}</tspan>${p} = ${v}`;
+const recta = () => {
+  const X = n => 40 + (n - 33) * 58, y = 120;
+  let s = `<line class="rd-eje" x1="18" y1="${y}" x2="582" y2="${y}"/>`;
+  for (let n = 33; n <= 42; n++) {
+    const g = n % 3 === 0 ? 9 : 5;
+    s += `<line class="rd-eje" x1="${X(n)}" y1="${y - g}" x2="${X(n)}" y2="${y + g}"/>`;
+    if (n % 3 === 0) s += `<text x="${X(n)}" y="${y + 36}">${n}</text><text class="rd-m" x="${X(n)}" y="${y + 62}">3 · ${n / 3}</text>`;
+  }
+  const a = X(36), b = X(37), c = X(39);
+  return `<svg class="recta-div" viewBox="0 0 600 260" role="img"
+    aria-label="La recta de 33 a 42. 37 está entre 36 y 39: de 36 se pasa 1, que es r; a 39 le faltan 2, que es r′. De 36 a 39 hay 3, el divisor.">
+    ${s}
+    <text class="rd-b" x="${b}" y="${y + 36}">37</text>
+    <path class="rd-r" d="M${a} ${y - 6} Q${(a + b) / 2} ${y - 58} ${b} ${y - 6}"/>
+    <text class="rd-rt" x="${(a + b) / 2}" y="${y - 42}">${rot('r', 1)}</text>
+    <path class="rd-rp" d="M${b} ${y - 6} Q${(b + c) / 2} ${y - 104} ${c} ${y - 6}"/>
+    <text class="rd-rpt" x="${(b + c) / 2}" y="${y - 68}">${rot('r', 2, '′')}</text>
+    <circle class="rd-pt" cx="${b}" cy="${y}" r="7"/>
+    <path class="rd-d" d="M${a} ${y + 80} V${y + 96} M${a} ${y + 88} H${c} M${c} ${y + 80} V${y + 96}"/>
+    <text class="rd-b" x="${(a + c) / 2}" y="${y + 126}">${rot('d', 3)}</text>
+  </svg>`;
+};
 
 const TEMAS = [
 {
@@ -213,9 +256,20 @@ const TEMAS = [
       html:grande('M − S = D'),
       revela:{ txt:'18 + 32 da 50: el sustraendo más la diferencia es el minuendo. La resta es la operación inversa de la suma.' },
       mas:[`En letras: ${M('S + D = M')}. Con eso salen casi todos los ejercicios de restas.`] },
+    { id:'leyes-resta', cajon:'postulado', chip:'Leyes', titulo:'Las leyes de la sustracción',
+      pregunta:'¿Da lo mismo 10 − 4 que 4 − 10? ¿Y (10 − 4) − 2 que 10 − (4 − 2)?',
+      enun:'La resta <b>no es conmutativa ni asociativa</b>: el minuendo y el sustraendo no se pueden cambiar de lugar.',
+      figura:reglas(['Uniformidad', 'a = b', 'a − c = b − c'],
+                  [noVale('Conmutativa: no vale'), '10 − 4 ≠ 4 − 10'],
+                  [noVale('Asociativa: no vale'), '(10 − 4) − 2 ≠ 10 − (4 − 2)'],
+                  ['Monotonía: desigualdad menos igualdad, el mismo sentido', 'a &lt; b, c = d', 'a − c &lt; b − d'],
+                  ['Igualdad menos desigualdad: el sentido contrario', 'a = b, c &lt; d', 'a − c &gt; b − d'],
+                  ['Desigualdad menos otra contraria: el sentido del minuendo', 'a &lt; b, c &gt; d', 'a − c &lt; b − d']),
+      revela:{ txt:'No: 10 − 4 da 6, y 4 − 10 da −6; (10 − 4) − 2 da 4, y 10 − (4 − 2) da 8.' },
+      mas:['Por eso la resta tiene tantas propiedades: el minuendo y el sustraendo no hacen el mismo papel.'] },
     { id:'prop-resta', cajon:'teorema', chip:'Propiedades', titulo:'Las propiedades de la sustracción',
       pregunta:'Si 50 − 18 da 32, ¿cuánto da 60 − 18? ¿Y 50 − 28?',
-      enun:'Lo que le pasa al <b>minuendo</b> le pasa a la diferencia. Lo que le pasa al <b>sustraendo</b>, le pasa al revés.',
+      enun:'Como no son intercambiables, cada término mueve la diferencia a su manera. Lo que le pasa al <b>minuendo</b> le pasa a la diferencia. Lo que le pasa al <b>sustraendo</b>, le pasa al revés.',
       figura:reglas(['1.ª Al minuendo, más k', '(M + k) − S = D + k'],
                   ['2.ª Al minuendo, menos k', '(M − k) − S = D − k'],
                   ['3.ª Al sustraendo, más k', 'M − (S + k) = D − k'],
@@ -224,13 +278,6 @@ const TEMAS = [
                   ['6.ª A los dos, menos k', '(M − k) − (S − k) = D'],
                   ['7.ª Al minuendo menos m, al sustraendo más p', '(M − m) − (S + p) = D − (m + p)']),
       revela:{ txt:'60 − 18 da 42: el minuendo subió 10 y la diferencia también. 50 − 28 da 22: el sustraendo subió 10 y la diferencia bajó 10.' } },
-    { id:'leyes-resta', cajon:'postulado', chip:'Leyes', titulo:'Las leyes de la sustracción',
-      pregunta:'7 &lt; 10. Si a los dos les resto 3, ¿sigue siendo «menor»? ¿Y si a un 10 le resto 7 y a otro 10 le resto 3?',
-      enun:'<b>Uniformidad:</b> la diferencia de dos números es una sola, y restando miembro a miembro dos igualdades sale otra igualdad. <b>Monotonía:</b> qué pasa con el sentido al restar.',
-      figura:reglas(['Desigualdad menos igualdad: el mismo sentido', 'a &lt; b, c = d', 'a − c &lt; b − d'],
-                  ['Igualdad menos desigualdad: el sentido contrario', 'a = b, c &lt; d', 'a − c &gt; b − d'],
-                  ['Desigualdad menos otra contraria: el sentido del minuendo', 'a &lt; b, c &gt; d', 'a − c &lt; b − d']),
-      revela:{ txt:'4 &lt; 7: restar lo mismo no cambia el sentido. Pero 10 − 7 da 3 y 10 − 3 da 7, y 3 &lt; 7: el sentido se dio vuelta, porque al que le restan más le queda menos.' } },
   ],
   problemas:[
     { cod:'E10', tras:'resta', titulo:'Los tres términos, sumados',
@@ -272,6 +319,8 @@ const TEMAS = [
   preguntas:[
     { p:'¿Por qué M + S + D da 2M?',
       r:'Porque S + D ya es M: el sustraendo más la diferencia es el minuendo. Queda M + M.' },
+    { p:'¿Por qué en la monotonía de la resta el sentido se da vuelta?',
+      r:'Porque al que le restan más le queda menos: 10 − 7 da 3, y 10 − 3 da 7.' },
     { p:'¿Hay algo de la vida real que sea la 5.ª propiedad?',
       r:'La diferencia de edad entre dos hermanos: pasan los años, los dos cumplen lo mismo, y la diferencia no cambia.' },
     { p:'En la 7.ª, ¿por qué la diferencia baja m + p y no m − p?',
@@ -296,6 +345,10 @@ const TEMAS = [
     <p><b>Ejercicio 13.</b> 2M es 50S, así que M es 25S; como D es M − S, 24S es 960 y S es 40. El
       minuendo es 1000 y la suma de sus cifras es 1. Casi todas las opciones son un número del
       problema: el que no lee la última línea elige 1000.</p>
+    <p><b>Primero las leyes, después las propiedades</b>, como en la suma. Que la resta no sea
+      conmutativa ni asociativa es lo que explica las siete propiedades: el minuendo y el
+      sustraendo no hacen el mismo papel, así que cada uno mueve la diferencia a su manera.
+      Conviene que lo vean con los números de la pregunta antes de mirar la tabla.</p>
     <p>Las leyes de la resta (la monotonía) no tienen ejercicio en el ejercitario: alcanza con la
       pregunta de la diapositiva.</p>`
 },
@@ -324,10 +377,20 @@ const TEMAS = [
                   ['Conmutativa', 'a · b = b · a'],
                   ['Asociativa', '(a · b) · c = a · (b · c)'],
                   ['Disociativa', '4 · 2 = (2 · 2) · 2'],
-                  ['Monotonía', 'a &lt; b, c &lt; d', 'a · c &lt; b · d']),
+                  ['Monotonía, si los cuatro son positivos', 'a &lt; b, c &lt; d', 'a · c &lt; b · d']),
       revela:{ txt:'Juntando 25 · 4, que da 100; después, 100 · 7 da 700. Se cambia el orden (conmutativa) y se agrupa (asociativa).' },
       mas:['La resta y la división <b>no</b> son conmutativas: 10 − 4 da 6, y 4 − 10 da −6.',
-           `Si un factor aumenta k, el producto aumenta k veces el otro factor: ${M('(a + k) · b = a · b + k · b')}.`] },
+           `La monotonía vale solo con positivos. Con negativos falla: ${M('−5 &lt; −1')} y ${M('−3 &lt; 2')}, pero ${M('(−5) · (−3)')} da 15 y ${M('(−1) · 2')} da −2, y 15 no es menor que −2.`] },
+    { id:'distributiva', cajon:'postulado', chip:'Leyes', titulo:'La distributiva, el neutro y el absorbente',
+      pregunta:'¿Cómo harías 7 · 102 de cabeza?',
+      enun:'Multiplicar una suma es multiplicar cada sumando y sumar: es la <b>distributiva</b>, la más usada de todas.',
+      figura:reglas(['Distributiva', 'a · (b + c) = a · b + a · c'],
+                  ['Elemento neutro', 'a · 1 = a'],
+                  ['Elemento absorbente', 'a · 0 = 0'],
+                  ['Inverso, con fracciones (a ≠ 0)', `a · ${Q(1, 'a')} = 1`]),
+      revela:{ txt:'Como 7 · (100 + 2): 700 más 14, juntos 714.' },
+      mas:[`Si un factor aumenta k, el producto aumenta k veces el otro: ${M('(a + k) · b = a · b + k · b')}.`,
+           `En los naturales no hay inverso; con fracciones, sí: ${M(`2 · ${Q(1, 2)} = 1`)}.`] },
   ],
   problemas:[
     { cod:'E15', tras:'producto', titulo:'¿Cuál no se verifica?',
@@ -346,7 +409,7 @@ const TEMAS = [
         { t:'multiplicación y división', error:'la división no es conmutativa' },
         { t:'resta y división', error:'ninguna de las dos es conmutativa' },
         { t:'adición y división', error:'la división no es conmutativa' } ] },
-    { cod:'E27', tras:'leyes-mult', titulo:'Un problema con números',
+    { cod:'E27', tras:'distributiva', titulo:'Un problema con números',
       enun:`En una multiplicación si el multiplicando disminuye en 4 unidades, el producto disminuye en 640; y si el multiplicador aumenta 4 unidades, el producto aumenta en 120. El producto es:${EJ(27)}`,
       opciones:[
         { t:'30', error:'dio el multiplicando' },
@@ -359,7 +422,11 @@ const TEMAS = [
     { p:'En el 15, ¿la B no falla si a es 0?',
       r:'Sí: 0 · 5 da 0, que no es mayor que 0. El ejercicio piensa en a positivo; aun así, la que falla siempre es la C: 8 · 0,5 da 4, no 0.' },
     { p:'¿La monotonía vale con negativos?',
-      r:'No: −3 < 1 y −2 < 1, pero (−3) · (−2) da 6, que no es menor que 1. La ley es para números positivos.' },
+      r:'No: −5 < −1 y −3 < 2, pero (−5) · (−3) da 15 y (−1) · 2 da −2, y 15 no es menor que −2. La ley es para números positivos.' },
+    { p:'¿Por qué el neutro y el absorbente aparecen dos veces?',
+      r:'En «el producto y el multiplicando» se ve qué pasa al multiplicar por 1 o por 0; acá tienen su nombre de ley, que es como los pregunta el examen.' },
+    { p:'En el 27, ¿dónde está la distributiva?',
+      r:'(a − 4) · b es a · b − 4 · b: el producto pierde 4 veces el multiplicador. Sin la distributiva no se ve de dónde sale el 640.' },
     { p:'En el 27, ¿por qué si el multiplicando baja 4 el producto baja 4 veces el multiplicador?',
       r:'Porque el multiplicador dice cuántas veces se suma el multiplicando. Si cada una de esas veces se suma 4 menos, en total se pierden 4 veces el multiplicador.' },
   ],
@@ -369,6 +436,10 @@ const TEMAS = [
       no da 0. Ojo con la B: con a igual a 0 tampoco vale, y algún alumno lo va a ver.</p>
     <p><b>Ejercicio 16.</b> «Adición» en la E es la suma con otro nombre: está para el que no
       lee con cuidado.</p>
+    <p><b>La monotonía</b> vale solo con positivos: con −5 &lt; −1 y −3 &lt; 2, los productos
+      son 15 y −2. En el examen los números son naturales, pero el que la aplica con negativos se
+      equivoca. <b>La distributiva</b> no estaba en el material de las leyes, y es la más usada:
+      la pide el ejercicio 27. El inverso se nombra para que sepan que en los naturales no existe.</p>
     <p><b>Ejercicio 27.</b> Si el multiplicando baja 4, el producto baja 4 veces el multiplicador:
       4b es 640 y b es 160. Si el multiplicador sube 4, el producto sube 4 veces el multiplicando:
       4a es 120 y a es 30. El producto, 30 · 160, es 4800. Las opciones A y B son los dos factores:
@@ -399,6 +470,41 @@ const TEMAS = [
                     ['Los dos restos suman el divisor', 'r + r′ = d'],
                     ['El resto más grande posible', 'r = d − 1']),
       revela:{ txt:'Faltan 2: 37 = 3 · 13 − 2. Y los restos, 1 y 2, suman 3: el divisor.' } },
+    { id:'exceso-recta', cajon:'teorema', chip:'División entera', titulo:'Defecto y exceso, en la recta',
+      pregunta:'37 cae entre dos múltiplos de 3. ¿Entre cuáles? ¿A cuánto está de cada uno?',
+      enun:'Por <b>defecto</b>, al múltiplo de abajo: r es lo que se pasó. Por <b>exceso</b>, al de arriba: r′ es lo que falta.',
+      figura:recta(),
+      revela:{ txt:'Entre 36 y 39. De 36 se pasó 1; a 39 le faltan 2.' },
+      mas:[`${M('c′ = c + 1')}: los dos múltiplos son consecutivos.`,
+           `${M('r + r′ = d')}: los dos tramos cubren de un múltiplo al otro.`] },
+  ],
+  /* después de la recta: por qué los restos suman el divisor, y un ejercicio
+     que llega a r′ por los dos caminos. No son del ejercitario: lo pidió Juan */
+  ejemplos:[
+    { tras:'exceso-recta', titulo:'¿Por qué los restos suman el divisor?', prosa:true, fija:1,
+      enun:'Probar que r + r′ = d, con las dos formas de escribir el dividendo.',
+      pasos:[
+        'Las dos formas dicen el mismo dividendo: por defecto, con c y r; por exceso, con c′ y r′.',
+        P('Como las dos son D, se igualan.', 'd · c + r = d · c′ − r′'),
+        P('Reemplazo c′ por c + 1.', `d · c + r = d · ${N('(c + 1)')} − r′`),
+        P('Aplico la distributiva.', 'd · c + r = d · c + d − r′'),
+        P('Resto d · c a los dos miembros.', `d · c + r ${N('− d · c')} = d · c + d − r′ ${N('− d · c')}`, 'r = d − r′'),
+        P('Sumo r′ a los dos miembros.', `r ${N('+ r′')} = d − r′ ${N('+ r′')}`, 'r + r′ = d'),
+      ],
+      final:`${M('r + r′ = d')}: los dos restos suman el divisor`,
+      control:`Con 37 entre 3, los restos son 1 y 2:${A('1 + 2 = 3 ✓')}` },
+    { tras:'exceso-recta', titulo:'El resto por exceso, por los dos caminos', prosa:true, fija:1,
+      enun:'Dividir 58 entre 7 por defecto y por exceso. Hallar el resto por exceso r′ de dos maneras: con la cuenta, y con r + r′ = d.',
+      pasos:[
+        'Lo que se busca: el resto por exceso de 58 entre 7, por dos caminos que tienen que dar lo mismo.',
+        P('Por defecto: el múltiplo de 7 de abajo es 7 · 8, que es 56.', '58 = 7 · 8 + 2'),
+        P('Por exceso, el cociente es uno más.', 'c′ = 8 + 1', ' = 9'),
+        P('Primer camino: lo que le falta a 58 para llegar a 7 · 9.', 'r′ = 7 · 9 − 58', ' = 63 − 58', ' = 5'),
+        P('Segundo camino: los dos restos suman el divisor.', 'r + r′ = 7', '2 + r′ = 7'),
+        P('Resto 2 a los dos miembros.', `2 + r′ ${N('− 2')} = 7 ${N('− 2')}`, 'r′ = 5'),
+      ],
+      final:`${M('r′ = 5')}, por los dos caminos`,
+      control:`Por exceso, 58 es 7 · 9 menos el resto:${A('7 · 9 − 5 = 63 − 5', ' = 58 ✓')}` },
   ],
   problemas:[
     { cod:'E18', tras:'division', titulo:'¿Cuándo es exacta?',
@@ -423,16 +529,16 @@ const TEMAS = [
     { cod:'E33', tras:'defecto', titulo:'Al dividendo, 49 más',
       enun:`El cociente y el resto de una división inexacta son 17 y 9 respectivamente. Pero si al dividendo se le aumenta 49 unidades, el cociente sería 21 y el resto 6. Hallar la suma de dividendo y divisor primitivos.${EJ(33)}`,
       opciones:[ { t:'238' }, { t:'240' }, { t:'244' }, { t:'241' }, { t:'243', ok:true } ] },
-    { cod:'E22', tras:'exceso', titulo:'¿Cuántas son falsas?', largo:true,
+    { cod:'E22', tras:'exceso-recta', titulo:'¿Cuántas son falsas?', largo:true,
       enun:`De las siguientes afirmaciones:${af('I) En una división inexacta, el divisor siempre es menor que el resto.',
         'II) La suma de los residuos por defecto y por exceso en una división inexacta siempre es igual al cociente.',
         'III) Si un número divide al dividendo y al divisor de una división inexacta, necesariamente divide al resto.',
         'IV) Cuando el cociente es igual a la unidad, necesariamente el dividendo es igual al divisor.')}Es/son falsa/s:${EJ(22)}`,
       opciones:[ { t:'Una' }, { t:'Dos' }, { t:'Tres', ok:true }, { t:'Todas', error:'tomó la III como falsa' }, { t:'Ninguna' } ] },
-    { cod:'E25', tras:'exceso', titulo:'Por defecto 41, por exceso 39',
+    { cod:'E25', tras:'exceso-recta', titulo:'Por defecto 41, por exceso 39',
       enun:`Al sumar los cuatro términos de una división entera por defecto se obtiene 41, pero si la división es por exceso, la suma es 39. Además, la suma de los cocientes es 7. El divisor es:${EJ(25)}`,
       opciones:[ { t:'26' }, { t:'5' }, { t:'7', ok:true }, { t:'2' }, { t:'4' } ] },
-    { cod:'E23', tras:'exceso', titulo:'Le faltan 13 para el máximo',
+    { cod:'E23', tras:'exceso-recta', titulo:'Le faltan 13 para el máximo',
       enun:`Al resto de una división entera le falta 13 unidades para ser el máximo posible. Si al restarle 131 unidades al dividendo y el divisor no varía, el cociente disminuye en 6 y el residuo se vuelve máximo. Entonces, la suma de las cifras del divisor es:${EJ(23)}`,
       opciones:[
         { t:'8', error:'multiplicó las cifras del divisor en vez de sumarlas' },
@@ -440,7 +546,7 @@ const TEMAS = [
         { t:'12' },
         { t:'13' },
         { t:'16' } ] },
-    { cod:'E34', tras:'exceso', titulo:'Lo más que se puede agregar',
+    { cod:'E34', tras:'exceso-recta', titulo:'Lo más que se puede agregar',
       enun:`En una división inexacta, el divisor es 23 y el resto 4. ¿Cuál es la máxima cantidad que se le puede agregar al dividendo de manera que el cociente aumente en 3?${EJ(34)}`,
       opciones:[
         { t:'65', error:'dio lo mínimo que hay que agregar, no lo máximo' },
@@ -466,6 +572,13 @@ const TEMAS = [
   notas:`<p>Es el tema que más pesa en el examen. Todo sale de tres fórmulas: <b>D = d · c + r</b>
       con el resto menor que el divisor, <b>c′ es c + 1</b> y <b>r + r′ es d</b>. Antes de cada
       problema conviene escribir con ellos qué dice cada dato, en letras.</p>
+    <p><b>La recta.</b> Con el dibujo, las fórmulas del exceso se ven antes de escribirlas: por
+      defecto se va al múltiplo de abajo y por exceso al de arriba, que son consecutivos (c′ es c + 1),
+      y los dos tramos cubren de un múltiplo al siguiente (r + r′ es d). Recién después va la
+      demostración en la pizarra, para que vean que no es una fórmula más para memorizar, sino una
+      consecuencia de lo que ya sabían. Si el proyector no ayuda, la recta se copia en el pizarrón.</p>
+    <p><b>Los dos caminos.</b> En el ejemplo de 58 entre 7, que cada uno calcule r′ por la cuenta
+      (63 − 58) y por los restos (7 − 2) antes de mostrar los pasos: que den lo mismo es el control.</p>
     <p><b>Ejercicio 18.</b> La A es la definición. La B es una división exacta, pero no la única.</p>
     <p><b>Ejercicio 24.</b> Dos decenas y tres unidades: 23. El cociente es la mitad de 4 · 23,
       46; x es 23 · 46, 1058. El material escribe los miles con coma (1,058): conviene avisar.

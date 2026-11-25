@@ -423,6 +423,78 @@ def controla_pagina(v30, d39, c39):
     print(f'  {len(EJ)} ejercicios, {sum(len(o) for _, o, _ in EJ.values())} opciones controladas; {n_teo} teorías')
 
 
+def teoria_nueva():
+    """Lo que dicen las teorías y los ejemplos propios: la resta sin
+    conmutativa ni asociativa, la monotonía del producto solo con positivos,
+    la distributiva y lo demás, la recta de 37 entre 3 y los dos caminos de
+    58 entre 7. Cada número se calcula acá y se busca escrito en la página."""
+    print('Teorías y ejemplos propios')
+    html = PAGINA.read_text(encoding='utf-8')
+    Z = range(-12, 13)
+
+    def esta(frag, que):
+        if frag not in html:
+            mal(f'{que}: la página no trae «{frag}»')
+
+    # la resta: ni conmutativa ni asociativa, con los números de la diapositiva
+    if 10 - 4 == 4 - 10 or (10 - 4) - 2 == 10 - (4 - 2):
+        mal('el contraejemplo de la resta no es contraejemplo')
+    if siempre(lambda a, b: a - b == b - a, product(Z, Z)):
+        mal('la resta resultó conmutativa')
+    esta(f'10 − 4 da {10 - 4}, y 4 − 10 da {4 - 10}'.replace('-', '−'), 'la resta')
+    esta(f'(10 − 4) − 2 da {(10 - 4) - 2}, y 10 − (4 − 2) da {10 - (4 - 2)}', 'la resta')
+    esta('Conmutativa: no vale', 'la resta')
+    esta('Asociativa: no vale', 'la resta')
+    # la diapositiva de las leyes de la resta va antes que la de las propiedades
+    if html.find("id:'leyes-resta'") > html.find("id:'prop-resta'"):
+        mal('las leyes de la resta tienen que ir antes que sus propiedades')
+
+    # la monotonía del producto: vale con positivos, falla con negativos
+    pos = range(1, 13)
+    if not siempre(lambda a, b, c, d: not (a < b and c < d) or a * c < b * d, product(pos, pos, pos, pos)):
+        mal('la monotonía falla con positivos')
+    a, b, c, d = -5, -1, -3, 2
+    if not (a < b and c < d) or a * c < b * d:
+        mal('el contraejemplo de la monotonía no es contraejemplo')
+    esta(f'da {a * c} y', 'la monotonía')
+    esta(f'da {b * d}'.replace('-', '−'), 'la monotonía')
+
+    # la distributiva, el neutro, el absorbente y el inverso
+    if not siempre(lambda a, b, c: a * (b + c) == a * b + a * c, product(Z, Z, Z)):
+        mal('la distributiva no vale')
+    if not siempre(lambda a: a * 1 == a and a * 0 == 0, [(a,) for a in Z]):
+        mal('el neutro o el absorbente no valen')
+    if not all(F(a) * (1 / F(a)) == 1 for a in Z if a) or any(2 * n == 1 for n in range(0, 50)):
+        mal('el inverso')
+    if 7 * 100 + 7 * 2 != 7 * 102:
+        mal('7 · 102')
+    esta(f'juntos {7 * 102}', 'la distributiva')
+
+    # la recta: 37 entre 3
+    c, r = defecto(37, 3)
+    c2, r2 = exceso(37, 3)
+    if (3 * c + r, 3 * c2 - r2) != (37, 37) or r + r2 != 3 or c2 != c + 1:
+        mal('la recta de 37 entre 3')
+    esta(f'Entre {3 * c} y {3 * c2}. De {3 * c} se pasó {r}; a {3 * c2} le faltan {r2}.', 'la recta')
+    esta(f"rot('r', {r})", 'la recta')
+    esta(f"rot('r', {r2}, '′')", 'la recta')
+    esta(f"rot('d', 3)", 'la recta')
+    esta(f"A('{r} + {r2} = 3 ✓')", 'la demostración')
+
+    # los dos caminos: 58 entre 7
+    c, r = defecto(58, 7)
+    c2 = c + 1
+    r_cuenta = 7 * c2 - 58                 # primer camino: lo que falta
+    r_restos = 7 - r                       # segundo camino: r + r′ = d
+    if r_cuenta != r_restos or r_cuenta != exceso(58, 7)[1]:
+        mal(f'58 entre 7: {r_cuenta} y {r_restos} no coinciden')
+    for frag in (f"'58 = 7 · {c} + {r}'", f"' = {c2}'", f"'r′ = 7 · {c2} − 58'", f"' = {7 * c2} − 58'",
+                 f"' = {r_cuenta}'", f"'{r} + r′ = 7'", f"'r′ = {r_restos}'", f"M('r′ = {r_cuenta}')",
+                 f"A('7 · {c2} − {r_cuenta} = {7 * c2} − {r_cuenta}', ' = 58 ✓')"):
+        esta(frag, '58 entre 7')
+    print(f'  37 entre 3: r = {defecto(37, 3)[1]}, r′ = {exceso(37, 3)[1]}; 58 entre 7: r′ = {r_cuenta} por los dos caminos')
+
+
 adicion()
 sustraccion()
 multiplicacion()
@@ -431,6 +503,7 @@ v30 = combinadas()
 d39, c39 = desafio()
 print(f'  E39  el número es {miles(d39)} (cociente por defecto {c39})')
 controla_pagina(v30, d39, c39)
+teoria_nueva()
 print()
 print('Todo en orden.' if not fallos else f'{len(fallos)} falla(s).')
 sys.exit(1 if fallos else 0)

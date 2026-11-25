@@ -1113,11 +1113,15 @@ Pizarra.unidad = cfg => {
 
   /* los ejemplos resueltos de un tema; con ayudaAparte van al final, como
      ayuda que se abre cuando un grupo se traba, fuera del recorrido */
-  const ejemplosDe = t => t.ejemplos.map((ej, i) => (ej.antes || []).map(td => teoria(td, cintaT(t))).join('') +
+  /* un ejemplo con tras:'<id de una teoría>' va justo después de esa
+     teoría, antes de sus ejercicios; los demás, con los ejemplos del tema */
+  const unEjemplo = (t, ej, i) => (ej.antes || []).map(td => teoria(td, cintaT(t))).join('') +
       bloque(`${idT(t)}-${i + 1}`, ej, {
         rotulo:`Ejemplo ${i + 1}.`,
         cinta:`<b>${etiqueta(t)}</b> · ${t.corto} · ${ayudaAparte ? 'ayuda, ' : ''}ejemplo ${i + 1} de ${t.ejemplos.length}` }) +
-      (ej.practica ? practica(ej.practica, `<b>${etiqueta(t)}</b> · ${t.corto} · después del ejemplo ${i + 1}`) : '')).join('') +
+      (ej.practica ? practica(ej.practica, `<b>${etiqueta(t)}</b> · ${t.corto} · después del ejemplo ${i + 1}`) : '');
+  const ejemplosTras = (t, id) => (t.ejemplos || []).map((ej, i) => ej.tras === id ? unEjemplo(t, ej, i) : '').join('');
+  const ejemplosDe = t => t.ejemplos.map((ej, i) => ej.tras ? '' : unEjemplo(t, ej, i)).join('') +
     (t.practica ? practica(t.practica, `<b>${etiqueta(t)}</b> · ${t.corto} · para practicar`) : '') +
     (t.despues || []).map(td => teoria(td, cintaT(t))).join('');
 
@@ -1176,7 +1180,7 @@ Pizarra.unidad = cfg => {
     ${c.figura ? `<div class="concepto-figura">${c.figura}</div>` : ''}
     <ul class="puntos">${c.puntos.map(p => `<li>${p}</li>`).join('')}</ul>
   </section>` : ''}
-  ${(t.teoria || []).map(td => teoria(td, cintaT(t)) + problemasDe(t, td.id)).join('')}
+  ${(t.teoria || []).map(td => teoria(td, cintaT(t)) + ejemplosTras(t, td.id) + problemasDe(t, td.id)).join('')}
   ${problemasDe(t)}
 
   ${ayudaAparte || !t.ejemplos ? '' : `<div class="ejemplos">${ejemplosDe(t)}</div>`}
