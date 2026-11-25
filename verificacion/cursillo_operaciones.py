@@ -495,6 +495,158 @@ def teoria_nueva():
     print(f'  37 entre 3: r = {defecto(37, 3)[1]}, r′ = {exceso(37, 3)[1]}; 58 entre 7: r′ = {r_cuenta} por los dos caminos')
 
 
+def diagnostico():
+    """El diagnóstico inicial (I1 a I5) y el final (F1 a F5): la prueba de
+    antes y después. Son propios, uno por tema, y van de a pares: I1 y F1
+    miden lo mismo con otros números. Cada respuesta se calcula acá por
+    fuerza bruta o probando en muchos números, y cada opción incorrecta se
+    rehace desde el error que la produce. Se devuelve, por código:
+    (tema, datos del enunciado, [(texto, ok)])."""
+    print('El diagnóstico inicial y el final')
+    D = {}
+
+    def cambio(k):                      # cómo varía una suma o una diferencia
+        return 'no varía' if k == 0 else f'aumenta {k}' if k > 0 else f'disminuye {-k}'
+
+    def factor(f):                      # cómo varía un producto
+        f = F(f)
+        return f'se multiplica por {f}' if f.denominator == 1 else f'se divide por {f.denominator}'
+
+    def item(cod, tema, datos, opciones):
+        textos = [t for t, _ in opciones]
+        if len(set(textos)) != 5 or sum(ok for _, ok in opciones) != 1:
+            mal(f'{cod}: tiene que tener 5 opciones distintas y una sola correcta')
+        D[cod] = (tema, datos, opciones)
+        k = [ok for _, ok in opciones].index(True)
+        print(f'  {cod}  la {"ABCDE"[k]}: {textos[k]}')
+
+    # tema 1: un sumando sube, el otro baja
+    def suma(cod, sube, baja, orden):
+        # la variación, probada en muchos pares de sumandos
+        var = {(a + sube) + (b - baja) - (a + b) for a in range(baja, 60) for b in range(baja, 60)}
+        if len(var) != 1:
+            mal(f'{cod}: la variación de la suma depende de los sumandos')
+        v = var.pop()
+        if v != sube - baja:
+            mal(f'{cod}: la variación no es {sube} − {baja}')
+        ops = {'ok': v, 'solo-sube': sube, 'solo-baja': -baja, 'suma-cambios': (sube + baja) * (1 if sube > baja else -1),
+               'compensa': 0}
+        item(cod, '1', [str(sube), str(baja)], [(cambio(ops[e]), e == 'ok') for e in orden])
+
+    suma('I1', 12, 5, ['solo-sube', 'solo-baja', 'ok', 'suma-cambios', 'compensa'])
+    suma('F1', 6, 15, ['solo-baja', 'ok', 'solo-sube', 'compensa', 'suma-cambios'])
+
+    # tema 2: M + S + D = s y la diferencia; se pide el sustraendo
+    def resta(cod, s, dif, orden):
+        sol = [(M, S) for M in range(0, s + 1) for S in range(0, M + 1) if M + S + (M - S) == s and M - S == dif]
+        if len(sol) != 1:
+            mal(f'{cod}: {len(sol)} soluciones')
+            return
+        M, S = sol[0]
+        if M != s // 2 or S != s // 2 - dif:                  # el otro camino: 2M = s
+            mal(f'{cod}: por fuerza bruta y despejando no da lo mismo')
+        ops = {'ok': S, 'minuendo': s // 2, 'resta-total': s - dif, 'mas-dif': s // 2 + dif, 'tercios': s // 3}
+        if s % 3:
+            mal(f'{cod}: {s} no se reparte en tres')
+        item(cod, '2', [str(s), str(dif)], [(str(ops[e]), e == 'ok') for e in orden])
+
+    resta('I2', 156, 30, ['ok', 'minuendo', 'resta-total', 'mas-dif', 'tercios'])
+    resta('F2', 174, 25, ['minuendo', 'resta-total', 'tercios', 'mas-dif', 'ok'])
+
+    # tema 3: el multiplicando y el multiplicador cambian; cómo cambia el producto
+    def producto(cod, fm, fn, orden, resta_txt):
+        fm, fn = F(fm), F(fn)
+        var = {(a * fm) * (b * fn) / (a * b) for a in POS for b in POS}
+        if len(var) != 1:
+            mal(f'{cod}: la variación del producto depende de los factores')
+        v = var.pop()
+        mult = fm if fm > 1 else fn                     # el que multiplica
+        div = 1 / (fn if fm > 1 else fm)                # por cuánto divide el otro
+        ops = {'ok': factor(v), 'solo-mult': factor(mult), 'solo-div': factor(1 / div),
+               'multiplica-cambios': factor(mult * div) if fm > 1 else factor(1 / (mult * div)),
+               'resta-cambios': resta_txt}
+        if resta_txt != cambio(mult - div):
+            mal(f'{cod}: «{resta_txt}» no sale de restar los cambios')
+        item(cod, '3', [], [(ops[e], e == 'ok') for e in orden])
+
+    producto('I3', 4, F(1, 2), ['solo-mult', 'solo-div', 'multiplica-cambios', 'ok', 'resta-cambios'], 'aumenta 2')
+    producto('F3', F(1, 6), 3, ['ok', 'solo-mult', 'resta-cambios', 'solo-div', 'multiplica-cambios'], 'disminuye 3')
+
+    # tema 4: divisor, cociente y el resto mayor posible; se pide el dividendo
+    def dividendo(cod, d, c, orden):
+        cand = [n for n in range(0, 10 * d * c) if defecto(n, d)[0] == c]
+        n = max(cand, key=lambda n: defecto(n, d)[1])
+        if n != d * c + d - 1:                          # el otro camino: r = d − 1
+            mal(f'{cod}: el dividendo no es d · c + d − 1')
+        ops = {'ok': n, 'resto-divisor': d * c + d, 'sin-resto': d * c, 'resta-resto': d * c - (d - 1),
+               'resto-uno': d * c + 1}
+        item(cod, '4', [str(d), str(c)], [(str(ops[e]), e == 'ok') for e in orden])
+
+    dividendo('I4', 9, 14, ['resto-divisor', 'ok', 'sin-resto', 'resta-resto', 'resto-uno'])
+    dividendo('F4', 7, 23, ['sin-resto', 'resto-divisor', 'ok', 'resto-uno', 'resta-resto'])
+
+    # tema 5: a : b · c + e · (f − g)
+    def combinada(cod, a, b, c, e, f, g, orden):
+        bien = F(a) / b * c + e * (f - g)
+        # por otro camino, con enteros y paso a paso: la división es exacta
+        otro = (a // b) * c + e * (f - g) if a % b == 0 else None
+        if bien != otro or bien.denominator != 1:
+            mal(f'{cod}: no da un entero, o los dos caminos no coinciden')
+        ops = {'ok': bien, 'divide-producto': F(a) / (b * c) + e * (f - g),
+               'suma-antes': (F(a) / b * c + e) * (f - g), 'parentesis': F(a) / b * c + e * f - g,
+               'izq-der': (F(a) / b * c + e) * f - g}
+        item(cod, '5', [f'{a} : {b} · {c} + {e} · ({f} − {g})'], [(str(ops[k]), k == 'ok') for k in orden])
+
+    combinada('I5', 48, 6, 2, 3, 10, 4, ['divide-producto', 'suma-antes', 'parentesis', 'izq-der', 'ok'])
+    combinada('F5', 60, 4, 3, 2, 9, 5, ['divide-producto', 'parentesis', 'suma-antes', 'ok', 'izq-der'])
+    return D
+
+
+def controla_diagnostico(D):
+    html = PAGINA.read_text(encoding='utf-8')
+    if not re.search(r'data-diapos="[^"]*\.diagnostico-diapo', html):
+        mal('data-diapos no trae .diagnostico-diapo')
+    if 'id="diagnostico-lugar"' not in html:
+        mal('la página no tiene #diagnostico-lugar')
+    ini, fin = html.find('const DIAGNOSTICO'), html.find('final:{', html.find('const DIAGNOSTICO'))
+    if ini < 0 or fin < 0:
+        mal('falta el DIAGNOSTICO con su final')
+        return
+    pag = {}
+    for cod, tema, enun, ops in re.findall(
+            r"\{\s*cod:'([IF]\d)',\s*tema:'(\d)',\s*enun:'([^']*)',\s*opciones:\[(.*?)\]\s*\}", html, flags=re.S):
+        lista = re.findall(r"\{\s*t:'([^']*)',\s*(?:(ok:true)|error:'([^']*)')\s*\}", ops)
+        pag[cod] = (tema, enun, lista, html.find(f"cod:'{cod}'"))
+    for cod, (tema, datos, ops) in D.items():
+        if cod not in pag:
+            mal(f'{cod}: no está en la página')
+            continue
+        t, enun, lista, pos = pag[cod]
+        if t != tema:
+            mal(f'{cod}: es del tema {tema}, la página dice {t}')
+        if [(a, bool(ok)) for a, ok, _ in lista] != ops:
+            mal(f'{cod}: las opciones de la página no son las calculadas: {[(a, bool(ok)) for a, ok, _ in lista]}')
+        for a, ok, err in lista:
+            if not ok and not err:
+                mal(f'{cod}: la opción «{a}» no anota de qué error sale')
+        for d in datos:
+            if d not in enun:
+                mal(f'{cod}: el enunciado no trae «{d}»')
+        if (cod[0] == 'I') != (pos < fin):
+            mal(f'{cod}: está en el diagnóstico equivocado')
+    for cod in pag:
+        if cod not in D:
+            mal(f'{cod}: está en la página y no en el verificador')
+    for k in range(1, 6):
+        if D[f'I{k}'][0] != D[f'F{k}'][0]:
+            mal(f'I{k} y F{k} no miden el mismo tema')
+    for pre in 'IF':
+        letras = [[ok for _, ok in D[f'{pre}{k}'][2]].index(True) for k in range(1, 6)]
+        if len(set(letras)) < 4:
+            mal(f'el diagnóstico {pre}: la correcta cae casi siempre en la misma letra')
+    print(f'  {len(pag)} ítems en la página, 5 y 5, de a pares')
+
+
 adicion()
 sustraccion()
 multiplicacion()
@@ -504,6 +656,7 @@ d39, c39 = desafio()
 print(f'  E39  el número es {miles(d39)} (cociente por defecto {c39})')
 controla_pagina(v30, d39, c39)
 teoria_nueva()
+controla_diagnostico(diagnostico())
 print()
 print('Todo en orden.' if not fallos else f'{len(fallos)} falla(s).')
 sys.exit(1 if fallos else 0)

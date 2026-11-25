@@ -1198,17 +1198,29 @@ Pizarra.unidad = cfg => {
       cinta:'<b>Desafío final</b> · toda la unidad junta', clase:'desafio', id:'desafio',
       attrs:'data-tema="desafio"' }) : '') + (ayudas.length ? `<div class="ayudas">${ayudas.join('')}</div>` : ''));
 
-  /* el diagnóstico, antes de la introducción: en hojas de 4 ítems, sin clave
-     en pantalla (la clave y la regla de ubicación van en las Notas) */
+  /* el diagnóstico, antes de la introducción: en hojas de 4 ítems (o las 5
+     juntas, más apretadas: porHoja:5), con «Ver clave» si clave:true. Si
+     trae final:{ consigna, notas, items }, el mismo diagnóstico con otros
+     números va al final, después del desafío: la prueba de antes y después.
+     Los ítems van de a pares, en el mismo orden (I1 y F1 miden lo mismo). */
   const lugarDiag = document.getElementById('diagnostico-lugar');
-  if (DIAGNOSTICO && lugarDiag){
-    const its = DIAGNOSTICO.items, n = DIAGNOSTICO.porHoja || 4, hojas = [];
+  const FINAL = DIAGNOSTICO && DIAGNOSTICO.final;
+  const hojasDiag = (D, nombre, id, tema) => {
+    const its = D.items, n = D.porHoja || DIAGNOSTICO.porHoja || 4, hojas = [];
     for (let i = 0; i < its.length; i += n) hojas.push(hojaMC({
-      clase:'diagnostico-diapo', id:`diagnostico-${i / n + 1}`, attrs:' data-tema="unidad"', items:its.slice(i, i + n),
-      clave:!!DIAGNOSTICO.clave,
-      cinta:`<b>Diagnóstico</b> · ítems ${i + 1} a ${Math.min(i + n, its.length)} de ${its.length}`,
-      titulo:i ? 'Diagnóstico (sigue)' : 'Diagnóstico', antes:i ? '' : `<p class="diag-consigna">${DIAGNOSTICO.consigna}</p>` }));
-    lugarDiag.outerHTML = raices(hojas.join(''));
+      clase:`diagnostico-diapo${n >= 5 ? ' diag-cinco' : ''}`, id:`${id}-${i / n + 1}`, attrs:` data-tema="${tema}"`,
+      items:its.slice(i, i + n), clave:!!(D.clave ?? DIAGNOSTICO.clave),
+      cinta:`<b>${nombre}</b> · ${its.length <= n ? `${its.length} ítems` : `ítems ${i + 1} a ${Math.min(i + n, its.length)} de ${its.length}`}`,
+      titulo:i ? `${nombre} (sigue)` : nombre, antes:i ? '' : `<p class="diag-consigna">${D.consigna}</p>` }));
+    return hojas.join('');
+  };
+  if (DIAGNOSTICO && lugarDiag)
+    lugarDiag.outerHTML = raices(hojasDiag(DIAGNOSTICO, FINAL ? 'Diagnóstico inicial' : 'Diagnóstico', 'diagnostico', 'unidad'));
+  if (FINAL){
+    const tras = document.querySelector('#temas > .ayudas');
+    const html = raices(hojasDiag(FINAL, 'Diagnóstico final', 'diagnostico-final', 'final'));
+    if (tras) tras.insertAdjacentHTML('beforebegin', html);
+    else document.getElementById('temas').insertAdjacentHTML('beforeend', html);
   }
 
   /* el mapa de rutas: los temas por las franjas, con qué hace cada nivel */
@@ -1268,6 +1280,12 @@ Pizarra.unidad = cfg => {
           return its.length ? `<h4>La clave de la franja ${k}</h4>${claveDe(its)}` : '';
         }).join('') : '') })),
     ...(DESAFIO ? [{ id:'desafio', titulo:'Desafío final', notas:DESAFIO.notas, preguntas:DESAFIO.preguntas }] : []),
+    ...(FINAL ? [{ id:'final', titulo:'Diagnóstico final', preguntas:FINAL.preguntas, notas:(FINAL.notas || '') +
+        `<p><b>Los pares</b>: cada ítem del final mide lo mismo que el del inicial, con otros números.</p>
+        <table class="diag-pares"><thead><tr><th>Inicial</th><th>Final</th><th>Qué mide</th></tr></thead><tbody>${
+          FINAL.items.map((it, i) => { const a = DIAGNOSTICO.items[i] || {}, t = TEMAS.find(t => idT(t) === String(it.tema));
+            return `<tr><td><b>${a.cod || ''}</b></td><td><b>${it.cod}</b></td><td>${it.mide || (t ? `Tema ${t.n} · ${t.corto}` : '')}</td></tr>`; }).join('')
+        }</tbody></table><p><b>La clave</b>, con el error que lleva a cada opción incorrecta:</p>${claveDe(FINAL.items)}` }] : []),
   ].map(s => ({ ...s, notas:raices(s.notas || ''),
                 preguntas:(s.preguntas || []).map(q => ({ p:raices(q.p), r:raices(q.r) })) }))};
 

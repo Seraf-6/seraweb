@@ -600,6 +600,155 @@ def controla_pagina(n33, mcm30, t39, mcm39, pasos39):
     print(f'  {len(EJ)} ejercicios, {sum(len(o) for _, o, _ in EJ.values())} opciones controladas; {n_teo} teorías')
 
 
+def diagnostico():
+    """El diagnóstico inicial (I1 a I5) y el final (F1 a F5): la prueba de
+    antes y después. Son propios, uno por tema, y van de a pares: I1 y F1
+    miden lo mismo con otros números. Cada respuesta se busca recorriendo
+    (sin las fórmulas de la clase) y cada opción incorrecta se rehace desde
+    el error que la produce. Se devuelve, por código:
+    (tema, datos del enunciado, [(texto, ok)])."""
+    print('El diagnóstico inicial y el final')
+    D = {}
+
+    def item(cod, tema, datos, opciones):
+        textos = [t for t, _ in opciones]
+        if len(set(textos)) != 5 or sum(ok for _, ok in opciones) != 1:
+            mal(f'{cod}: tiene que tener 5 opciones distintas y una sola correcta')
+        D[cod] = (tema, datos, opciones)
+        k = [ok for _, ok in opciones].index(True)
+        print(f'  {cod}  la {"ABCDE"[k]}: {textos[k]}')
+
+    # tema 1: cuántos múltiplos de d hay entre a y b
+    def multiplos(cod, d, a, b, orden):
+        bien = len([n for n in range(a + 1, b) if n % d == 0])
+        if bien != b // d - a // d:                     # el otro camino: los de hasta b menos los de hasta a
+            mal(f'{cod}: contando y restando cocientes no da lo mismo')
+        ops = {'ok': bien, 'distancia': (b - a) // d, 'hasta-b': b // d, 'resta': b - a, 'hasta-a': a // d}
+        item(cod, '1', [str(d), str(a), str(b)], [(str(ops[e]), e == 'ok') for e in orden])
+
+    multiplos('I1', 6, 45, 128, ['distancia', 'ok', 'hasta-b', 'resta', 'hasta-a'])
+    multiplos('F1', 8, 45, 170, ['distancia', 'hasta-b', 'resta', 'ok', 'hasta-a'])
+
+    # tema 2: la cifra del □ para que sea divisible por 3 y por 4
+    def cifra(cod, izq, der, orden):
+        num = lambda c: int(f'{izq}{c}{der}')
+        bien = [c for c in range(10) if num(c) % 3 == 0 and num(c) % 4 == 0]
+        if len(bien) != 1:
+            mal(f'{cod}: {len(bien)} cifras posibles')
+            return
+        ops = []
+        for c, que in orden:
+            n = num(c)
+            # el otro camino: los criterios (suma de cifras; las dos últimas cifras)
+            c3, c4 = sum(int(x) for x in str(n)) % 3 == 0, int(str(n)[-2:]) % 4 == 0
+            if (c3, c4) != (n % 3 == 0, n % 4 == 0):
+                mal(f'{cod}: los criterios no coinciden con dividir')
+            if que == 'ok' and not (c3 and c4) or que == '3' and (c3, c4) != (True, False) or que == '4' and (c3, c4) != (False, True):
+                mal(f'{cod}: la cifra {c} no cumple lo que dice su error ({que})')
+            ops.append((str(c), que == 'ok'))
+        item(cod, '2', [f'{izq}□{der}'], ops)
+
+    cifra('I2', 7, 4, [(1, '3'), (0, '4'), (7, '3'), (4, 'ok'), (8, '4')])
+    cifra('F2', 8, 2, [(5, 'ok'), (2, '3'), (3, '4'), (8, '3'), (7, '4')])
+
+    # tema 3: cuántos primos hay entre a y b
+    def primos(cod, a, b, orden):
+        rango = range(a + 1, b)
+        impares = [n for n in rango if n % 2]
+        ops = {'ok': len([n for n in rango if es_primo(n)]),
+               'impares': len(impares),
+               'solo-3': len([n for n in impares if n % 3]),
+               'sin-7': len([n for n in impares if n % 3 and n % 5]),
+               'terminan': len([n for n in rango if n % 10 in (1, 3, 7, 9)])}
+        # el otro camino: la criba, tachando múltiplos de 2, 3, 5 y 7 (alcanza hasta 120)
+        criba = [n for n in rango if all(n % p or n == p for p in (2, 3, 5, 7))]
+        if b > 121 or len(criba) != ops['ok']:
+            mal(f'{cod}: la criba y la definición no dan lo mismo')
+        item(cod, '3', [str(a), str(b)], [(str(ops[e]), e == 'ok') for e in orden])
+
+    primos('I3', 20, 50, ['ok', 'impares', 'solo-3', 'sin-7', 'terminan'])
+    primos('F3', 60, 100, ['impares', 'solo-3', 'ok', 'terminan', 'sin-7'])
+
+    # tema 4: cuántos divisores tiene n
+    def cuantos(cod, n, orden):
+        f = factoriza(n)
+        prod = suma = 1
+        for e in f.values():
+            prod *= e + 1
+        bien = len(divisores(n))
+        if bien != prod:
+            mal(f'{cod}: contando uno por uno y con la fórmula no da lo mismo')
+        pe = 1
+        for e in f.values():
+            pe *= e
+        ops = {'ok': bien, 'producto-exp': pe, 'suma-exp': sum(f.values()),
+               'suma-mas-uno': sum(e + 1 for e in f.values()), 'sin-extremos': bien - 2}
+        item(cod, '4', [str(n)], [(str(ops[e]), e == 'ok') for e in orden])
+
+    cuantos('I4', 72, ['producto-exp', 'suma-exp', 'suma-mas-uno', 'sin-extremos', 'ok'])
+    cuantos('F4', 180, ['producto-exp', 'ok', 'suma-exp', 'sin-extremos', 'suma-mas-uno'])
+
+    # tema 5: dos colectivos que salen juntos; a qué hora vuelven a salir juntos
+    def colectivos(cod, h, p, q, orden):
+        hora = lambda m: f'{h + m // 60}:{m % 60:02d}'
+        # recorriendo los minutos: el primero en que salen los dos
+        t = next(m for m in range(1, p * q + 1) if m % p == 0 and m % q == 0)
+        if t != mcm(p, q):
+            mal(f'{cod}: recorriendo y con el MCM no da lo mismo')
+        ops = {'ok': t, 'mcd': mcd(p, q), 'producto': p * q, 'suma': p + q, 'mayor': max(p, q)}
+        item(cod, '5', [str(p), str(q), f'{h}:00'], [(hora(ops[e]), e == 'ok') for e in orden])
+
+    colectivos('I5', 6, 12, 18, ['mcd', 'mayor', 'ok', 'producto', 'suma'])
+    colectivos('F5', 7, 15, 20, ['mcd', 'suma', 'producto', 'mayor', 'ok'])
+    return D
+
+
+def controla_diagnostico(D):
+    html = PAGINA.read_text(encoding='utf-8')
+    if not re.search(r'data-diapos="[^"]*\.diagnostico-diapo', html):
+        mal('data-diapos no trae .diagnostico-diapo')
+    if 'id="diagnostico-lugar"' not in html:
+        mal('la página no tiene #diagnostico-lugar')
+    ini = html.find('const DIAGNOSTICO')
+    fin = html.find('final:{', ini)
+    if ini < 0 or fin < 0:
+        mal('falta el DIAGNOSTICO con su final')
+        return
+    pag = {}
+    for cod, tema, enun, ops in re.findall(
+            r"\{\s*cod:'([IF]\d)',\s*tema:'(\d)',\s*enun:'([^']*)',\s*opciones:\[(.*?)\]\s*\}", html, flags=re.S):
+        lista = re.findall(r"\{\s*t:'([^']*)',\s*(?:(ok:true)|error:'([^']*)')\s*\}", ops)
+        pag[cod] = (tema, enun, lista, html.find(f"cod:'{cod}'"))
+    for cod, (tema, datos, ops) in D.items():
+        if cod not in pag:
+            mal(f'{cod}: no está en la página')
+            continue
+        t, enun, lista, pos = pag[cod]
+        if t != tema:
+            mal(f'{cod}: es del tema {tema}, la página dice {t}')
+        if [(a, bool(ok)) for a, ok, _ in lista] != ops:
+            mal(f'{cod}: las opciones de la página no son las calculadas: {[(a, bool(ok)) for a, ok, _ in lista]}')
+        for a, ok, err in lista:
+            if not ok and not err:
+                mal(f'{cod}: la opción «{a}» no anota de qué error sale')
+        for d in datos:
+            if d not in enun:
+                mal(f'{cod}: el enunciado no trae «{d}»')
+        if (cod[0] == 'I') != (pos < fin):
+            mal(f'{cod}: está en el diagnóstico equivocado')
+    for cod in pag:
+        if cod not in D:
+            mal(f'{cod}: está en la página y no en el verificador')
+    for k in range(1, 6):
+        if D[f'I{k}'][0] != D[f'F{k}'][0]:
+            mal(f'I{k} y F{k} no miden el mismo tema')
+    for pre in 'IF':
+        letras = [[ok for _, ok in D[f'{pre}{k}'][2]].index(True) for k in range(1, 6)]
+        if len(set(letras)) < 4:
+            mal(f'el diagnóstico {pre}: la correcta cae casi siempre en la misma letra')
+    print(f'  {len(pag)} ítems en la página, 5 y 5, de a pares')
+
+
 tema1()
 tema2()
 tema3()
@@ -608,6 +757,7 @@ mcm30 = tema5()
 t39, mcm39, pasos39 = desafio()
 print(f'  E39  hay que caminar {t39} segundos (MCM {mcm39} cm, {pasos39} pasos)')
 controla_pagina(n33, mcm30, t39, mcm39, pasos39)
+controla_diagnostico(diagnostico())
 print()
 print('Todo en orden.' if not fallos else f'{len(fallos)} falla(s).')
 sys.exit(1 if fallos else 0)

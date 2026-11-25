@@ -55,7 +55,7 @@ body[data-solo="1"] .teoria-diapo:is(:has(.reglas),:has(.forma-grande)) .teoria-
 }
 </style>
 </head>
-<body data-diapos=".intro, .teoria-diapo, .problema-diapo, .desafio">
+<body data-diapos=".diagnostico-diapo, .intro, .teoria-diapo, .problema-diapo, .desafio">
 <nav class="sitio-nav">
   <div class="sitio-nav-int">
     <a class="sitio-marca" href="../../index.html">Sera<span>Web</span></a>
@@ -82,6 +82,8 @@ body[data-solo="1"] .teoria-diapo:is(:has(.reglas),:has(.forma-grande)) .teoria-
   <nav class="nav" aria-label="Ir a un tema">
     <div class="nav-int" id="nav"></div>
   </nav>
+
+  <div id="diagnostico-lugar"></div>
 
   <section class="intro" id="inicio" data-tema="unidad">
     <p class="cinta">Cursillo de ingreso · Aritmética y Álgebra · unidad 4</p>
@@ -564,6 +566,99 @@ const TEMAS = [
 
 /* El ejercicio 39 del ejercitario, resuelto en la pizarra: un problema de
    MCM disfrazado de caminata. En el ejercitario la respuesta es la B. */
+/* El diagnóstico: cinco ítems al empezar y cinco al terminar, la prueba de
+   antes y después. Uno por tema, de opción múltiple como el examen, y propios
+   (no son del ejercitario). Van de a pares: I1 y F1 miden lo mismo con otros
+   números. Cada opción incorrecta sale de un error que los alumnos cometen de
+   verdad; el error no se proyecta: arma la clave de las Notas. Todo se
+   recalcula en el verificador. */
+const DIAGNOSTICO = {
+  clave:true, porHoja:5,
+  consigna:'Antes de empezar. Respondan en papel, solos: el código del ítem y la letra. Al final de la clase hay otros cinco iguales.',
+  notas:`<p><b>La prueba de antes y después.</b> Cinco ítems al empezar, uno por tema, y cinco
+      al terminar (después del desafío) que miden lo mismo con otros números. Que lo hagan
+      solos y en papel, con su nombre, y <b>juntar las hojas antes de «Ver clave»</b>: si no,
+      el inicial deja de medir lo que sabían al llegar.</p>
+    <p>Para comparar alcanza con contar, ítem por ítem, cuántos acertaron antes y después. La
+      letra que eligieron dice más que el puntaje: cada incorrecta sale de un error distinto
+      (en la clave de abajo), y el que eligió el mismo error en los dos todavía lo tiene.</p>
+    <p>En I2, cada opción incorrecta cumple uno solo de los dos criterios: el que la eligió
+      miró uno y se olvidó del otro.</p>`,
+  items:[
+    { cod:'I1', tema:'1', enun:'¿Cuántos múltiplos de 6 hay entre 45 y 128?', opciones:[
+      { t:'13', error:'dividió la distancia, 128 − 45 = 83, entre 6, sin mirar dónde cae el primer múltiplo' },
+      { t:'14', ok:true },
+      { t:'21', error:'contó todos los múltiplos de 6 hasta 128, también los de antes de 45' },
+      { t:'83', error:'restó los extremos y no dividió entre 6' },
+      { t:'7', error:'dio los múltiplos que hay hasta 45, que eran los que había que sacar' } ] },
+    { cod:'I2', tema:'2', enun:'El número 7□4 es divisible por 3 y por 4. ¿Qué cifra va en el □?', opciones:[
+      { t:'1', error:'miró solo el criterio del 3: 14 no es múltiplo de 4' },
+      { t:'0', error:'miró solo el criterio del 4: 7 + 0 + 4 = 11 no es múltiplo de 3' },
+      { t:'7', error:'miró solo el criterio del 3: 74 no es múltiplo de 4' },
+      { t:'4', ok:true },
+      { t:'8', error:'miró solo el criterio del 4: 7 + 8 + 4 = 19 no es múltiplo de 3' } ] },
+    { cod:'I3', tema:'3', enun:'¿Cuántos números primos hay entre 20 y 50?', opciones:[
+      { t:'7', ok:true },
+      { t:'15', error:'contó todos los impares' },
+      { t:'10', error:'tachó los pares y los múltiplos de 3, y nada más' },
+      { t:'8', error:'tachó los múltiplos de 2, 3 y 5, y se olvidó del 7: contó el 49' },
+      { t:'12', error:'creyó que todo número que termina en 1, 3, 7 o 9 es primo' } ] },
+    { cod:'I4', tema:'4', enun:'¿Cuántos divisores tiene 72?', opciones:[
+      { t:'6', error:'multiplicó los exponentes de 2³ · 3² sin sumarles 1' },
+      { t:'5', error:'sumó los exponentes' },
+      { t:'7', error:'sumó los exponentes más 1, en vez de multiplicarlos: 4 + 3' },
+      { t:'10', error:'no contó el 1 ni el 72' },
+      { t:'12', ok:true } ] },
+    { cod:'I5', tema:'5', enun:'De la terminal de San Lorenzo salen juntos dos colectivos a las 6:00. Uno sale cada 12 minutos y el otro, cada 18. ¿A qué hora vuelven a salir juntos?', opciones:[
+      { t:'6:06', error:'usó el MCD de 12 y 18 en vez del MCM' },
+      { t:'6:18', error:'tomó el mayor de los dos tiempos' },
+      { t:'6:36', ok:true },
+      { t:'9:36', error:'multiplicó 12 · 18 = 216 minutos: es un múltiplo común, pero no el menor' },
+      { t:'6:30', error:'sumó los dos tiempos' } ] },
+  ],
+  final:{
+    consigna:'Ahora, los cinco del final. Respondan en papel, solos, igual que al empezar.',
+    notas:`<p>Los mismos cinco del principio con otros números. Juntar las hojas antes de
+        «Ver clave», y después corregir juntos los dos: el inicial y el final.</p>`,
+    preguntas:[
+      { p:'¿Son los mismos ejercicios del principio?',
+        r:'Son los mismos tipos, con otros números: así se ve si lo que cambió es lo que aprendimos y no la memoria.' },
+    ],
+    items:[
+      { cod:'F1', tema:'1', enun:'¿Cuántos múltiplos de 8 hay entre 45 y 170?', opciones:[
+        { t:'15', error:'dividió la distancia, 170 − 45 = 125, entre 8, sin mirar dónde cae el primer múltiplo' },
+        { t:'21', error:'contó todos los múltiplos de 8 hasta 170, también los de antes de 45' },
+        { t:'125', error:'restó los extremos y no dividió entre 8' },
+        { t:'16', ok:true },
+        { t:'5', error:'dio los múltiplos que hay hasta 45, que eran los que había que sacar' } ] },
+      { cod:'F2', tema:'2', enun:'El número 8□2 es divisible por 3 y por 4. ¿Qué cifra va en el □?', opciones:[
+        { t:'5', ok:true },
+        { t:'2', error:'miró solo el criterio del 3: 22 no es múltiplo de 4' },
+        { t:'3', error:'miró solo el criterio del 4: 8 + 3 + 2 = 13 no es múltiplo de 3' },
+        { t:'8', error:'miró solo el criterio del 3: 82 no es múltiplo de 4' },
+        { t:'7', error:'miró solo el criterio del 4: 8 + 7 + 2 = 17 no es múltiplo de 3' } ] },
+      { cod:'F3', tema:'3', enun:'¿Cuántos números primos hay entre 60 y 100?', opciones:[
+        { t:'20', error:'contó todos los impares' },
+        { t:'13', error:'tachó los pares y los múltiplos de 3, y nada más' },
+        { t:'8', ok:true },
+        { t:'16', error:'creyó que todo número que termina en 1, 3, 7 o 9 es primo' },
+        { t:'10', error:'tachó los múltiplos de 2, 3 y 5, y se olvidó del 7: contó el 77 y el 91' } ] },
+      { cod:'F4', tema:'4', enun:'¿Cuántos divisores tiene 180?', opciones:[
+        { t:'4', error:'multiplicó los exponentes de 2² · 3² · 5 sin sumarles 1' },
+        { t:'18', ok:true },
+        { t:'5', error:'sumó los exponentes' },
+        { t:'16', error:'no contó el 1 ni el 180' },
+        { t:'8', error:'sumó los exponentes más 1, en vez de multiplicarlos: 3 + 3 + 2' } ] },
+      { cod:'F5', tema:'5', enun:'De la terminal de San Lorenzo salen juntos dos colectivos a las 7:00. Uno sale cada 15 minutos y el otro, cada 20. ¿A qué hora vuelven a salir juntos?', opciones:[
+        { t:'7:05', error:'usó el MCD de 15 y 20 en vez del MCM' },
+        { t:'7:35', error:'sumó los dos tiempos' },
+        { t:'12:00', error:'multiplicó 15 · 20 = 300 minutos: es un múltiplo común, pero no el menor' },
+        { t:'7:20', error:'tomó el mayor de los dos tiempos' },
+        { t:'8:00', ok:true } ] },
+    ],
+  },
+};
+
 const DESAFIO = {
   titulo:'Pisar la raya', prosa:true, fija:1,
   enun:`«La distancia entre dos líneas de una vereda es 1,2 m. Si se empieza a caminar pisando la raya con velocidad de 3 m/s y 75 cm de longitud de paso, ¿cuánto tiempo se debe caminar hasta pisar la raya por 34ava vez?»${EJ(39)}`,
@@ -611,6 +706,8 @@ const UNIDAD = {
     <p>Cada diapositiva de teoría arranca con una pregunta: que la contesten antes de ver la
       regla. Cada ejercicio tiene «Ver clave», y en las Notas de su tema está la resolución y el
       porqué de las opciones.</p>
+    <p>La clase abre y cierra con un <b>diagnóstico de cinco ítems</b>, uno por tema: el
+      inicial y el final miden lo mismo con otros números, para comparar antes y después.</p>
     <p>Del ejercitario se proyectan 24 de los 39. Quedaron afuera el 12 (la V habla de un
       «suborden», que no se entiende), el 15 (no queda claro si pide el total de billetes o el
       rollo más grande) y el 18 (la C y la E son las dos 12). Los demás (25, 27, 29, 31, 32,
@@ -618,7 +715,7 @@ const UNIDAD = {
       tarea.</p>`
 };
 
-Pizarra.unidad({ TEMAS, DESAFIO, UNIDAD, grado:'cursillo', temasLibro:5 });
+Pizarra.unidad({ TEMAS, DESAFIO, UNIDAD, DIAGNOSTICO, grado:'cursillo', temasLibro:5 });
 </script>
 
 <script src="../../assets/proyeccion.js" defer></script>

@@ -875,6 +875,22 @@ y la m de un metro quedan derechas. El verificador
 busca el MCD y el MCM recorriendo, y no usa las fórmulas de la clase: las
 fórmulas las prueba contra eso.
 
+**Toda clase del cursillo abre y cierra con un diagnóstico de cinco ítems**
+(lo pidió Juan el 25/11/2026, para tener una prueba de antes y después): cinco
+al empezar (I1 a I5) y cinco al terminar, después del desafío (F1 a F5), de
+opción múltiple como el examen, uno por tema y **propios** (no del
+ejercitario). Van de a pares: I1 y F1 miden lo mismo con otros números, y cada
+opción incorrecta sale de un error anotado en `error`, igual en los dos. En los
+datos es `DIAGNOSTICO:{ clave:true, porHoja:5, consigna, notas, items,
+final:{ consigna, notas, items } }`: el motor pone el inicial en
+`#diagnostico-lugar` y el final después del desafío (`data-tema="final"`, con
+su clave y la tabla de pares en las Notas). Con `porHoja:5` los cinco van en
+una sola diapositiva, apretados como una puerta; las opciones tienen que ser
+cortas («se divide por 2», no «queda dividido por 2»). La página agrega
+`.diagnostico-diapo` a `data-diapos`. El verificador de la clase resuelve
+cada ítem y rehace cada opción desde su error. Lo tienen operaciones y
+divisibilidad; sistema métrico tiene el de 8 ítems de antes, sin final.
+
 El formato por niveles (diagnóstico que ubica, mapa de rutas, franjas A, B y C
 con los ejercicios del libro, puertas de 5 ítems) sigue en el motor (`rutas()`,
 `practicaDe`, `PUERTA_REGLA`) para otra clase que lo quiera; sistema métrico

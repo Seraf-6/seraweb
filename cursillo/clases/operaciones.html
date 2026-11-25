@@ -74,7 +74,7 @@ body[data-solo="1"] .teoria-diapo:is(:has(.reglas),:has(.forma-grande)) .teoria-
 }
 </style>
 </head>
-<body data-diapos=".intro, .teoria-diapo, .ejemplo-diapo, .problema-diapo, .desafio">
+<body data-diapos=".diagnostico-diapo, .intro, .teoria-diapo, .ejemplo-diapo, .problema-diapo, .desafio">
 <nav class="sitio-nav">
   <div class="sitio-nav-int">
     <a class="sitio-marca" href="../../index.html">Sera<span>Web</span></a>
@@ -102,6 +102,8 @@ body[data-solo="1"] .teoria-diapo:is(:has(.reglas),:has(.forma-grande)) .teoria-
   <nav class="nav" aria-label="Ir a un tema">
     <div class="nav-int" id="nav"></div>
   </nav>
+
+  <div id="diagnostico-lugar"></div>
 
   <section class="intro" id="inicio" data-tema="unidad">
     <p class="cinta">Cursillo de ingreso · Aritmética y Álgebra · unidad 3</p>
@@ -639,6 +641,97 @@ const TEMAS = [
 
 /* El ejercicio 39 del ejercitario, resuelto en la pizarra: junta la
    división por defecto y por exceso. En el ejercitario la respuesta es la D. */
+/* El diagnóstico: cinco ítems al empezar y cinco al terminar, la prueba de
+   antes y después. Uno por tema, de opción múltiple como el examen, y propios
+   (no son del ejercitario). Van de a pares: I1 y F1 miden lo mismo con otros
+   números. Cada opción incorrecta sale de un error que los alumnos cometen de
+   verdad; el error no se proyecta: arma la clave de las Notas. Todo se
+   recalcula en el verificador. */
+const DIAGNOSTICO = {
+  clave:true, porHoja:5,
+  consigna:'Antes de empezar. Respondan en papel, solos: el código del ítem y la letra. Al final de la clase hay otros cinco iguales.',
+  notas:`<p><b>La prueba de antes y después.</b> Cinco ítems al empezar, uno por tema, y cinco
+      al terminar (después del desafío) que miden lo mismo con otros números. Que lo hagan
+      solos y en papel, con su nombre, y <b>juntar las hojas antes de «Ver clave»</b>: si no,
+      el inicial deja de medir lo que sabían al llegar.</p>
+    <p>Para comparar alcanza con contar, ítem por ítem, cuántos acertaron antes y después. La
+      letra que eligieron dice más que el puntaje: cada incorrecta sale de un error distinto
+      (en la clave de abajo), y el que eligió el mismo error en los dos todavía lo tiene.</p>`,
+  items:[
+    { cod:'I1', tema:'1', enun:'Si un sumando aumenta 12 y otro sumando disminuye 5, la suma:', opciones:[
+      { t:'aumenta 12', error:'miró solo el sumando que aumenta' },
+      { t:'disminuye 5', error:'miró solo el sumando que disminuye' },
+      { t:'aumenta 7', ok:true },
+      { t:'aumenta 17', error:'sumó los dos cambios, sin ver que uno es para abajo' },
+      { t:'no varía', error:'creyó que siempre se compensan: eso es solo si los dos cambian lo mismo' } ] },
+    { cod:'I2', tema:'2', enun:'En una resta, la suma del minuendo, el sustraendo y la diferencia es 156, y la diferencia es 30. ¿Cuál es el sustraendo?', opciones:[
+      { t:'48', ok:true },
+      { t:'78', error:'dio el minuendo, la mitad de 156' },
+      { t:'126', error:'le restó la diferencia a la suma de los tres: 156 − 30' },
+      { t:'108', error:'le sumó la diferencia al minuendo: 78 + 30' },
+      { t:'52', error:'repartió 156 en tres partes iguales' } ] },
+    { cod:'I3', tema:'3', enun:'Si el multiplicando se multiplica por 4 y el multiplicador se divide por 2, el producto:', opciones:[
+      { t:'se multiplica por 4', error:'miró solo el multiplicando' },
+      { t:'se divide por 2', error:'miró solo el multiplicador' },
+      { t:'se multiplica por 8', error:'tomó los dos cambios para el mismo lado: 4 · 2' },
+      { t:'se multiplica por 2', ok:true },
+      { t:'aumenta 2', error:'restó los cambios, como si fuera una suma: 4 − 2' } ] },
+    { cod:'I4', tema:'4', enun:'En una división entera por defecto el divisor es 9, el cociente es 14 y el resto es el mayor posible. ¿Cuál es el dividendo?', opciones:[
+      { t:'135', error:'tomó como resto el divisor: 9 · 14 + 9' },
+      { t:'134', ok:true },
+      { t:'126', error:'se olvidó del resto: 9 · 14' },
+      { t:'118', error:'restó el resto: 9 · 14 − 8' },
+      { t:'127', error:'tomó el resto más chico, 1' } ] },
+    { cod:'I5', tema:'5', enun:'El valor de 48 : 6 · 2 + 3 · (10 − 4) es:', opciones:[
+      { t:'22', error:'multiplicó 6 · 2 antes de dividir: 48 : 12 + 18' },
+      { t:'114', error:'sumó antes de multiplicar: (16 + 3) · 6' },
+      { t:'42', error:'sacó mal el paréntesis: 3 · 10 − 4, sin multiplicar el 4' },
+      { t:'186', error:'hizo todo de izquierda a derecha, sin mirar el paréntesis' },
+      { t:'34', ok:true } ] },
+  ],
+  final:{
+    consigna:'Ahora, los cinco del final. Respondan en papel, solos, igual que al empezar.',
+    notas:`<p>Los mismos cinco del principio con otros números. Juntar las hojas antes de
+        «Ver clave», y después corregir juntos los dos: el inicial y el final.</p>`,
+    preguntas:[
+      { p:'¿Son los mismos ejercicios del principio?',
+        r:'Son los mismos tipos, con otros números: así se ve si lo que cambió es lo que aprendimos y no la memoria.' },
+    ],
+    items:[
+      { cod:'F1', tema:'1', enun:'Si un sumando disminuye 15 y otro sumando aumenta 6, la suma:', opciones:[
+        { t:'disminuye 15', error:'miró solo el sumando que disminuye' },
+        { t:'disminuye 9', ok:true },
+        { t:'aumenta 6', error:'miró solo el sumando que aumenta' },
+        { t:'no varía', error:'creyó que siempre se compensan: eso es solo si los dos cambian lo mismo' },
+        { t:'disminuye 21', error:'sumó los dos cambios, sin ver que uno es para arriba' } ] },
+      { cod:'F2', tema:'2', enun:'En una resta, la suma del minuendo, el sustraendo y la diferencia es 174, y la diferencia es 25. ¿Cuál es el sustraendo?', opciones:[
+        { t:'87', error:'dio el minuendo, la mitad de 174' },
+        { t:'149', error:'le restó la diferencia a la suma de los tres: 174 − 25' },
+        { t:'58', error:'repartió 174 en tres partes iguales' },
+        { t:'112', error:'le sumó la diferencia al minuendo: 87 + 25' },
+        { t:'62', ok:true } ] },
+      { cod:'F3', tema:'3', enun:'Si el multiplicando se divide por 6 y el multiplicador se multiplica por 3, el producto:', opciones:[
+        { t:'se divide por 2', ok:true },
+        { t:'se multiplica por 3', error:'miró solo el multiplicador' },
+        { t:'disminuye 3', error:'restó los cambios, como si fuera una suma: 6 − 3' },
+        { t:'se divide por 6', error:'miró solo el multiplicando' },
+        { t:'se divide por 18', error:'tomó los dos cambios para el mismo lado: 6 · 3' } ] },
+      { cod:'F4', tema:'4', enun:'En una división entera por defecto el divisor es 7, el cociente es 23 y el resto es el mayor posible. ¿Cuál es el dividendo?', opciones:[
+        { t:'161', error:'se olvidó del resto: 7 · 23' },
+        { t:'168', error:'tomó como resto el divisor: 7 · 23 + 7' },
+        { t:'167', ok:true },
+        { t:'162', error:'tomó el resto más chico, 1' },
+        { t:'155', error:'restó el resto: 7 · 23 − 6' } ] },
+      { cod:'F5', tema:'5', enun:'El valor de 60 : 4 · 3 + 2 · (9 − 5) es:', opciones:[
+        { t:'13', error:'multiplicó 4 · 3 antes de dividir: 60 : 12 + 8' },
+        { t:'58', error:'sacó mal el paréntesis: 2 · 9 − 5, sin multiplicar el 5' },
+        { t:'188', error:'sumó antes de multiplicar: (45 + 2) · 4' },
+        { t:'53', ok:true },
+        { t:'418', error:'hizo todo de izquierda a derecha, sin mirar el paréntesis' } ] },
+    ],
+  },
+};
+
 const DESAFIO = {
   titulo:'Un número dividido entre 150', prosa:true, fija:1,
   enun:`«Hallar un número entero que, dividido entre 150, dé un resto por defecto que es el triple del cociente por exceso y un resto por exceso que es el cuádruple del cociente por defecto.»${EJ(39)}`,
@@ -683,11 +776,13 @@ const UNIDAD = {
     <p>Cada diapositiva de teoría arranca con una pregunta: que la contesten antes de ver la
       fórmula. Cada ejercicio tiene «Ver clave», y en las Notas de su tema está la resolución y
       el porqué de las opciones.</p>
+    <p>La clase abre y cierra con un <b>diagnóstico de cinco ítems</b>, uno por tema: el
+      inicial y el final miden lo mismo con otros números, para comparar antes y después.</p>
     <p>Del ejercitario se proyectan 20 de los 40. Los demás (sobre todo los de división entera,
       del 19 al 40) quedan para trabajar en clase o de tarea.</p>`
 };
 
-Pizarra.unidad({ TEMAS, DESAFIO, UNIDAD, grado:'cursillo', temasLibro:5 });
+Pizarra.unidad({ TEMAS, DESAFIO, UNIDAD, DIAGNOSTICO, grado:'cursillo', temasLibro:5 });
 </script>
 
 <script src="../../assets/proyeccion.js" defer></script>
