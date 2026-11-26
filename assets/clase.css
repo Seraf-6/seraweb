@@ -831,6 +831,10 @@ body[data-solo="1"] .t-mini th{font-size:1em}
 .teoria-pregunta{margin:0 0 14px; font-family:var(--serif); font-style:italic; font-size:1.5rem; line-height:1.35}
 body[data-solo="1"] .teoria-pregunta{font-size:1.45em}
 .teoria-figura.tapada{visibility:hidden}
+/* divide a (∣) y no divide a (∤): derechos siempre, con su aire */
+.dv{font-style:normal; font-family:'Cambria Math','Segoe UI Symbol',serif; padding:0 .08em}
+/* lo que llega con un paso (data-desde) tiene su lugar guardado desde el principio */
+.teoria-figura [data-desde]:not(.fig-ve){visibility:hidden}
 .teoria-elementos{margin:8px 0 0; font-family:var(--sans); font-size:.95em}
 .teoria-elementos a{font-weight:700}
 .teoria-respuesta{margin:0 0 12px; padding:8px 14px; border-radius:4px; background:var(--acento-suave);

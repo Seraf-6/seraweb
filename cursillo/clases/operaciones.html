@@ -142,9 +142,10 @@ const EJ = n => fte(`Ejercitario del cursillo, ejercicio ${n}`);
 const af = (...xs) => `<span class="afirm">${xs.map(x => `<span>${x}</span>`).join('')}</span>`;
 /* una fórmula sola, grande */
 const grande = s => `<p class="forma-grande">${M(s)}</p>`;
-/* leyes y propiedades: [nombre, fórmula] o [nombre, si…, entonces…] */
+/* leyes y propiedades: [nombre, fórmula] o [nombre, si…, entonces…]. Una fórmula que
+   ya viene escrita (empieza con <) va tal cual: así una palabra no queda en cursiva. */
 const reglas = (...filas) => `<table class="reglas"><tbody>${filas.map(([n, a, b]) =>
-  `<tr><th>${n}</th><td>${M(a)}${b ? `<span class="entonces">entonces</span>${M(b)}` : ''}</td></tr>`).join('')}</tbody></table>`;
+  `<tr><th>${n}</th><td>${a.startsWith('<') ? a : M(a)}${b ? `<span class="entonces">entonces</span>${M(b)}` : ''}</td></tr>`).join('')}</tbody></table>`;
 /* una ley que esta operación no cumple: la fila va resaltada */
 const noVale = s => `<span class="no-vale">✗ ${s}</span>`;
 /* la división entera en la recta: 37 entre 3, con los dos restos y el divisor */
@@ -470,7 +471,7 @@ const TEMAS = [
       html:grande('D = d · c′ − r′'),
       figura:reglas(['El cociente por exceso es uno más', 'c′ = c + 1'],
                     ['Los dos restos suman el divisor', 'r + r′ = d'],
-                    ['El resto más grande posible', 'r = d − 1']),
+                    ['El resto más grande posible', `<span class="ec">${I('r')} máximo ${I('= d − 1')}</span>`]),
       revela:{ txt:'Faltan 2: 37 = 3 · 13 − 2. Y los restos, 1 y 2, suman 3: el divisor.' } },
     { id:'exceso-recta', cajon:'teorema', chip:'División entera', titulo:'Defecto y exceso, en la recta',
       pregunta:'37 cae entre dos múltiplos de 3. ¿Entre cuáles? ¿A cuánto está de cada uno?',
