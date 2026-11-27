@@ -54,6 +54,8 @@ cursillo/clases/<tema>.html clases del cursillo         ← escritas a mano
 cursillo/clases/sistema-metrico.html  unidad 6 de Aritmética y Álgebra ← escrita a mano
 cursillo/clases/operaciones.html      unidad 3 de Aritmética y Álgebra ← escrita a mano
 cursillo/clases/divisibilidad.html    unidad 4 de Aritmética y Álgebra ← escrita a mano
+cursillo/clases/divisibilidad-refuerzo.html  unidad 4, segunda clase ← escrita a mano
+cursillo/clases/vectores.html         unidad 2 de Geometría Analítica y Cálculo ← escrita a mano
 cursillo/materiales…/        el material del Poli (zip): FUENTE, no se publica (.gitignore)
 cursillo/Presentaciones…/    presentaciones y ejercitarios del cursillo: FUENTE, no se publica (.gitignore)
 omapa/index.html            módulo de olimpiada          ← lo genera build.py
@@ -322,7 +324,11 @@ principio se ve solo el título y una pregunta** (`pregunta`, obligatoria: la
 piensan ellos antes de ver nada); con «Siguiente», el enunciado con su dibujo
 (el dibujo está desde el principio solo si la pregunta lo necesita:
 `verFigura`), la caja, la respuesta (`revela`), cada línea más y la
-comparación. Van **justo antes del ejemplo donde la palabra aparece por
+comparación. El dibujo también puede armarse por partes: lo que lleva
+`data-desde="k"` aparece con el paso k (su lugar está guardado desde el
+principio, nada se corre) y lo que lleva `data-pinta="k"` se enciende con él.
+Así se arman la tabla de los divisores de 12 o las filas de una tabla de
+reglas. Van **justo antes del ejemplo donde la palabra aparece por
 primera vez** (`ej.antes:[…]`), al final de un tema (`t.despues`, como la
 caja llena al terminar la clase) o al principio de la unidad (`INICIO`, en
 el lugar `#teoria-inicio` de la página). Si la página tiene
@@ -863,8 +869,22 @@ después de esa teoría y antes de sus ejercicios (`ejemplosTras` en el motor).
 **Divisibilidad tiene el mismo formato** (lo pidió Juan el 24/11/2026, sobre la
 presentación y el ejercitario de `cursillo/Presentaciones…/`): cinco temas en el
 orden de la presentación (múltiplos y divisores, criterios, primos y
-compuestos, factores primos y divisores, MCD y MCM), 24 de los 39 ejercicios y
-el 39 como desafío en la pizarra (un MCM: pisar la raya). La presentación lleva
+compuestos, factores primos y divisores, MCD y MCM), 16 de los 39 ejercicios
+proyectados y el 39 como desafío (un MCM: pisar la raya), que va de tarea y se
+corrige la clase siguiente. **En una clase de cuatro horas entran unos 16
+ejercicios** (lo midió Juan en la de operaciones, 26/11/2026): otros 8 del
+ejercitario (4, 5, 24, 33, 21, 14, 11 y 22) van de tarea, con su resolución en
+las Notas de su tema, y las Notas de la unidad dan el reparto del tiempo, con
+una pausa antes del tema 4. **«Divide a» se escribe n ∣ A** (∣, U+2223; «no
+divide», ∤), con espacios y el divisor primero, nunca con la barra del teclado:
+proyectada se confunde con un 1. `M()` los escribe siempre derechos, aunque la
+frase vaya en cursiva. Los enunciados del ejercitario no la usan: van tal cual.
+La cantidad, la suma y el producto de los divisores salen de una tabla de los
+divisores de 12 (filas, las potencias de 2; columnas, las de 3), y el MCD, el
+MCM y sus propiedades, de una tabla de exponentes de 12 y 18 con una sola
+regla: d ∣ n cuando cada exponente de d es menor o igual que el de n (el MCD
+toma el menor de cada columna; el MCM, el mayor). Las baldosas ayudan a
+recordar cuál es cuál. La presentación lleva
 los nombres de sus autores: no van en el sitio. Quedaron afuera el 12 (la V
 habla de un «suborden»), el 15 (ambiguo: el total de billetes o el rollo más
 grande) y el 18 (la C y la E son las dos 12). Los criterios del 4, 6, 9, 10 y
@@ -873,7 +893,44 @@ cursiva son solo las sueltas (`Pizarra.letras` con lookarounds): MCD, MCM, cm
 y la m de un metro quedan derechas. El verificador
 (`verificacion/cursillo_divisibilidad.py`) cuenta los divisores uno por uno,
 busca el MCD y el MCM recorriendo, y no usa las fórmulas de la clase: las
-fórmulas las prueba contra eso.
+fórmulas las prueba contra eso. Además rehace dividiendo cada afirmación con
+números escrita con ∣ o ∤, rechaza la barra del teclado, exige que se
+proyecten exactamente los 16 y que cada uno de tarea tenga en las Notas su
+resolución con la letra correcta, y recalcula las dos tablas y las baldosas.
+
+**Divisibilidad: refuerzo y profundización** (`divisibilidad-refuerzo.html`,
+pedida por Juan el 26/11/2026) es la segunda clase de la unidad 4: casi todo
+sale de dos ideas, **A** (lo que ya es múltiplo se ignora: los principios) y
+**B** (un número es su tabla de exponentes), y cada teoría lo dice en su chip
+(«Idea A · Teorema»). Cinco bloques: el lenguaje, por qué funcionan los
+criterios, los divisores de un producto, la tabla de exponentes, MCD y MCM.
+Las demostraciones son ejemplos paso a paso, como «¿Por qué los restos suman
+el divisor?» de operaciones: cada paso nombra la ley que usa. Los ejercicios
+salen del Ejercitario 3.1, el 3.2 y el Cuestionario de la unidad 4, tal cual,
+más algunos propios (`fte('Propio')`); se proyectan entre 10 y 12 (las
+demostraciones llevan tiempo) y el resto va de tarea, resuelto en las Notas.
+No se proyecta ninguno que ya esté en la primera clase (3.1·1, 3.1·2, 3.1·9,
+3.2·2 y 3.2·8). El 3.2·4 es ambiguo (a = 2 es par y primo: la B y la D) y va
+de tarea con el aviso. Un número escrito con sus cifras lleva la raya arriba
+(`cif('abc')`). Verificador: `verificacion/cursillo_divisibilidad_refuerzo.py`
+(cada renglón de las demostraciones se evalúa, el de abc con los 900 números).
+Por ahora tiene el bloque 2; los demás se agregan de a uno.
+
+**Vectores** (`vectores.html`, pedida por Juan el 26/11/2026) es una clase de
+teoría con la lista de ejercicios al final: cinco temas en el orden del material
+de lectura de la unidad 2 de Geometría Analítica y Cálculo (qué es un vector,
+módulo y tipos, operaciones, producto escalar, ángulo y proyección), cada uno con
+sus diapositivas de teoría y un ejemplo propio en la pizarra; después, el tema 6,
+**quince ejercicios del Ejercitario 2.1 y del 2.2 de fijación, de menor a mayor**,
+que tocan los cinco temas, tal cual y con sus opciones, y el 20 del 2.1 como
+desafío. El 2.2 es el 2.1 con otros números: de cada par va uno solo (el 7 del
+2.1 dice «obtuso» a secas y es falso por el llano; el 10 del 2.2 dice que un
+coseno «es 90°»). Las figuras del ejercitario están redibujadas con `dib()`, el
+dibujo de flechas de la página. La notación: el vector con su flecha arriba
+(`V('u')`; en `W()` y `R()`, `~u`), el módulo con dos rayas (‖v‖, como el
+ejercitario). Verificador: `verificacion/cursillo_vectores.py` (las afirmaciones
+generales, sobre vectores al azar; las figuras, con coordenadas al azar; el
+orden de la lista está escrito en el verificador).
 
 **Toda clase del cursillo abre y cierra con un diagnóstico de cinco ítems**
 (lo pidió Juan el 25/11/2026, para tener una prueba de antes y después): cinco

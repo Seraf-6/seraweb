@@ -70,7 +70,11 @@ function raices(s){
    '3^(m + 3)', '6^(3 − a)'. */
 const I = s => raices(String(s).replace(/\^\(([^()]*)\)/g, '<sup>$1</sup>')
   .replace(/\^(\d+|[a-z])/g, '<sup>$1</sup>').split(/(<[^>]+>)/)
-  .map(t => t.startsWith('<') ? t : t.replace(Pizarra.letras, '<i>$&</i>')).join(''));
+  .map(t => t.startsWith('<') ? t : t.replace(Pizarra.letras, '<i>$&</i>')
+    .replace(/[∣∤]/g, '<span class="dv">$&</span>')).join(''));
+/* «divide a» es ∣ (U+2223) y «no divide a», ∤ (U+2224), con espacios a los
+   lados: la barra del teclado, proyectada, se confunde con un 1 o una l.
+   I() los escribe siempre derechos, aunque la frase vaya en cursiva. */
 const M = s => '<span class="ec">' + I(s) + '</span>';
 const Q = (n, d) => `<span class="fr"><span>${I(String(n))}</span><span>${I(String(d))}</span></span>`;
 
@@ -871,7 +875,9 @@ const CAJONES = { definicion:'Definición', postulado:'Postulado', nocion:'Noci�
    ejemplo. Al principio, solo el título y la pregunta: la piensan ellos.
    Con «Siguiente», el enunciado (y el dibujo con él, salvo que la pregunta
    lo necesite: verFigura), la caja, la respuesta (revela), cada línea más y
-   la comparación. */
+   la comparación. Las partes de la figura marcadas con data-desde="k"
+   aparecen con el paso k, y las de data-pinta="k" se encienden con él: así
+   una tabla se arma de a partes, como el cuaderno de un ejemplo. */
 function teoria(td, cinta, attrs = ''){
   const t = s => sombrero(s);
   const partes = [
@@ -915,6 +921,19 @@ document.addEventListener('click', ev => {
     p.classList.toggle('recien-parte', ver && p.hidden);
     p.hidden = !ver;
   });
+  /* Las partes de la figura también pueden llegar con un paso: data-desde="k"
+     aparece con el paso k (sin mover nada: su lugar está reservado desde el
+     principio), y data-pinta="k" se enciende con el paso k. */
+  const diapo = nav.closest('.teoria-diapo');
+  diapo.querySelectorAll('.teoria-figura [data-desde]').forEach(e => {
+    const ver = visto >= +e.dataset.desde;
+    if (ver !== e.classList.contains('fig-ve')){
+      e.classList.toggle('fig-ve', ver);
+      e.classList.toggle('recien-parte', ver);
+    }
+  });
+  diapo.querySelectorAll('.teoria-figura [data-pinta]').forEach(e =>
+    e.classList.toggle('pintado', visto >= +e.dataset.pinta));
   const fig = nav.closest('.teoria-diapo').querySelector('.teoria-figura[data-con-enun]');
   if (fig && fig.classList.contains('tapada') === (visto > 0)){
     fig.classList.toggle('recien-parte', visto > 0);

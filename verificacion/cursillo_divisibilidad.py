@@ -16,10 +16,16 @@ de la clase:
    que es una cuenta se recalcula desde ese error.
 4. El enunciado de la página trae los datos del material.
 5. Cada ejercicio con tras: va después de una teoría que existe en la página.
+   Se proyectan 16 (lo que entra en una clase de cuatro horas); los otros 8
+   van de tarea, y su resolución está en las Notas con la letra correcta.
 6. Los ejemplos de la teoría (317, 720, 12 y 18…) y el desafío (el
    ejercicio 39, resuelto en la pizarra).
 7. Ningún renglón propio encadena dos igualdades, no hay rayas (—) y no
    aparece el nombre de otro docente.
+8. La notación: «divide a» es ∣, nunca la barra del teclado, y cada
+   afirmación con números (7 ∣ 84, 6 ∤ 9) se rehace dividiendo. La tabla de
+   los divisores de 12, la de exponentes del MCD y el MCM, las baldosas y
+   los ejemplos de la teoría se recalculan por otro camino.
 
     python verificacion/cursillo_divisibilidad.py
 """
@@ -519,6 +525,10 @@ FUENTE = {
     'E30': ['mayor que 700 pero menor que 800', 'sobran 10', 'sobran 15', 'sobran 19'],
     'E33': ['son 624', '12 divisores positivos', 'no son múltiplos de 7'],
 }
+# los que se proyectan (16: lo que entra en una clase) y los que van de tarea
+PROYECTADOS = ['E1', 'E13', 'E17', 'E16', 'E6', 'E7', 'E3', 'E2', 'E8',
+               'E10', 'E19', 'E9', 'E26', 'E28', 'E20', 'E30']
+TAREA = ['E4', 'E5', 'E24', 'E33', 'E21', 'E14', 'E11', 'E22']
 # lo que se transcribe tal cual aunque tenga dos «=»: una afirmación del material
 TAL_CUAL = ['III) Si MCD(B, C) = 1, entonces MCM(B, C) = B × C.']
 
@@ -536,7 +546,22 @@ def controla_pagina(n33, mcm30, t39, mcm39, pasos39):
         tras = re.search(r"tras:'([^']+)'", cuerpo)
         en_pagina[cod] = ([(t, bool(ok), err) for t, ok, err in lista], tras.group(1) if tras else None)
     teorias = set(re.findall(r"\{\s*id:'([^']+)',\s*cajon:", html))
+    if sorted(PROYECTADOS + TAREA) != sorted(EJ):
+        mal('los proyectados y los de tarea no son todos los del verificador')
+    if not 16 <= len(PROYECTADOS) <= 17:
+        mal(f'se proyectan {len(PROYECTADOS)}: en una clase entran 16 o 17')
+    for cod in TAREA:
+        if cod in en_pagina:
+            mal(f'{cod}: va de tarea y está proyectado')
+        letra = 'ABCDE'[[ok for _, ok in EJ[cod][1]].index(True)]
+        m = re.search(r'<b>Ejercicio %s</b> \(de tarea\)\.(.*?)</p>' % cod[1:], html, flags=re.S)
+        if not m:
+            mal(f'{cod}: va de tarea y su resolución no está en las Notas')
+        elif not re.search(r'\b[Ll]a %s\b' % letra, m.group(1)):
+            mal(f'{cod}: la resolución de las Notas no dice «la {letra}»')
     for cod, (tema, ops, errores) in EJ.items():
+        if cod in TAREA:
+            continue
         if cod not in en_pagina:
             mal(f'{cod}: no está en la página')
             continue
@@ -560,6 +585,8 @@ def controla_pagina(n33, mcm30, t39, mcm39, pasos39):
             mal(f'{cod}: está en la página y no en el verificador')
 
     for cod, datos in FUENTE.items():
+        if cod in TAREA:
+            continue
         m = re.search(r"\{\s*cod:'%s'.*?enun:`([^`]*)`" % cod, html, flags=re.S)
         if not m:
             mal(f'{cod}: no encuentro su enunciado')
@@ -749,6 +776,161 @@ def controla_diagnostico(D):
     print(f'  {len(pag)} ítems en la página, 5 y 5, de a pares')
 
 
+def expresion(s):
+    """El valor de una cuenta con +, − y · entre enteros (sin paréntesis),
+    con la prioridad de siempre: primero los productos."""
+    total = 0
+    for k, termino in enumerate(re.split(r'\s([+−])\s', s)[::2]):
+        signo = re.split(r'\s([+−])\s', s)[2 * k - 1] if k else '+'
+        v = 1
+        for f in termino.split(' · '):
+            v *= int(f)
+        total += v if signo == '+' else -v
+    return total
+
+
+def controla_teoria_nueva():
+    """La notación n ∣ A, la tabla de los divisores de 12, la de exponentes
+    del tema 5 y sus baldosas, y los ejemplos de la teoría nueva."""
+    print('La teoría: la notación, las tablas y los ejemplos')
+    html = PAGINA.read_text(encoding='utf-8')
+
+    # 1. «divide a» es ∣ (U+2223), nunca la barra del teclado
+    for arg in re.findall(r"\bM\('([^']*)'\)", html):
+        if '|' in arg:
+            mal(f'M() con la barra del teclado: {arg}')
+        if re.search(r'\S[∣∤]|[∣∤]\S', arg):
+            mal(f'∣ o ∤ sin espacios a los lados: {arg}')
+    if re.search(r'\d \| \d|\w \| \w', html):
+        mal('hay una barra del teclado usada como «divide a»')
+
+    # 2. cada afirmación con números, n ∣ A o n ∤ A, se rehace dividiendo
+    n_af = 0
+    for n, rel, expr in re.findall(r'(?<![\d.])(\d+) ([∣∤]) (\d+(?: [+·−] \d+)*)', html):
+        a = expresion(expr)
+        divide = a % int(n) == 0
+        if divide != (rel == '∣'):
+            mal(f'«{n} {rel} {expr}» es falso: {expr} es {a}')
+        n_af += 1
+    if n_af < 20:
+        mal(f'solo encontré {n_af} afirmaciones con ∣ o ∤')
+
+    # 3. contar múltiplos: hasta N hay N : n (por defecto), y entre dos se restan
+    hasta100 = len([k for k in range(1, 101) if k % 7 == 0])
+    hasta30 = len([k for k in range(1, 31) if k % 7 == 0])
+    entre = len([k for k in range(31, 100) if k % 7 == 0])
+    if (hasta100, hasta30, entre) != (100 // 7, 30 // 7, 100 // 7 - 30 // 7) or (hasta100, hasta30, entre) != (14, 4, 10):
+        mal('el ejemplo de contar múltiplos de 7 no da 14, 4 y 10')
+    for frag in ('hay 14 múltiplos de 7', '30 : 7 da 4', 'hay 14 − 4, que son 10'):
+        if frag not in html:
+            mal(f'la teoría no trae «{frag}»')
+
+    # 4. los principios de los restos, con sus ejemplos
+    if (13 % 5, 22 % 5, 13 + 22) != (3, 2, 35) or (8 % 6, 9 % 6, 8 * 9) != (2, 3, 72):
+        mal('los ejemplos de los restos no dan')
+    for frag in ('los restos, 3 y 2, suman 5', 'los restos, 2 y 3, multiplican 6'):
+        if frag not in html:
+            mal(f'la teoría no trae «{frag}»')
+    # el principio mismo, probado por fuerza bruta
+    for n in range(2, 30):
+        for A in range(1, 80):
+            for B in range(1, 80):
+                if ((A % n + B % n) % n == 0) != ((A + B) % n == 0) or ((A % n) * (B % n) % n == 0) != (A * B % n == 0):
+                    mal(f'el principio de los restos falla con n = {n}, A = {A}, B = {B}')
+                    return
+
+    # 5. la tabla de 12: filas, las potencias de 2; columnas, las de 3
+    filas, cols = [1, 2, 4], [1, 3]
+    tabla = [[f * c for c in cols] for f in filas]
+    celdas = sorted(x for fila in tabla for x in fila)
+    if celdas != divisores(12):
+        mal(f'la tabla de 12 no son sus divisores: {celdas}')
+    if len(filas) * len(cols) != len(divisores(12)) or (2 + 1) * (1 + 1) != 6:
+        mal('3 filas por 2 columnas no da la cantidad de divisores')
+    suma_filas = sum((1 + 3) * f for f in filas)
+    if not (suma_filas == sum(divisores(12)) == (1 + 2 + 4) * (1 + 3) == 7 * 4 == 28):
+        mal('la suma de los divisores de 12 no da 28 por los tres caminos')
+    prod = 1
+    for d in divisores(12):
+        prod *= d
+    pares = [(tabla[0][0], tabla[2][1]), (tabla[0][1], tabla[2][0]), (tabla[1][0], tabla[1][1])]
+    if prod != 12 ** 3 or any(a * b != 12 for a, b in pares):
+        mal('el producto de los divisores de 12 no es 12³, o un par opuesto no da 12')
+    # el observador: con 36 (un cuadrado) el producto es 36 elevado a 9 : 2, 6 a la 9
+    p36 = 1
+    for d in divisores(36):
+        p36 *= d
+    if len(divisores(36)) != 9 or p36 != 6 ** 9 or p36 ** 2 != 36 ** 9:
+        mal('lo que dice el observador del 36 no da')
+    for frag in ("(1 + 2 + 4)(1 + 3)", "suman 28", "12^3", "(2 + 1)(1 + 1)", "1 y 12, 3 y 4, 2 y 6"):
+        if frag not in html:
+            mal(f'la teoría no trae «{frag}»')
+
+    # 6. la tabla de exponentes del tema 5: cada fila es su número, el MCD toma
+    #    el menor de cada columna, el MCM el mayor, y de ahí las propiedades
+    filas_exp = re.findall(r"\['([^']+)', \[(\d+), (\d+)\], '(\d+)'", html)
+    if len(filas_exp) < 12:
+        mal(f'encontré {len(filas_exp)} filas en las tablas de exponentes')
+    valor = {}
+    for rot, e2, e3, n in filas_exp:
+        if 2 ** int(e2) * 3 ** int(e3) != int(n):
+            mal(f'la fila {rot}: 2^{e2} · 3^{e3} no es {n}')
+        valor[rot] = (int(e2), int(e3), int(n))
+    a, b = valor['12'], valor['18']
+    if valor['MCD'][:2] != (min(a[0], b[0]), min(a[1], b[1])) or valor['MCD'][2] != mcd(12, 18):
+        mal('la fila del MCD no es el menor de cada columna, o no es el MCD')
+    if valor['MCM'][:2] != (max(a[0], b[0]), max(a[1], b[1])) or valor['MCM'][2] != mcm(12, 18):
+        mal('la fila del MCM no es el mayor de cada columna, o no es el MCM')
+    for k in range(2):
+        if sorted((valor['MCD'][k], valor['MCM'][k])) != sorted((a[k], b[k])):
+            mal('en una columna, el MCD y el MCM no son los dos de arriba repartidos')
+    if mcd(12, 18) * mcm(12, 18) != 12 * 18 or 12 * 18 != 216:
+        mal('MCD · MCM no es A · B, o no da 216')
+    if 36 % 12 or any(a[k] > valor['MCM'][k] for k in range(2)):
+        mal('12 supera al 36 en alguna columna')
+    c1, c2 = valor['12 : 6'], valor['18 : 6']
+    if (c1[2], c2[2]) != (12 // mcd(12, 18), 18 // mcd(12, 18)) or any(min(c1[k], c2[k]) != 0 for k in range(2)):
+        mal('los cocientes por el MCD no tienen un 0 en cada columna')
+    if (mcd(2, 3), mcm(2, 3)) != (1, 6):
+        mal('MCD(2, 3) y MCM(2, 3) no dan 1 y 6')
+    # la regla del tema: d ∣ n cuando cada exponente de d es menor o igual
+    fac = {k: factoriza(k) for k in range(1, 400)}
+    for d in range(1, 400):
+        for n in range(1, 400):
+            fd, fn = fac[d], fac[n]
+            regla = all(e <= fn.get(p, 0) for p, e in fd.items())
+            if regla != (n % d == 0):
+                mal(f'la regla de los exponentes falla con {d} y {n}')
+                return
+
+    # 7. las baldosas: el MCD es la baldosa cuadrada más grande que cubre el
+    #    rectángulo sin cortar; el MCM, el piso cuadrado más chico de baldosas
+    bal = [tuple(map(int, t)) for t in re.findall(r"baldosas\((\d+), (\d+), (\d+), (\d+),", html)]
+    if len(bal) != 2:
+        mal(f'hay {len(bal)} dibujos de baldosas, tienen que ser 2')
+    else:
+        (W, H, w, h), (W2, H2, w2, h2) = bal
+        grande_cubre = max(k for k in range(1, min(W, H) + 1) if W % k == 0 and H % k == 0)
+        piso = min(k for k in range(1, W2 * H2 + 1) if k % w2 == 0 and k % h2 == 0)
+        if (w, h) != (grande_cubre, grande_cubre) or grande_cubre != mcd(12, 18) or sorted((W, H)) != [12, 18]:
+            mal('el dibujo del MCD no es la baldosa más grande del rectángulo de 12 × 18')
+        if (W2, H2) != (piso, piso) or piso != mcm(12, 18) or sorted((w2, h2)) != [12, 18]:
+            mal('el dibujo del MCM no es el piso más chico de baldosas de 12 × 18')
+        if (W // w) * (H // h) != 6 or (W2 // w2) * (H2 // h2) != 6:
+            mal('los dibujos no tienen 6 baldosas cada uno')
+
+    # 8. mismo resto: el menor mayor que 2 que deja resto 2 al dividir por 3 y por 4
+    n14 = next(n for n in range(3, 100) if n % 3 == 2 and n % 4 == 2)
+    if n14 != mcm(3, 4) + 2 or 'el número es 12 + 2, 14' not in html:
+        mal('el ejemplo de mismo resto no da 14')
+
+    # 9. el tema 5 tiene 4 teorías, como antes de rehacerlo
+    t5 = html[html.index("n:5, corto:'MCD y MCM'"):html.index("problemas:[", html.index("n:5, corto:'MCD y MCM'"))]
+    if len(re.findall(r"\{\s*id:'[^']+',\s*cajon:", t5)) != 4:
+        mal('el tema 5 no tiene 4 diapositivas de teoría')
+    print(f'  {n_af} afirmaciones con ∣ o ∤, la tabla de 12, {len(filas_exp)} filas de exponentes, 2 dibujos de baldosas')
+
+
 tema1()
 tema2()
 tema3()
@@ -758,6 +940,7 @@ t39, mcm39, pasos39 = desafio()
 print(f'  E39  hay que caminar {t39} segundos (MCM {mcm39} cm, {pasos39} pasos)')
 controla_pagina(n33, mcm30, t39, mcm39, pasos39)
 controla_diagnostico(diagnostico())
+controla_teoria_nueva()
 print()
 print('Todo en orden.' if not fallos else f'{len(fallos)} falla(s).')
 sys.exit(1 if fallos else 0)

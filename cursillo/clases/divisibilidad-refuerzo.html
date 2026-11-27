@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="../../assets/img/seraweb.svg" type="image/svg+xml">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Divisibilidad: refuerzo y profundización · Cursillo · SeraWeb</title>
+<meta name="description" content="Cursillo de ingreso: la segunda clase de divisibilidad. Casi todo sale de dos ideas: lo que ya es múltiplo se ignora, y un número es su tabla de exponentes. Las demostraciones paso a paso y los ejercicios del material con sus opciones.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file: 'unsafe-inline'; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; font-src 'self' file:; media-src 'self' file:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<script src="../../assets/acceso.js"></script>
+<link rel="stylesheet" href="../../assets/base.css">
+<link rel="stylesheet" href="../../assets/sitio.css">
+<link rel="stylesheet" href="../../assets/clase.css">
+<style>
+/* ---------- solo de esta página ---------- */
+/* de qué ejercicio del material sale cada uno */
+.fuente{display:block; margin-top:8px; font-family:var(--mono); font-style:normal; font-size:11px;
+  letter-spacing:.04em; color:var(--lapiz)}
+body[data-solo="1"] .fuente{font-size:.45em}
+/* el número escrito con sus cifras (abc), con la raya arriba */
+.sobre{position:relative; display:inline-block}
+.sobre::before{content:""; position:absolute; left:.05em; right:0; top:.1em; border-top:.06em solid currentColor}
+/* las dos ideas de la clase, en dos cajitas */
+.ideas{display:flex; flex-wrap:wrap; gap:.6em; margin:.4em 0 .8em; list-style:none; padding:0}
+.ideas li{flex:1 1 16em; padding:.5em .8em; border:1px solid var(--linea-fuerte); border-radius:8px; background:var(--papel-2)}
+.ideas b{display:block; font-family:var(--sans); font-size:.8em; color:var(--acento); letter-spacing:.04em}
+/* las reglas: el nombre a la izquierda y lo que dice a la derecha */
+.reglas{border-collapse:collapse; margin:.1em 0 .6em; font-size:1.1em}
+.reglas th{padding:.28em 1.2em .28em 0; text-align:left; vertical-align:baseline;
+  font-family:var(--sans); font-weight:600; font-size:.8em; color:var(--lapiz)}
+.reglas td{padding:.28em 0; vertical-align:baseline}
+.reglas tr + tr :is(th,td){border-top:1px solid var(--linea)}
+.reglas small{font-size:.75em; color:var(--lapiz); white-space:nowrap}
+.reglas tr[data-desde]:not(.fig-ve) :is(th,td), .reglas tr[data-desde]:not(.fig-ve) + tr :is(th,td){border-top-color:transparent}
+@media (min-width:701px){ .teoria-cuerpo.con-figura:has(.reglas){grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)} }
+body[data-solo="1"] .envoltura:has(.teoria-diapo.activa .reglas){max-width:none}
+body[data-solo="1"] .teoria-diapo:has(.reglas) .teoria-enun{font-size:1.2em}
+body[data-solo="1"] .teoria-figura .reglas{font-size:1.15em}
+body[data-solo="1"] .teoria-figura .reglas :is(th,td){padding-block:.18em}
+/* las opciones cortas, en fila */
+:is(#mc-E31-3,#mc-P1,#mc-P2) .mc-ops{grid-template-columns:repeat(5,max-content); column-gap:2.2em}
+@media (max-width:700px){
+  .teoria-cuerpo.con-figura:has(.reglas){grid-template-columns:minmax(0,1fr)}
+  .reglas, body[data-solo="1"] .teoria-figura .reglas{font-size:.95em}
+  .reglas th{display:block; padding:.45em 0 0}
+  .reglas td{display:block; padding:0 0 .3em}
+  .reglas tr + tr td{border-top:0}
+  :is(#mc-E31-3,#mc-P1,#mc-P2) .mc-ops{grid-template-columns:repeat(2,max-content) !important}
+}
+</style>
+</head>
+<body data-diapos=".diagnostico-diapo, .intro, .teoria-diapo, .ejemplo-diapo, .problema-diapo, .desafio">
+<nav class="sitio-nav">
+  <div class="sitio-nav-int">
+    <a class="sitio-marca" href="../../index.html">Sera<span>Web</span></a>
+    <div class="sitio-ruta">
+      <a href="../../index.html">Inicio</a><span class="sep">/</span>
+      <a href="../index.html">Cursillo</a><span class="sep">/</span>
+      <span>Divisibilidad: refuerzo</span>
+    </div>
+  </div>
+</nav>
+
+<div class="envoltura">
+
+  <header class="tapa">
+    <p class="sello">SeraWeb · Cursillo de ingreso</p>
+    <h1>Divisibilidad: refuerzo y profundización</h1>
+    <p class="bajada">«La belleza de la matemática solo se le muestra a quien la sigue con paciencia.»<span class="firma">Maryam Mirzakhani, entrevista de 2014</span></p>
+    <div class="pie-tapa">
+      <span>Aritmética y Álgebra · unidad 4 · segunda clase</span>
+      <span>Docente: Juan Serafini</span>
+    </div>
+  </header>
+
+  <nav class="nav" aria-label="Ir a un tema">
+    <div class="nav-int" id="nav"></div>
+  </nav>
+
+  <div id="diagnostico-lugar"></div>
+
+  <section class="intro" id="inicio" data-tema="unidad">
+    <p class="cinta">Cursillo de ingreso · Aritmética y Álgebra · unidad 4 · segunda clase</p>
+    <h2>Casi todo sale de dos ideas</h2>
+    <ul class="ideas">
+      <li><b>IDEA A</b>Lo que ya es múltiplo se ignora: los principios.</li>
+      <li><b>IDEA B</b>Un número es su tabla de exponentes: <span class="ec">d ∣ n</span> cuando cada
+        exponente de <i>d</i> es menor o igual que el de <i>n</i>.</li>
+    </ul>
+    <ul class="puntos">
+      <li>La primera clase dio una regla por tema. Esta muestra de dónde sale cada una.</li>
+      <li>Las demostraciones van paso a paso, y cada paso dice qué ley usa.</li>
+    </ul>
+    <div class="recorrido" id="recorrido"></div>
+  </section>
+
+  <main id="temas"></main>
+
+  <footer class="creditos">
+    Material de clase del cursillo de ingreso · La segunda clase de la unidad 4 (Divisibilidad)
+    de Aritmética y Álgebra. Los ejercicios del material se transcriben con sus opciones y su
+    número; los demás, la teoría y las demostraciones son propios. Cada respuesta y cada opción
+    de esta página están verificadas en
+    <span class="ec">verificacion/cursillo_divisibilidad_refuerzo.py</span>.
+  </footer>
+</div>
+
+<script src="../../assets/pizarra.js"></script>
+
+<script>
+/* En cursiva van solo las letras sueltas (a, b, c, n, N): MCD, MCM y las
+   palabras quedan derechas. 100a cuenta como suelta. */
+Pizarra.letras = /(?<![A-Za-zÁ-úñ&])(?<!\d )[A-Za-z](?![A-Za-zÁ-úñ;])/g;
+
+/* de qué ejercicio sale */
+const fte = s => `<span class="fuente">${s}</span>`;
+const PROPIO = fte('Propio');
+/* un número escrito con sus cifras, con la raya arriba: cif('abc') es el
+   número de cifras a, b y c, no a · b · c. Las letras van en cursiva
+   también fuera de M(). */
+const cif = s => `<span class="sobre">${s.replace(/[a-z]/g, '<i>$&</i>')}</span>`;
+/* las reglas: [nombre, lo que dice, el paso con que llega] */
+const reglas = (...filas) => `<table class="reglas"><tbody>${filas.map(([n, a, desde]) =>
+  `<tr${desde ? ` data-desde="${desde}"` : ''}><th>${n}</th><td>${a}</td></tr>`).join('')}</tbody></table>`;
+/* «si esto, entonces aquello» */
+const entonces = (hs, t) => `${hs.map(M).join(' y ')} ⇒ ${M(t)}`;
+
+
+const TEMAS = [
+{
+  n:2, corto:'Los criterios', titulo:'Por qué funcionan los criterios', pag:'por qué funcionan los criterios · idea A',
+  teoria:[
+    { id:'un-numero', cajon:'lenguaje', chip:'Idea A · Lenguaje', titulo:'Un número es una suma',
+      pregunta:'La suma de las cifras de 2.340 es 9. ¿Por qué eso tendría que decir algo del número?',
+      enun:`Cada cifra va multiplicada por la potencia de 10 de su lugar: ${M('2.340 = 2 · 1.000 + 3 · 100 + 4 · 10 + 0')}`,
+      revela:{ txt:`Cada potencia de 10 es un múltiplo de 9 más 1: ${M('1.000 = 999 + 1')}, ${M('100 = 99 + 1')} y ${M('10 = 9 + 1')}.` },
+      mas:[`Con letras: el número de cifras ${M('a')}, ${M('b')} y ${M('c')} se escribe ${cif('abc')}, con una raya arriba para no confundirlo con ${M('a · b · c')}. Vale ${M('100a + 10b + c')}.`] },
+    { id:'direcciones', cajon:'teorema', chip:'Idea A · Teorema', titulo:'Ida, vuelta y el mismo resto',
+      pregunta:'Si la suma de las cifras no es múltiplo de 9, ¿el número puede serlo igual?',
+      enun:`La pizarra dejó ${M('N = 9 · (11a + b) + (a + b + c)')}: un múltiplo de 9, más lo que queda. Es el molde de la división entera, con el múltiplo adelante.`,
+      figura:reglas(['Ida', `${entonces(['9 ∣ a + b + c'], '9 ∣ N')} <small>principio de la suma</small>`, 1],
+                    ['Vuelta', `${entonces(['9 ∣ N'], '9 ∣ a + b + c')} <small>principio de un sumando</small>`, 2],
+                    ['El resto', `${M('N')} y ${M('a + b + c')} dejan el mismo resto entre 9`, 3]),
+      revela:{ txt:'No. Si 9 dividiera al número, dividiría también a la suma de las cifras: el criterio va de ida y de vuelta.' },
+      mas:['2.341 es 2.340 + 1: deja resto 1 entre 9. Sus cifras suman 10, que también deja resto 1.'] },
+    { id:'molde', cajon:'estrategia', chip:'Idea A · Estrategia', titulo:'El mismo molde: 3, 4 y 11',
+      pregunta:`En ${cif('abc')}, ¿qué parte ya es múltiplo de 3? ¿Y de 4? ¿Y de 11?`,
+      enun:'Se separa lo que ya es múltiplo, y se ignora. Lo que queda es el criterio.',
+      figura:reglas(['Por 3', `${M('99a + 9b = 3 · (33a + 3b)')}: queda ${M('a + b + c')}`, 2],
+                    ['Por 4', `${M('100a = 4 · 25a')}: quedan las dos últimas, ${M('10b + c')}`, 3],
+                    ['Por 11', `${M('100 = 99 + 1')} y ${M('10 = 11 − 1')}: queda ${M('a − b + c')}`, 4]),
+      mas:['El 3 divide al 9: lo que era múltiplo de 9 también es múltiplo de 3.',
+           'El 10 no es múltiplo de 4, pero el 100 sí: por eso se miran las dos últimas cifras.',
+           `El 10 es un múltiplo de 11 menos 1: el 1 entra restando. ${M(`${cif('abc')} = 11 · (9a + b) + (a − b + c)`)}`] },
+  ],
+  /* las demostraciones: en cada paso, la ley o el principio que se usa */
+  ejemplos:[
+    { tras:'un-numero', titulo:'¿Por qué funciona el criterio del 9?', prosa:true, fija:1,
+      enun:`Probar que ${M('9 ∣ 2.340')} sin dividir, escribiendo el número con sus cifras.`,
+      pasos:[
+        'Lo que se busca: partir 2.340 en una parte que ya es múltiplo de 9, que se ignora, y otra que se mira.',
+        P('Valor posicional: cada cifra por la potencia de 10 de su lugar.', '2.340 = 2 · 1.000 + 3 · 100 + 4 · 10 + 0'),
+        P('Disociativa: cada potencia de 10 es un múltiplo de 9 más 1.', ` = 2 · ${N('(999 + 1)')} + 3 · ${N('(99 + 1)')} + 4 · ${N('(9 + 1)')} + 0`),
+        P('Distributiva.', ' = 2 · 999 + 2 + 3 · 99 + 3 + 4 · 9 + 4 + 0'),
+        P('Conmutativa y asociativa: junto lo que tiene 9 y, aparte, las cifras.', ' = (2 · 999 + 3 · 99 + 4 · 9) + (2 + 3 + 4 + 0)'),
+        P('Distributiva, al revés: saco el 9 de factor común.', ` = ${N('9 ·')} (2 · 111 + 3 · 11 + 4) + (2 + 3 + 4 + 0)`),
+        P('Hago las cuentas de los paréntesis.', ' = 9 · 259 + 9'),
+        `Principio de la suma: ${M('9 ∣ 9 · 259')} y ${M('9 ∣ 9')}, así que 9 divide a la suma.`,
+      ],
+      final:`${M('9 ∣ 2.340')}: la parte con 9 se ignora, y lo que queda es la suma de las cifras`,
+      control:`Dividiendo:${A('9 · 260 = 2.340 ✓')}` },
+    { tras:'un-numero', titulo:'El mismo camino, con letras', prosa:true, fija:1,
+      enun:`Lo mismo para cualquier número de tres cifras, ${cif('abc')}. ¿Cuándo es múltiplo de 9?`,
+      pasos:[
+        'Lo que se busca: el mismo camino que con 2.340, pero con letras, para que valga con todos los números de tres cifras.',
+        P('Valor posicional.', `${cif('abc')} = 100a + 10b + c`),
+        P('Disociativa.', ` = ${N('(99 + 1)')}a + ${N('(9 + 1)')}b + c`),
+        P('Distributiva.', ' = 99a + a + 9b + b + c'),
+        P('Conmutativa y asociativa.', ' = (99a + 9b) + (a + b + c)'),
+        P('Distributiva, al revés: saco el 9.', ` = ${N('9 ·')} (11a + b) + (a + b + c)`),
+        `La primera parte es múltiplo de 9 siempre, sean cuales sean las cifras: se ignora. Lo que decide es ${M('a + b + c')}.`,
+      ],
+      final:`${M(`9 ∣ ${cif('abc')}`)} cuando ${M('9 ∣ a + b + c')}`,
+      control:`Con 567:${A('5 + 6 + 7 = 18', '567 = 9 · 63 ✓')}` },
+  ],
+  problemas:[
+    { cod:'E31-3', tras:'direcciones', titulo:'Tres cifras, al revés',
+      enun:`Se tiene un numero de 3 cifras múltiplo de 9, si se invierte el orden de sus cifras el número es múltiplo de 5, el número total de decenas es múltiplo de 8. Entonces el producto de las cifras es:${fte('Ejercitario 3.1, ejercicio 3')}`,
+      opciones:[
+        { t:'120', error:'usó el criterio del 3: 564 cumple todo lo demás' },
+        { t:'210', ok:true },
+        { t:'200', error:'tomó la cifra de las decenas, y no el número de decenas: le dio 585' },
+        { t:'180' },
+        { t:'20' } ] },
+    { cod:'P1', tras:'molde', titulo:'La cifra del 11',
+      enun:`El número ${cif('3a52')} es múltiplo de 11. Entonces ${M('a')} es:${PROPIO}`,
+      opciones:[
+        { t:'1', error:'sumó todas las cifras, como en el 9, y pidió que dieran 11' },
+        { t:'2', error:'usó el criterio del 3 y eligió la menor cifra que sirve' },
+        { t:'4', error:'agrupó cifras seguidas, (2 + 5) − (a + 3), y no alternadas' },
+        { t:'6', ok:true },
+        { t:'8', error:'usó el criterio del 9' } ] },
+    { cod:'P2', tras:'molde', titulo:'Dos cifras que se repiten',
+      enun:`Si ${M('a')} y ${M('b')} son cifras y ${M('a ≠ 0')}, el número ${cif('abab')} siempre es divisible por:${PROPIO}`,
+      opciones:[
+        { t:'11', error:'creyó que la suma alternada da 0: da 2(b − a), y es 0 solo si las dos cifras son iguales' },
+        { t:'101', ok:true },
+        { t:'1.001', error:'lo confundió con abcabc, que es abc · 1.001' },
+        { t:'111', error:'lo confundió con aaa, que es 111 · a' },
+        { t:'3', error:'creyó que 2a + 2b es siempre múltiplo de 3' } ] },
+  ],
+  preguntas:[
+    { p:'¿Por qué en el criterio del 11 queda una resta?',
+      r:'Porque 10 es 11 − 1: al repartir, el 1 entra restando. En 100 = 99 + 1 entra sumando. Por eso los signos van alternados.' },
+    { p:'¿Sirve el criterio del 9 con números de cuatro o cinco cifras?',
+      r:'Sí: 1.000 es 999 + 1, 10.000 es 9.999 + 1, y así con cualquier potencia de 10. La demostración es la misma, con más renglones.' },
+    { p:'¿Por qué el del 4 mira dos cifras y el del 9 todas?',
+      r:'Porque 100 ya es múltiplo de 4, y todo lo que va de las centenas para arriba se ignora. Ninguna potencia de 10 es múltiplo de 9: todas dejan 1.' },
+    { p:'¿El criterio del 9 dice cuánto da la división?',
+      r:'No, pero dice el resto: 2.341 deja resto 1 entre 9, el mismo que deja 10, la suma de sus cifras.' },
+    { p:'En el 3.1·3, ¿por qué la primera cifra tiene que ser 5 y no 0?',
+      r:'Al invertirlo, la primera cifra pasa a ser la última, y tiene que ser 0 o 5. Pero un número de tres cifras no empieza con 0.' },
+    { p:'En abab, ¿de dónde sale el 101?',
+      r:'Del mismo molde: abab es 1.000a + 100b + 10a + b, que da 1.010a + 101b. Y 1.010 es 10 · 101: queda 101 · (10a + b).' },
+  ],
+  notas:`<p><b>Por qué se demuestra.</b> Los criterios ya los usan desde la primera clase; lo que
+      falta es el porqué. Con el porqué, los ejercicios de cifras desconocidas dejan de ser
+      recetas: se arma el número con sus cifras y se ignora lo que ya es múltiplo. Es la idea A.</p>
+    <p><b>Las demostraciones.</b> Que lean en voz alta el nombre de la ley de cada paso: son las
+      de la clase de operaciones. La de 2.340 va primero porque con números se ve que no hay
+      truco; la de abc dice que vale para todos. Antes de la segunda, conviene preguntar «¿qué
+      va a cambiar si en vez de 2.340 ponemos abc?».</p>
+    <p><b>El mismo molde.</b> La tabla del 3, el 4 y el 11 se arma con ellos: cada fila aparece
+      con «Siguiente» después de que la pensaron. Preguntar primero «¿qué parte ya es múltiplo?».
+      El 11 es el que más cuesta: que vean que 10 = 11 − 1 antes de mostrar la fila.</p>
+    <p><b>Ritmo.</b> El bloque entero, unos 50 minutos: 25 para las dos demostraciones y la
+      tabla, y 25 para los tres ejercicios.</p>
+    <p><b>Ejercitario 3.1, ejercicio 3</b>. Al invertirlo es múltiplo de 5: la primera cifra es 5
+      (no puede ser 0). El número de decenas, 5b, es múltiplo de 8: entre 50 y 59 solo está el 56.
+      56c es múltiplo de 9 cuando 11 + c lo es: c es 7. El número es 567 y el producto de sus
+      cifras, 210: la B. La 120 sale de 564, que cumple todo con el criterio del 3; la 200, de
+      585, del que pide que la cifra de las decenas (8) sea múltiplo de 8. La 180 y la 20 no
+      salen de un error claro.</p>
+    <p><b>Ejercicio P1</b> (propio). Desde la derecha, 2 − 5 + a − 3 da a − 6: a es 6, y 3.652 es
+      11 · 332. La D. Cada incorrecta sale de usar otro criterio: el del 9, el del 3, sumar todo,
+      o agrupar cifras seguidas.</p>
+    <p><b>Ejercicio P2</b> (propio). abab es 1.010a + 101b, que es 101 · (10a + b): la B. El 11
+      falla con 1.212, cuya suma alternada es 2: 11 ∤ 1.212. Que prueben cada opción con un
+      ejemplo antes de ver la clave.</p>
+    <p><b>De tarea.</b> El 4 del Ejercitario 3.2.</p>
+    <p><b>Ejercitario 3.2, ejercicio 4</b> (de tarea). Las cifras suman 16 + a, que es múltiplo de 9
+      solo con a igual a 2. Pero 2 es par y es primo: la B y la D son verdaderas las dos. Avisarles
+      antes, como con los ejercicios que quedaron afuera en la primera clase: sirve para
+      practicar la cuenta, no para elegir una letra.</p>`
+},
+];
+
+/* El diagnóstico: un ítem por bloque al empezar y otro igual al terminar,
+   propios y de opción múltiple. Por ahora, el del bloque 2. Cada opción
+   incorrecta sale de un error que los alumnos cometen de verdad; todo se
+   recalcula en el verificador. */
+const DIAGNOSTICO = {
+  clave:true, porHoja:5,
+  consigna:'Antes de empezar. Respondan en papel, solos: el código del ítem y la letra. Al final de la clase hay otros iguales.',
+  notas:`<p><b>La prueba de antes y después</b>, como en la primera clase: un ítem por bloque al
+      empezar y otro igual al terminar, con otros números. Juntar las hojas antes de «Ver
+      clave».</p>
+    <p>En I2, cada incorrecta sale de un criterio mal usado (el del 3, el del 11), de
+      olvidarse una cifra, o de poner el resto como cifra.</p>`,
+  items:[
+    { cod:'I2', tema:'2', enun:'El número 8□61 es múltiplo de 9. ¿Qué cifra va en el □?', opciones:[
+      { t:'0', error:'usó el criterio del 3 y eligió la menor cifra que sirve' },
+      { t:'2', error:'usó el criterio del 11' },
+      { t:'3', ok:true },
+      { t:'4', error:'se olvidó de sumar el 1' },
+      { t:'6', error:'las cifras conocidas suman 15, que deja resto 6 entre 9, y puso el resto' } ] },
+  ],
+  final:{
+    consigna:'Ahora, los del final. Respondan en papel, solos, igual que al empezar.',
+    notas:'<p>Los mismos del principio con otros números. Juntar las hojas antes de «Ver clave».</p>',
+    items:[
+      { cod:'F2', tema:'2', enun:'El número 6□42 es múltiplo de 9. ¿Qué cifra va en el □?', opciones:[
+        { t:'0', error:'usó el criterio del 3 y eligió la menor cifra que sirve' },
+        { t:'1', error:'se olvidó de sumar el 4' },
+        { t:'3', error:'las cifras conocidas suman 12, que deja resto 3 entre 9, y puso el resto' },
+        { t:'6', ok:true },
+        { t:'8', error:'usó el criterio del 11' } ] },
+    ],
+  },
+};
+
+const UNIDAD = {
+  preguntas:[
+    { p:'¿Por qué otra clase de divisibilidad?',
+      r:'Porque la primera dio una regla por tema, y en el examen los problemas mezclan. Si se ve de dónde sale cada regla, no hace falta acordarse de todas.' },
+  ],
+  notas:`<p>La segunda clase de la <b>unidad 4</b> de Aritmética y Álgebra (divisibilidad). La
+      primera dio una regla por tema; esta muestra que casi todo sale de dos ideas: <b>A</b>, lo
+      que ya es múltiplo se ignora (los principios), y <b>B</b>, un número es su tabla de
+      exponentes. Cada bloque dice de cuál sale.</p>
+    <p><b>Por ahora la página trae el bloque 2</b> (por qué funcionan los criterios), para ver
+      cómo se proyecta antes de seguir. Los bloques 1, 3, 4 y 5, el desafío y el resto del
+      diagnóstico vienen después.</p>
+    <p><b>Cuánto entra.</b> Las demostraciones llevan tiempo: se proyectan entre 10 y 12
+      ejercicios, y los demás van de tarea con su resolución en las Notas de su bloque. El
+      reparto: diagnóstico inicial, 10 minutos; bloque 1, 25; bloque 2, 50; bloque 3, 25;
+      <b>pausa</b> de un cuarto de hora; bloque 4, 45; bloque 5, 60; diagnóstico final, 10. El
+      desafío va de tarea.</p>
+    <p><b>La notación.</b> n ∣ A, «n divide a A», con la raya larga y con espacios; n ∤ A, «no
+      divide». Los enunciados del material van tal cual. Un número escrito con sus cifras lleva
+      la raya arriba (abc), para no confundirlo con a · b · c; el material no la usa (escribe
+      4a327).</p>
+    <p>No se repite ningún ejercicio que ya se proyectó en la primera clase: el 1, el 2 y el 9
+      del 3.1 y el 2 y el 8 del 3.2 son allá el 1, el 2, el 26, el 28 y el 30.</p>`
+};
+
+Pizarra.unidad({ TEMAS, UNIDAD, DIAGNOSTICO, grado:'cursillo', temasLibro:5 });
+</script>
+
+<script src="../../assets/proyeccion.js" defer></script>
+<script src="../../assets/timer.js" defer></script>
+<script src="../../assets/clase.js" defer></script>
+</body>
+</html>
