@@ -408,6 +408,7 @@ def main():
         escribe('quimica/index.html', indice_quimica()),
         escribe('fisica/index.html', indice_fisica()),
         escribe('cursillo/index.html', indice_cursillo()),
+        escribe('cursillo/alumnos/index.html', cursillo_generar.pagina_alumnos(pagina)),
         escribe('omapa/index.html', indice_omapa()),
         escribe('fichas/index.html', indice_fichas()),
     ]

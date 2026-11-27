@@ -219,3 +219,42 @@ def pagina_cursillo(pagina, barra, pie):
     return pagina('Cursillo', '\n'.join(cuerpo), prof=1, css_extra=('assets/cursillo.css',),
                   descripcion='Cursillo de ingreso: la semana de clases y los temas, '
                               'con sus clases para proyectar.')
+
+
+def pagina_alumnos(pagina):
+    """La portada de los alumnos del cursillo: cursillo/alumnos/index.html.
+
+    Es adonde llega una cuenta con alcance «cursillo» (ver ALCANCES en
+    assets/acceso.js): las clases del banco que ya tienen página, y nada
+    más. Sin la barra del sitio, sin la semana ni otros enlaces: de acá solo
+    se va a una clase, y de una clase solo se vuelve acá."""
+    sube = '../../'
+    tarjetas = []
+    for tid, t in TEMAS.items():
+        if not t.get('clase'):
+            continue
+        tarjetas.append(
+            f'<a class="tarjeta" href="{sube}{e(t["clase"])}">'
+            f'<span class="rotulo">{e(t["materia"])} · {e(t["bloque"])}</span>'
+            f'<h3>{e(t["titulo"])}</h3><p>{e(t["fuente"])}</p></a>')
+    cuerpo = f"""<div class="envoltura ancha">
+<header class="portada">
+  <p class="sello">Cursillo de ingreso</p>
+  <h1>Los materiales de clase</h1>
+  <p class="bajada">Las clases que se proyectan en el cursillo, para repasarlas en casa.
+    Material de teoría y ejercicios recopilado por Lic. Juan Serafini.</p>
+</header>
+<section class="bloque">
+  <p class="eyebrow">Las clases</p>
+  <h2>Elegí una</h2>
+  <div class="tarjetas">
+    {''.join(tarjetas)}
+  </div>
+</section>
+<p class="alu-salir"><button class="boton" type="button" onclick="AESAcceso.salir()">Salir</button></p>
+</div>
+<style>.alu-salir{{margin:28px 0 40px}}
+.alu-salir button{{font:inherit; font-weight:700; padding:9px 18px; border:1px solid var(--linea-fuerte); border-radius:6px; background:var(--papel-2); color:var(--tinta); cursor:pointer}}
+.alu-salir button:hover{{border-color:var(--acento)}}</style>"""
+    return pagina('Cursillo · materiales', cuerpo, prof=2,
+                  descripcion='Los materiales de clase del cursillo de ingreso.')

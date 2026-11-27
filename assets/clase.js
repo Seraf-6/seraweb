@@ -86,16 +86,20 @@
   pMenu.setAttribute('aria-label', 'Menú');
   var ruta = Array.prototype.slice.call(document.querySelectorAll('.sitio-ruta a'));
   var aqui = document.querySelector('.sitio-ruta span:last-child');
+  /* Una cuenta con alcance (los alumnos del cursillo, ver acceso.js) vuelve
+     solo a su portada, y no ve las notas del docente. */
+  var alcance = window.AESAlcance;
   pMenu.innerHTML = '<div class="cls-cab"><div class="cls-tit"><span class="cls-rot">Menú</span>' +
       '<b>' + (aqui ? aqui.textContent : document.title) + '</b></div>' +
       '<button class="cls-cerrar" type="button" data-cls="cerrar" aria-label="Cerrar">×</button></div>' +
     '<div class="cls-cuerpo">' +
       '<p class="menu-rot">Ir a</p><nav class="menu-ruta">' +
-      ruta.map(function (a, k) {
-        return '<a href="' + a.getAttribute('href') + '">' + a.textContent + '</a>';
-      }).reverse().join('') + '</nav>' +
-      '<p class="menu-rot">Para el docente</p>' +
-      '<button class="menu-op" type="button" data-cls="notas">Notas del tema que se está viendo</button>' +
+      (alcance ? '<a href="' + alcance.portada + '">Los materiales del cursillo</a>' :
+        ruta.map(function (a, k) {
+          return '<a href="' + a.getAttribute('href') + '">' + a.textContent + '</a>';
+        }).reverse().join('')) + '</nav>' +
+      (alcance ? '' : '<p class="menu-rot">Para el docente</p>' +
+        '<button class="menu-op" type="button" data-cls="notas">Notas del tema que se está viendo</button>') +
     '</div>';
   document.body.appendChild(pMenu);
 

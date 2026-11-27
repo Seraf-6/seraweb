@@ -50,6 +50,7 @@ fichas/
 quimica/index.html          Química                      ← lo genera build.py
 fisica/index.html           Física (por ahora vacía)     ← lo genera build.py
 cursillo/index.html         Cursillo: la semana y los temas ← lo genera build.py
+cursillo/alumnos/index.html la portada de los alumnos del cursillo ← lo genera build.py
 cursillo/clases/<tema>.html clases del cursillo         ← escritas a mano
 cursillo/clases/sistema-metrico.html  unidad 6 de Aritmética y Álgebra ← escrita a mano
 cursillo/clases/operaciones.html      unidad 3 de Aritmética y Álgebra ← escrita a mano
@@ -1215,9 +1216,24 @@ https ni con doble clic.
 Las cuentas se manejan con `python herramientas/clave.py` (sin argumentos las
 lista; `clave.py <usuario>` crea o cambia; `--quitar <usuario>`). Pide la
 contraseña sin mostrarla, exige al menos 10 caracteres y reescribe el bloque
-`CUENTAS` de `acceso.js`. «Recordar en esta computadora» la guarda en
+`CUENTAS` de `acceso.js`. «Mostrar la contraseña» deja ver cómo se escribió. «Recordar en esta computadora» la guarda en
 `localStorage`; si no, dura hasta cerrar el navegador. Al cambiar una
 contraseña, las computadoras que la tenían recordada la vuelven a pedir.
+
+**Cuentas con alcance.** Una cuenta puede tener un tercer dato en `CUENTAS`,
+su alcance (`clave.py <usuario> --alcance cursillo`; `--alcance ninguno` se lo
+saca, y cambiar la contraseña lo conserva). El alcance está en `ALCANCES` de
+`acceso.js`: qué páginas puede ver y cuál es su portada. Con alcance `cursillo`
+(la cuenta `poli-int-1`, de los alumnos del cursillo, pedida por Juan el
+26/11/2026) se ven solo las clases de `cursillo/clases/` y la portada
+`cursillo/alumnos/index.html`: cualquier otra página manda a la portada, igual
+que cualquier enlace que salga de ahí; el menú ☰ de las clases vuelve solo a
+la portada y no muestra las Notas del docente; y cada clase abre siempre en
+«una a la vez», aunque antes se haya cambiado. La portada la genera
+`build.py` (`pagina_alumnos` en `cursillo_generar.py`) con los temas de
+`cursillo_datos.py` que tienen clase: sin la barra del sitio ni otros enlaces,
+con un botón «Salir». Como todo lo de esta pantalla, es una puerta y no una
+cerradura.
 
 Las páginas del Open House no la llevan a propósito: se abren desde los QR
 de la muestra, en el celular de los padres. Una regla de contraseña según la
