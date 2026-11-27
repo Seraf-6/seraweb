@@ -18,6 +18,16 @@ No hay que compilar nada para verlo: son archivos HTML sueltos. Se puede
 abrir `index.html` con doble clic, servirlo desde GitHub Pages, o descargar
 la carpeta entera y usarla **sin conexión**.
 
+**Dónde está publicado.** El repositorio es `Seraf-6/seraweb` y GitHub Pages
+publica la rama `main` en **https://seraf-6.github.io/seraweb/**. Antes se
+llamaba `aesweb`: la dirección vieja (`…/aesweb/`) ya no existe y GitHub no la
+redirige. La carpeta local todavía se llama `aesweb`, y algunas claves del
+navegador también (`aesweb-acceso`, `aesweb-proy`, `aesweb-valoraciones`):
+no se cambian, porque son lo que cada computadora tiene guardado.
+Se trabaja en la rama `cambios-locales` y se pasa a `main` para publicar.
+La portada de los alumnos del cursillo es
+https://seraf-6.github.io/seraweb/cursillo/alumnos/.
+
 Para regenerar las páginas de índice después de tocar el contenido:
 
 ```bash
@@ -639,7 +649,16 @@ enlaza directo.
 (`3a-07`), no lleva el nombre, y la dirección de la pieza depende solo de él:
 `https://seraf-6.github.io/aesweb/open-2026/p/3a-07/`. Si cambia el audio, el
 título o la foto, la dirección sigue igual. Reimprimir doscientas etiquetas
-porque se movió un archivo es el error caro de este módulo. Por lo mismo:
+porque se movió un archivo es el error caro de este módulo.
+
+**Los QR impresos ya no funcionan, y es a propósito.** Llevan la dirección del
+repositorio viejo (`…/aesweb/open-2026/`), que dejó de existir al renombrarlo
+`seraweb`. Juan decidió (26/11/2026) que se queden así, después de la muestra:
+no se arman redirecciones ni otro repositorio `aesweb`. Las páginas siguen en
+`https://seraf-6.github.io/seraweb/open-2026/`. `URL_BASE` en `generar.py` y el
+verificador siguen con `aesweb` porque es lo que dicen los QR commiteados; si
+algún día se hicieran QR nuevos, se cambian las dos y se borran los SVG.
+Mientras el módulo estuvo en uso valía esto:
 
 - Los QR se hacen con `segno` **una sola vez**, cuando falta el SVG, y quedan
   commiteados. Con los SVG en el repositorio el sitio se construye sin segno.
@@ -1005,7 +1024,7 @@ sección "Dos nombres reservados".
 `valoraciones/index.html` es la herramienta para armar, editar e imprimir las
 valoraciones escritas de unidad. No está en `contenido.py` ni en la portada:
 no es material de alumno, se entra por la dirección
-(`…/aesweb/valoraciones/`). Se abre con doble clic, anda sin conexión y no
+(`…/seraweb/valoraciones/`). Se abre con doble clic, anda sin conexión y no
 tiene dependencias: la matemática la dibuja el motor en HTML y CSS, sin KaTeX.
 
 **Ningún contenido de valoración entra al repositorio**, ni como ejemplo. Lo
