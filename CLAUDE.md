@@ -936,21 +936,27 @@ de tarea con el aviso. Un número escrito con sus cifras lleva la raya arriba
 (cada renglón de las demostraciones se evalúa, el de abc con los 900 números).
 Por ahora tiene el bloque 2; los demás se agregan de a uno.
 
-**Vectores** (`vectores.html`, pedida por Juan el 26/11/2026) es una clase de
-teoría con la lista de ejercicios al final: cinco temas en el orden del material
-de lectura de la unidad 2 de Geometría Analítica y Cálculo (qué es un vector,
-módulo y tipos, operaciones, producto escalar, ángulo y proyección), cada uno con
-sus diapositivas de teoría y un ejemplo propio en la pizarra; después, el tema 6,
-**quince ejercicios del Ejercitario 2.1 y del 2.2 de fijación, de menor a mayor**,
-que tocan los cinco temas, tal cual y con sus opciones, y el 20 del 2.1 como
-desafío. El 2.2 es el 2.1 con otros números: de cada par va uno solo (el 7 del
-2.1 dice «obtuso» a secas y es falso por el llano; el 10 del 2.2 dice que un
-coseno «es 90°»). Las figuras del ejercitario están redibujadas con `dib()`, el
-dibujo de flechas de la página. La notación: el vector con su flecha arriba
-(`V('u')`; en `W()` y `R()`, `~u`), el módulo con dos rayas (‖v‖, como el
-ejercitario). Verificador: `verificacion/cursillo_vectores.py` (las afirmaciones
-generales, sobre vectores al azar; las figuras, con coordenadas al azar; el
-orden de la lista está escrito en el verificador).
+**Vectores** (`vectores.html`, pedida por Juan el 26/11/2026, corregida el
+27/11) es la unidad 2 de Geometría Analítica y Cálculo en el orden del material
+de lectura: qué es un vector, módulo y tipos, operaciones, producto escalar,
+ángulo y proyección. Cada tema tiene su teoría, un ejemplo propio en la pizarra
+y, enseguida, **los ejercicios del Ejercitario 2.1 y del 2.2 de fijación que
+usan ese tema** (`tras:` la última teoría del tema), de menor a mayor: 1 después
+del tema 2, 5 después del 3, 3 después del 4 y 6 después del 5. Son quince, tal
+cual y con sus opciones, y el 20 del 2.1 es el desafío, de tarea. El 2.2 es el
+2.1 con otros números: de cada par va uno solo (el 7 del 2.1 dice «obtuso» a
+secas y es falso por el llano; el 10 del 2.2 dice que un coseno «es 90°»). **Fijo
+y libre son los del material** (fijo, el que sale del origen; libre, el que sale
+de otro punto); las Notas aclaran que en otros libros fijo es la flecha AB,
+libre la familia de equipolentes y el del origen, el vector posición. Cada
+fórmula con subíndices dice qué son (con A = (x₁, y₁) y B = (x₂, y₂), o con
+u = (x₁, y₁) y v = (x₂, y₂)). La notación: el vector con su flecha arriba
+(`V('u')`; en `W()` y `R()`, `~u`), el módulo con dos rayas (‖v‖), y los versores
+de los ejes sin punto, `~ı` y `~ȷ`, para que la flecha no choque con el punto.
+Las figuras del ejercitario están redibujadas con `dib()`. Verificador:
+`verificacion/cursillo_vectores.py` (las afirmaciones generales, sobre vectores
+al azar; las figuras, con coordenadas al azar; dónde va cada ejercicio y su
+resolución en las Notas de su tema; la notación y las condiciones).
 
 **Toda clase del cursillo abre y cierra con un diagnóstico de cinco ítems**
 (lo pidió Juan el 25/11/2026, para tener una prueba de antes y después): cinco

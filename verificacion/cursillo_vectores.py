@@ -1,9 +1,9 @@
 """Verificación de la clase del cursillo: Vectores en el plano.
 
 `cursillo/clases/vectores.html` es la teoría de la unidad 2 de Geometría
-Analítica y Cálculo (vectores en el plano), con un ejemplo resuelto por tema,
-y al final una lista de ejercicios del Ejercitario 2.1 y del 2.2 de fijación,
-de menor a mayor dificultad, con sus opciones tal cual. Acá cada cosa se
+Analítica y Cálculo (vectores en el plano), con un ejemplo resuelto por tema
+y, enseguida, los ejercicios del Ejercitario 2.1 y del 2.2 de fijación que
+usan ese tema, de menor a mayor, con sus opciones tal cual. Acá cada cosa se
 rehace por un camino distinto del de la clase:
 
 1. Los ejercicios numéricos, con sympy (exacto) y, donde se puede, por otro
@@ -17,9 +17,14 @@ rehace por un camino distinto del de la clase:
    un error que es una cuenta se rehace desde ese error.
 5. Los ejemplos de la teoría: cada renglón del cuaderno; el diagnóstico,
    cada ítem y cada opción incorrecta desde su error.
-6. La lista va de menor a mayor (el orden está escrito acá) y toca todos
-   los temas; no hay rayas (—), ni dos igualdades en un renglón, ni el
-   nombre de otro docente.
+6. Cada ejercicio va después del tema que usa (tras:), de menor a mayor
+   dentro del tema (el orden está escrito acá), y su resolución está en las
+   Notas de ese tema.
+7. La notación: cada fórmula con subíndices dice qué son (A = (x₁, y₁)…),
+   los versores de los ejes van sin punto (ı, ȷ), el versor y los colineales
+   piden un vector no nulo, y la recta de la dirección pasa por los dos
+   extremos del vector. No hay rayas (—), ni dos igualdades en un renglón,
+   ni el nombre de otro docente.
 
     python verificacion/cursillo_vectores.py
 """
@@ -100,15 +105,16 @@ PALABRAS = {'Una': 1, 'Dos': 2, 'Tres': 3, 'Cuatro': 4, 'Cero': 0, 'Ninguna': 0,
 
 
 # ═══════════════════════ La lista de ejercicios ═══════════════════════
-# en el orden en que van en la página: de menor a mayor
-ORDEN = ['E21-1', 'E21-16', 'E22-6', 'E21-2', 'E21-3', 'E21-4', 'E21-12', 'E21-10',
-         'E21-15', 'E22-7', 'E21-8', 'E21-9', 'E21-17', 'E21-11', 'E21-19']
+# cada ejercicio va después del tema que usa, de menor a mayor dentro del tema
+# (1 qué es un vector, 2 módulo y tipos, 3 operaciones, 4 producto escalar,
+# 5 ángulo y proyección), tras la última teoría del tema
+POR_TEMA = {2: ('versor', ['E22-6']),
+            3: ('resta-escalar', ['E21-1', 'E21-2', 'E21-3', 'E21-4', 'E21-12']),
+            4: ('cuadrado', ['E21-16', 'E21-10', 'E21-9']),
+            5: ('proyeccion', ['E21-15', 'E22-7', 'E21-8', 'E21-17', 'E21-11', 'E21-19'])}
+ORDEN = [c for n in sorted(POR_TEMA) for c in POR_TEMA[n][1]]
 DESAFIO = 'E21-20'
-# el tema de cada uno (1 qué es un vector, 2 módulo y tipos, 3 operaciones,
-# 4 producto escalar, 5 ángulo y proyección)
-TEMA = {'E21-1': 3, 'E21-16': 1, 'E22-6': 2, 'E21-2': 3, 'E21-3': 3, 'E21-4': 3,
-        'E21-12': 2, 'E21-10': 4, 'E21-15': 2, 'E22-7': 4, 'E21-8': 5, 'E21-9': 4,
-        'E21-17': 5, 'E21-11': 5, 'E21-19': 5, 'E21-20': 5}
+TEMA = {c: n for n in POR_TEMA for c in POR_TEMA[n][1]} | {DESAFIO: 5}
 
 
 def ejercicios():
@@ -467,6 +473,43 @@ def limpia(s):
     return s
 
 
+def controla_notacion(html):
+    """Lo que se corrigió el 27/11: subíndices, ı y ȷ, condiciones, el dibujo."""
+    # cada renglón con subíndices dice qué son
+    for renglon in html.splitlines():
+        for k in '₁₂':
+            if re.search(r'[xy]' + k, renglon) and f'(x{k}, y{k})' not in renglon:
+                mal(f'usa x{k} o y{k} y no dice qué son: {renglon.strip()[:80]}')
+    # los versores de los ejes, sin punto
+    if re.search(r"~[ij]\b", html):
+        mal('quedó un ~i o un ~j con punto: van ~ı y ~ȷ')
+    letras = html.split('Pizarra.letras =')[1][:120]
+    if html.count('~ı') < 4 or 'ıȷ' not in letras:
+        mal('faltan ı y ȷ, o Pizarra.letras no las pone en cursiva')
+    if '4~ı + 3~ȷ' not in html:
+        mal('las componentes no conectan AB con 4ı + 3ȷ')
+    # las condiciones y las aclaraciones
+    for frag, que in [("de un vector ${W('~v')} no nulo", 'el versor pide v no nulo'),
+                      ("${W('~u = k · ~v')}, con ${W('~v')} no nulo", 'los colineales piden v no nulo'),
+                      ('fuera 0, la proyección sería el vector nulo', 'el desafío no descarta u · v = 0'),
+                      ('por eso el punto y el vector se escriben igual', 'la revela de las componentes'),
+                      ('vector posición', 'las Notas no aclaran fijo, libre y posición'),
+                      ('En el material, el que sale del origen', 'la igualdad no dice que fijo y libre son del material')]:
+        if frag not in html:
+            mal(que)
+    if 'recto([0, 1]' in html:
+        mal('quedó el código muerto en la proyección')
+    # la recta de la dirección pasa por (1, 1) y (6, 3), los extremos del vector
+    m = re.search(r"guias:\[\[\[0, ([\d.]+)\], \[7, ([\d.]+)\], 2\]\]", html)
+    if not m:
+        mal('no encuentro la recta de la dirección')
+    else:
+        y0, y7 = F(m.group(1)), F(m.group(2))
+        recta = lambda x: y0 + (y7 - y0) * x / 7
+        if recta(1) != 1 or recta(6) != 3:
+            mal('la recta de la dirección no pasa por (1, 1) y (6, 3)')
+
+
 def controla_pagina(D, datos):
     print('La página')
     if not PAGINA.exists():
@@ -483,11 +526,27 @@ def controla_pagina(D, datos):
         pos[cod] = ini
     orden = sorted(en_pagina, key=pos.get)
     if orden != ORDEN:
-        mal(f'la lista no está en el orden de menor a mayor: {orden}')
-    if not 14 <= len(ORDEN) <= 17:
-        mal(f'la lista tiene {len(ORDEN)}: en una clase entran unos 16')
-    if set(TEMA[c] for c in ORDEN + [DESAFIO]) != {1, 2, 3, 4, 5}:
-        mal('la lista no toca los cinco temas')
+        mal(f'los ejercicios no van en el orden de cada tema: {orden}')
+    if len(ORDEN) != 15 or len(set(ORDEN)) != 15:
+        mal(f'tienen que ser 15 ejercicios distintos: {len(ORDEN)}')
+    if "n:6," in html or 'temasLibro:5' not in html:
+        mal('quedó el tema 6 de los ejercicios, o temasLibro no es 5')
+    # cada uno, dentro de su tema, después de su teoría, y su resolución en las Notas del tema
+    inicios = {n: html.find("n:%d, corto:" % n) for n in range(1, 6)}
+    finales = {n: (inicios[n + 1] if n < 5 else html.find('const DESAFIO')) for n in inicios}
+    for n, (tras, cods) in POR_TEMA.items():
+        a, b = inicios[n], finales[n]
+        for c in cods:
+            i = html.find(f"cod:'{c}'")
+            if not a < i < b:
+                mal(f'{c}: no está en el tema {n}')
+            if not html[i:i + 60].startswith(f"cod:'{c}', tras:'{tras}'"):
+                mal(f'{c}: tiene que ir tras «{tras}», la última teoría del tema {n}')
+            lib, num = c[1:3], c.split('-')[1]
+            nombre = f"<b>Ejercitario 2.{lib[1]}{' de fijación' if lib == '22' else ''}, ejercicio {num}</b>"
+            j = html.find(nombre, html.find('notas:`', a))
+            if not a < j < b:
+                mal(f'{c}: su resolución no está en las Notas del tema {n}')
     for cod in ORDEN:
         if cod not in EJ:
             mal(f'{cod}: no está resuelto en el verificador')
@@ -517,6 +576,8 @@ def controla_pagina(D, datos):
         nombre = f"Ejercitario 2.{lib[1]}{' de fijación' if lib == '22' else ''}, ejercicio {n}"
         if nombre not in html:
             mal(f'{cod}: la página no dice de dónde sale («{nombre}»)')
+
+    controla_notacion(html)
 
     # el desafío
     for frag in ("16 · cos 120°", "' = −8'", "θ = 120°"):
