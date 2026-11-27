@@ -23,12 +23,68 @@
   var VUELTAS = 100000;
   var CUENTAS = {
     "andreita": ["6887483ccb04312a", "d08a8b10db5bb080df408d93b29350bb7699f9d3b609768da05b3c538a6a66d6"],
-    "docente": ["c66e783d10ae2455", "0892ebd35e33d50de9c35744c962c043f651ef0dba1b07df5c12ecd0dd392c3c"]
+    "docente": ["c66e783d10ae2455", "0892ebd35e33d50de9c35744c962c043f651ef0dba1b07df5c12ecd0dd392c3c"],
+    "poli-int-1": ["ad1490b1624504a1", "a493bf637943044ac6d1b6c077c6c5f6d1d4a59733571d6b28057afdb80a4a83", "cursillo"]
   };
   /* CUENTAS:fin */
 
+  /* Lo que puede ver cada cuenta. Una cuenta con alcance (el tercer dato
+     de CUENTAS, que pone clave.py --alcance) entra solo a esas páginas:
+     cualquier otra la manda a su portada, igual que los enlaces que salen
+     de ahí. Sin alcance, la cuenta ve todo el sitio. Tampoco esto es
+     seguridad: es una puerta, no una cerradura. */
+  var ALCANCES = {
+    cursillo: { portada: 'cursillo/alumnos/index.html',
+                puede: /^cursillo\/(clases\/[^\/]+\.html|alumnos\/(index\.html)?)$/ }
+  };
+
   var LLAVE = 'aesweb-acceso';
   var raiz = document.documentElement;
+  /* la raíz del sitio: donde está este guion, sin assets/acceso.js */
+  var BASE = ((document.currentScript && document.currentScript.src) || '')
+    .replace(/assets\/acceso\.js(\?.*)?$/, '');
+
+  /* Para salir: AESAcceso.salir() desde la consola, o el botón «Salir»
+     que agregue una página. */
+  window.AESAcceso = { salir: function(){
+    try { localStorage.removeItem(LLAVE); sessionStorage.removeItem(LLAVE); } catch(e){}
+    location.reload();
+  }};
+
+  /* ── el alcance de la cuenta ─────────────────────────────────── */
+  function alcanceDe(u){
+    var c = CUENTAS.hasOwnProperty(u) ? CUENTAS[u] : null;
+    return c && c[2] && ALCANCES.hasOwnProperty(c[2]) ? c[2] : null;
+  }
+  function relativa(url){              // la dirección sin la raíz, el ? ni el #
+    var s = String(url).split('#')[0].split('?')[0];
+    if (!BASE || s.indexOf(BASE) !== 0) return null;
+    try { return decodeURI(s.slice(BASE.length)); } catch(e){ return s.slice(BASE.length); }
+  }
+  /* Con alcance: marca la página, deja la proyección en «una a la vez» (si
+     en esta computadora no se eligió otra cosa) y vigila los enlaces.
+     Devuelve la dirección a la que hay que ir si esta página no se puede ver. */
+  function aplica(u){
+    var nombre = alcanceDe(u);
+    if (!nombre) return null;
+    var a = ALCANCES[nombre], portada = BASE + a.portada;
+    var puede = function(url){ var r = relativa(url); return r !== null && a.puede.test(r); };
+    raiz.setAttribute('data-alcance', nombre);
+    window.AESAlcance = { nombre: nombre, portada: portada };
+    try {        // cada clase abre siempre en «una a la vez», aunque antes se haya cambiado
+      var p = JSON.parse(localStorage.getItem('aesweb-proy') || 'null') || {};
+      p.solo = 1; localStorage.setItem('aesweb-proy', JSON.stringify(p));
+    } catch(e){}
+    var est = document.createElement('style');
+    est.textContent = 'html[data-alcance] .sitio-ruta, html[data-alcance] .pie-sitio{display:none}';
+    document.head.appendChild(est);
+    document.addEventListener('click', function(e){
+      var l = e.target && e.target.closest ? e.target.closest('a[href]') : null;
+      if (!l || l.getAttribute('href').charAt(0) === '#') return;
+      if (!puede(l.href)){ e.preventDefault(); location.href = portada; }
+    }, true);
+    return puede(location.href) ? null : portada;
+  }
 
   /* ── SHA-256, en JavaScript puro ──────────────────────────────
      Sin crypto.subtle: no existe fuera de https, y el sitio también
@@ -103,7 +159,13 @@
   function valido(g){
     return !!(g && CUENTAS.hasOwnProperty(g.u) && CUENTAS[g.u][1] === g.h);
   }
-  if (valido(lee('localStorage')) || valido(lee('sessionStorage'))) return;
+  var guardado = valido(lee('localStorage')) ? lee('localStorage') :
+                 valido(lee('sessionStorage')) ? lee('sessionStorage') : null;
+  if (guardado){
+    var ir = aplica(guardado.u);
+    if (ir){ raiz.style.visibility = 'hidden'; location.replace(ir); }
+    return;
+  }
 
   /* ── tapar la página hasta que entre ─────────────────────────── */
   raiz.classList.add('acceso-pendiente');
@@ -141,6 +203,7 @@
       '<p>Para usar el sitio, entrá con el usuario y la contraseña que te dio tu docente.</p>' +
       '<label>Usuario<input type="text" name="u" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>' +
       '<label>Contraseña<input type="password" name="c" autocomplete="current-password" required></label>' +
+      '<label class="recordar"><input type="checkbox" name="ver"> Mostrar la contraseña</label>' +
       '<label class="recordar"><input type="checkbox" name="r" checked> Recordar en esta computadora</label>' +
       '<button type="submit">Entrar</button>' +
       '<p class="error" role="alert" aria-live="assertive"></p>' +
@@ -151,6 +214,8 @@
     // Que las teclas no lleguen a los atajos de la clase (flechas, espacio del timer).
     caja.addEventListener('keydown', function(e){ e.stopPropagation(); });
     form.u.focus();
+    // para ver cómo se escribió la contraseña
+    form.ver.addEventListener('change', function(){ form.c.type = form.ver.checked ? 'text' : 'password'; });
     form.addEventListener('submit', function(e){
       e.preventDefault();
       var u = normaliza(form.u.value), c = form.c.value;
@@ -167,6 +232,9 @@
         }
         var g = JSON.stringify({ u: u, h: h });
         try { window[form.r.checked ? 'localStorage' : 'sessionStorage'].setItem(LLAVE, g); } catch(e2){}
+        // Con alcance, se vuelve a cargar: así la proyección arranca en «una
+        // a la vez», y si esta página no se puede ver, se va a la portada.
+        if (alcanceDe(u)){ location.replace(aplica(u) || location.href); return; }
         caja.remove();
         raiz.classList.remove('acceso-pendiente');
       }, 30);
@@ -174,11 +242,4 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arma);
   else arma();
-
-  /* Para salir: AESAcceso.salir() desde la consola, o el enlace «Salir»
-     que agregue una página. */
-  window.AESAcceso = { salir: function(){
-    try { localStorage.removeItem(LLAVE); sessionStorage.removeItem(LLAVE); } catch(e){}
-    location.reload();
-  }};
 })();

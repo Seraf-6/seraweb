@@ -4,6 +4,12 @@
     python herramientas/clave.py                  lista las cuentas
     python herramientas/clave.py docente          crea la cuenta o le cambia la contraseña
     python herramientas/clave.py --quitar alumnos quita una cuenta
+    python herramientas/clave.py poli-int-1 --alcance cursillo
+                                                  una cuenta que solo ve las clases del
+                                                  cursillo (ALCANCES en acceso.js);
+                                                  --alcance ninguno se lo saca
+
+Al cambiar la contraseña, la cuenta conserva su alcance.
 
 La contraseña se pide sin mostrarla y no se guarda en ningún lado: en
 acceso.js queda solo su huella, con una sal nueva cada vez. Después de
@@ -54,8 +60,18 @@ def escribe(texto, m, vueltas, cuentas):
 def main(args):
     texto, m, vueltas, cuentas = lee()
     if not args:
-        print('Cuentas:', ', '.join(sorted(cuentas)) or '(ninguna)')
+        print('Cuentas:', ', '.join(u + (f' (solo {v[2]})' if len(v) > 2 else '')
+                                    for u, v in sorted(cuentas.items())) or '(ninguna)')
         return
+    alcance = None
+    if '--alcance' in args:
+        i = args.index('--alcance')
+        if i + 1 >= len(args):
+            sys.exit('Uso: clave.py <usuario> --alcance <cursillo|ninguno>')
+        alcance = args[i + 1]
+        args = args[:i] + args[i + 2:]
+        if alcance != 'ninguno' and not re.search(r'\b%s\s*:' % re.escape(alcance), texto):
+            sys.exit(f'No hay un alcance «{alcance}» en ALCANCES de assets/acceso.js.')
     if args[0] == '--quitar':
         if len(args) != 2 or args[1] not in cuentas:
             sys.exit('Uso: clave.py --quitar <usuario existente>')
@@ -74,8 +90,11 @@ def main(args):
     if getpass.getpass('Otra vez: ') != clave:
         sys.exit('No coinciden. No cambié nada.')
     nueva = usuario not in cuentas
+    if alcance is None and not nueva and len(cuentas[usuario]) > 2:
+        alcance = cuentas[usuario][2]          # cambiar la contraseña no le saca el alcance
     sal = secrets.token_hex(8)
-    cuentas[usuario] = [sal, huella(usuario, clave, sal, vueltas)]
+    cuentas[usuario] = [sal, huella(usuario, clave, sal, vueltas)] + (
+        [alcance] if alcance and alcance != 'ninguno' else [])
     escribe(texto, m, vueltas, cuentas)
     print(f'Listo: {usuario} {"creada" if nueva else "con contraseña nueva"}. '
           'Ahora commit y push de assets/acceso.js.')
