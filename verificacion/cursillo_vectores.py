@@ -473,6 +473,66 @@ def limpia(s):
     return s
 
 
+def controla_sombra(html):
+    """De dónde sale el coseno: v acostado, u con un ángulo θ. Las cuentas de
+    la diapositiva se rehacen con sympy, y el dibujo tiene que poder hacerse
+    con los números de SOMBRA (θ agudo y la sombra cayendo sobre v)."""
+    a, b, t = sp.symbols('a b t', positive=True)
+    u, v = (a * sp.cos(t), a * sp.sin(t)), (b, 0)
+    pe_sombra = u[0] * v[0] + u[1] * v[1]
+    if sp.simplify(pe_sombra - a * b * sp.cos(t)) != 0 or sp.simplify(sp.sqrt(u[0]**2 + u[1]**2) - a) != 0:
+        mal('la sombra: u · v no da ‖u‖ ‖v‖ cos θ, o u no mide ‖u‖')
+    # otro camino: con vectores al azar, el coseno de la fórmula es el del ángulo medido con atan2
+    for _ in range(50):
+        p, q = al_azar(), al_azar()
+        ang = sp.atan2(p[1], p[0]) - sp.atan2(q[1], q[0])
+        c = sp.Rational(pe(p, q)) / sp.sqrt(mod2(p) * mod2(q))
+        if abs(sp.N(sp.cos(ang) - c, 30)) > sp.Float('1e-25'):
+            mal(f'el coseno de la fórmula no es el del ángulo entre {p} y {q}')
+            break
+    for frag in ("R('~u = (‖~u‖ cos θ, ‖~u‖ sen θ)')", "R('~v = (‖~v‖, 0)')",
+                 "R('~u · ~v = ‖~u‖ cos θ · ‖~v‖ + ‖~u‖ sen θ · 0')", "R(' = ‖~u‖ ‖~v‖ cos θ')"):
+        if frag not in html:
+            mal(f'la sombra no trae {frag}')
+    # el teorema del coseno y la proyección, por otro camino: vectores al azar
+    for _ in range(50):
+        p, q = al_azar(), al_azar()
+        ang = sp.atan2(p[1], p[0]) - sp.atan2(q[1], q[0])
+        mu, mv = sp.sqrt(mod2(p)), sp.sqrt(mod2(q))
+        resta2 = mod2(resta(p, q))
+        if abs(sp.N(resta2 - (mod2(p) + mod2(q) - 2 * mu * mv * sp.cos(ang)), 30)) > 1e-20 \
+                or resta2 != mod2(p) + mod2(q) - 2 * pe(p, q):
+            mal(f'el teorema del coseno y el cuadrado de la resta no coinciden con {p} y {q}')
+            break
+        largo = mu * sp.cos(ang)                                  # la sombra, con signo
+        proy = [largo * c / mv for c in q]                        # por el versor de v
+        if any(abs(sp.N(a1 - F(pe(p, q), mod2(q)) * c, 30)) > 1e-20 for a1, c in zip(proy, q)):
+            mal(f'la sombra por el versor no es la proyección con {p} y {q}')
+            break
+    for frag, que in [("¿Por qué se puede acostar v sobre el eje x?", 'el observador: acostar v'),
+                      ("¿Qué pasa con la sombra si el ángulo es recto?", 'el observador: el ángulo recto'),
+                      ('El supuesto escondido.', 'las Notas: el supuesto de girar'),
+                      ("R('‖~u − ~v‖^2 = ‖~u‖^2 + ‖~v‖^2 − 2 ‖~u‖ ‖~v‖ cos θ')", 'las Notas: el teorema del coseno'),
+                      ("R('‖~u − ~v‖^2 = ‖~u‖^2 + ‖~v‖^2 − 2 ~u · ~v')", 'las Notas: el cuadrado de la resta'),
+                      ('Es la fórmula que salió de la sombra', 'el ángulo no se apoya en la sombra'),
+                      ('Es la sombra de la diapositiva del coseno, convertida en vector', 'la proyección no reusa la sombra'),
+                      ('Tema 5, con la sombra y seis ejercicios, 75', 'el reparto no suma los cinco minutos del tema 5')]:
+        if frag not in html:
+            mal(que)
+    if re.search(r'\bsin\s*θ', html):
+        mal('el seno se escribe sen, no sin')
+    if not -1 < html.find("{ id:'sombra'") < html.find("{ id:'angulo'"):
+        mal('la diapositiva de la sombra tiene que ir antes de la del ángulo')
+    m = re.search(r'const SOMBRA = \{ u:([\d.]+), v:([\d.]+), grados:(\d+) \}', html)
+    if not m:
+        mal('no encuentro SOMBRA, los números del dibujo')
+        return
+    lu, lv, g = F(m.group(1)), F(m.group(2)), int(m.group(3))
+    pie = lu * sp.cos(sp.rad(g))                     # el pie de la perpendicular
+    if not 0 < g < 90 or not 0 < sp.N(pie) < lv:
+        mal('en el dibujo de la sombra, θ no es agudo o la sombra no cae sobre v')
+
+
 def controla_notacion(html):
     """Lo que se corrigió el 27/11: subíndices, ı y ȷ, condiciones, el dibujo."""
     # cada renglón con subíndices dice qué son
@@ -499,6 +559,7 @@ def controla_notacion(html):
             mal(que)
     if 'recto([0, 1]' in html:
         mal('quedó el código muerto en la proyección')
+    controla_sombra(html)
     # la recta de la dirección pasa por (1, 1) y (6, 3), los extremos del vector
     m = re.search(r"guias:\[\[\[0, ([\d.]+)\], \[7, ([\d.]+)\], 2\]\]", html)
     if not m:

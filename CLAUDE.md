@@ -953,7 +953,15 @@ fórmula con subíndices dice qué son (con A = (x₁, y₁) y B = (x₂, y₂),
 u = (x₁, y₁) y v = (x₂, y₂)). La notación: el vector con su flecha arriba
 (`V('u')`; en `W()` y `R()`, `~u`), el módulo con dos rayas (‖v‖), y los versores
 de los ejes sin punto, `~ı` y `~ȷ`, para que la flecha no choque con el punto.
-Las figuras del ejercitario están redibujadas con `dib()`. Verificador:
+Las figuras del ejercitario están redibujadas con `dib()`. **La fórmula del
+coseno se demuestra** (pedido de Juan, 27/11): «De dónde sale el coseno», antes
+de «El ángulo», acuesta v sobre el eje x y baja la perpendicular desde la punta
+de u; la sombra, ‖u‖ cos θ, da u · v = ‖u‖ ‖v‖ cos θ por componentes, y «La
+proyección» es esa misma sombra convertida en vector (mismo dibujo, mismo
+verde). El seno se escribe «sen». Las Notas del tema 5 dicen el supuesto
+escondido (girar no cambia el producto escalar) y la demostración con el
+teorema del coseno. Con eso el tema 5 dura 75 minutos y la clase, cinco más que
+las cuatro horas: Juan prefirió eso a sacar ejercicios. Verificador:
 `verificacion/cursillo_vectores.py` (las afirmaciones generales, sobre vectores
 al azar; las figuras, con coordenadas al azar; dónde va cada ejercicio y su
 resolución en las Notas de su tema; la notación y las condiciones).

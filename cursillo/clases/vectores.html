@@ -60,6 +60,24 @@ body[data-solo="1"] .envoltura:has(.teoria-diapo.activa .reglas){max-width:none}
 .vdib .v-pt{color:var(--tinta)}
 .vdib .v-pt circle{fill:currentColor}
 .vdib .v-recto{fill:none; stroke:var(--tinta); stroke-width:1.6}
+/* la sombra: el cateto de abajo, grueso y verde; el arco del ángulo; los rótulos en HTML */
+.vdib .v-sombra{stroke:var(--acento2); stroke-width:9; stroke-linecap:butt; opacity:.55}
+.vdib .v-arco{fill:none; stroke:var(--tinta); stroke-width:1.6}
+.vdib .v-theta{font-style:normal; font-size:20px; fill:var(--tinta)}
+.vdib .v-fo{font-family:var(--serif); font-size:19px; line-height:1.2; white-space:nowrap; color:var(--tinta)}
+.vdib .v-fo-sombra{color:var(--acento2); font-weight:700}
+/* θ derecha aunque la frase vaya en cursiva: en cursiva parece otra letra */
+.th{font-style:normal}
+/* la diapositiva de la sombra, más apretada: el texto a la izquierda, las cuentas debajo del dibujo */
+body[data-solo="1"] :is(#d-sombra, #d-proyeccion) .teoria-pregunta{font-size:1.15em}
+body[data-solo="1"] :is(#d-sombra, #d-proyeccion) .teoria-enun{font-size:1.1em}
+body[data-solo="1"] :is(#d-sombra, #d-proyeccion) .teoria-mas{font-size:.95em}
+body[data-solo="1"] :is(#d-sombra, #d-proyeccion) .teoria-tit{font-size:1.5em}
+@media (min-width:701px){ :is(#d-sombra, #d-proyeccion) .teoria-cuerpo.con-figura{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)} }
+/* las cuentas de la sombra, debajo del dibujo */
+.sombra-cuentas{margin:.3em 0 0 1em; font-size:1em}
+.proy-cuenta{font-size:1.05em}
+.sombra-cuentas .rot{font-family:var(--sans); font-size:.75em; color:var(--lapiz); margin:0 0 .2em}
 .teoria-figura .vdib{max-height:62vh; width:auto}
 /* la teoría, más apretada: cada diapositiva entra en la pantalla con todos sus pasos */
 body[data-solo="1"] .teoria-diapo .teoria-tit{font-size:1.75em; margin-bottom:6px}
@@ -157,6 +175,8 @@ const R = s => s.replace(/_~([\wıȷ])/g, (m, l) => `<sub>${V(l)}</sub>`).replac
   .replace(/₁/g, '<sub>1</sub>').replace(/₂/g, '<sub>2</sub>');
 const W = s => M(R(s));
 const VV = s => M(s.replace(/[A-Z0]/g, V));
+/* θ en el texto corrido, siempre derecha */
+const TH = '<span class="th">θ</span>';
 /* de qué ejercicio sale */
 const fte = s => `<span class="fuente">${s}</span>`;
 const E21 = n => fte(`Ejercitario 2.1, ejercicio ${n}`);
@@ -217,6 +237,33 @@ const recto = (p, q, k) => (X, Y, u) => {
   const a = n(p), b = n(q), c = [a[0] + b[0], a[1] + b[1]];
   return `<path class="v-recto"${k ? ` data-desde="${k}"` : ''} d="M${X(a[0])} ${Y(a[1])}L${X(c[0])} ${Y(c[1])}L${X(b[0])} ${Y(b[1])}"/>`;
 };
+
+/* La sombra: v acostado sobre el eje x, u con un ángulo θ, la perpendicular
+   desde la punta de u y los dos catetos, ‖u‖ cos θ (la sombra, en verde) y
+   ‖u‖ sen θ (la altura). Los números salen de SOMBRA: la punta de u es
+   (‖u‖ cos θ, ‖u‖ sen θ), y de ahí todo lo demás. paso: con qué paso llega
+   la perpendicular (los catetos, con el siguiente). */
+const SOMBRA = { u:3.4, v:4.5, grados:50 };
+function dibSombra(paso){
+  const { u:lu, v:lv, grados } = SOMBRA, t = grados * Math.PI / 180;
+  const ux = lu * Math.cos(t), uy = lu * Math.sin(t), d = k => ` data-desde="${k}"`;
+  const fo = (x, y, w, txt, k, cls) => (X, Y) =>
+    `<foreignObject x="${X(x)}" y="${Y(y)}" width="${w}" height="40"${d(k)}><div class="v-fo ${cls || ''}">${txt}</div></foreignObject>`;
+  return dib({ vista:[-0.6, -0.9, 5.4, 3.2], u:50, alt:'v acostado sobre el eje x, u con un ángulo θ, y la perpendicular desde la punta de u',
+    ejes:true,
+    extra:(X, Y, u) => {
+      const r = 0.75, a = [r, 0], b = [r * Math.cos(t), r * Math.sin(t)], e = 0.24;
+      return `<line class="v-sombra"${d(paso + 1)} x1="${X(0)}" y1="${Y(0)}" x2="${X(ux)}" y2="${Y(0)}"/>` +
+        `<path class="v-arco" d="M${X(a[0])} ${Y(a[1])}A${r * u} ${r * u} 0 0 0 ${X(b[0])} ${Y(b[1])}"/>` +
+        `<text class="v-theta" x="${X(1.05 * Math.cos(t / 2))}" y="${Y(1.05 * Math.sin(t / 2)) + 7}">θ</text>` +
+        `<line class="v-guia"${d(paso)} x1="${X(ux)}" y1="${Y(uy)}" x2="${X(ux)}" y2="${Y(0)}"/>` +
+        `<path class="v-recto"${d(paso)} d="M${X(ux - e)} ${Y(0)}L${X(ux - e)} ${Y(e)}L${X(ux)} ${Y(e)}"/>` +
+        fo(ux / 2 - 0.85, -0.18, 115, W('‖~u‖ cos θ'), paso + 1, 'v-fo-sombra')(X, Y) +
+        fo(ux + 0.12, uy / 2 + 0.25, 115, W('‖~u‖ sen θ'), paso + 1)(X, Y);
+    },
+    flechas:[{ de:[0, 0], a:[lv, 0], rot:'v', cls:'fl-2', pos:[84, -14] },
+             { de:[0, 0], a:[ux, uy], rot:'u', cls:'fl-1', pos:[-16, -4] }] });
+}
 
 /* las figuras del ejercitario, redibujadas */
 const CUADRADO = dib({ vista:[-0.6, -0.6, 3.6, 3.6], u:46, alt:'Un cuadrado con los vectores A, B, C, D sobre sus lados y E, F por el centro',
@@ -585,9 +632,20 @@ const TEMAS = [
 {
   n:5, corto:'Ángulo y proyección', titulo:'El ángulo entre dos vectores y la proyección', pag:'material de lectura, secciones 4 y 5',
   teoria:[
+    { id:'sombra', cajon:'teorema', chip:'Coseno', titulo:'De dónde sale el coseno',
+      pregunta:`Si ${W('~v')} está acostado sobre el eje x y ${W('~u')} forma un ángulo ${TH} con él, ¿cuáles son las componentes de ${W('~u')} y de ${W('~v')}?`,
+      verFigura:true,
+      enun:`Desde la punta de ${W('~u')}, una perpendicular a la recta de ${W('~v')}: queda un triángulo rectángulo, con ${W('~u')} de hipotenusa.`,
+      html:[`<p class="teoria-mas">Los catetos, por trigonometría: ${W('‖~u‖ cos θ')} (la sombra) y ${W('‖~u‖ sen θ')} (la altura).</p>`,
+            `<p class="teoria-mas">El producto escalar, por componentes.</p>`],
+      figura:dibSombra(1) +
+        `<div class="sombra-cuentas" data-desde="2"><p class="rot">las componentes</p>${A(R('~u = (‖~u‖ cos θ, ‖~u‖ sen θ)'), R('~v = (‖~v‖, 0)'))}</div>` +
+        `<div class="sombra-cuentas" data-desde="3"><p class="rot">el producto escalar</p>${A(R('~u · ~v = ‖~u‖ cos θ · ‖~v‖ + ‖~u‖ sen θ · 0'), R(' = ‖~u‖ ‖~v‖ cos θ'))}</div>`,
+      revela:{ txt:`Despejando: ${M('cos θ = ')}${Q(R('~u · ~v'), R('‖~u‖ ‖~v‖'))}` },
+      mas:[`El producto escalar es la sombra de ${W('~u')} por el largo de ${W('~v')}. Si ${TH} pasa de 90°, la sombra cae del otro lado y el coseno es negativo: por eso el signo de ${W('~u · ~v')} dice si el ángulo es agudo, recto u obtuso.`] },
     { id:'angulo', cajon:'teorema', chip:'Ángulo', titulo:'El ángulo entre dos vectores',
       pregunta:`${W('~u · ~v = 6')}, ${W('‖~u‖ = 3')} y ${W('‖~v‖ = 4')}. ¿El ángulo que forman es agudo u obtuso?`,
-      enun:`Para dos vectores no nulos, con θ entre 0° y 180°:`,
+      enun:`Es la fórmula que salió de la sombra, para dos vectores no nulos, con ${TH} entre 0° y 180°:`,
       html:`<p class="forma-grande">${M('cos θ = ')}${Q(R('~u · ~v'), R('‖~u‖ ‖~v‖'))}</p>`,
       figura:reglas(['Positivo', `${W('~u · ~v')} mayor que 0: agudo (o 0°)`, 2],
                     ['Cero', `${W('~u · ~v')} igual a 0: recto`, 2],
@@ -597,15 +655,20 @@ const TEMAS = [
            'Para el ángulo en grados, minutos y segundos, la calculadora: la tecla cos⁻¹.'] },
     { id:'proyeccion', cajon:'definicion', chip:'Proyección', titulo:'La proyección de un vector sobre otro',
       pregunta:`Si la luz cae perpendicular a ${W('~v')}, ¿qué sombra hace ${W('~u')} sobre la recta de ${W('~v')}?`,
-      enun:`Un número por ${W('~v')}: un vector en la dirección de ${W('~v')}.`,
-      html:`<p class="forma-grande">${W('proy_~v ~u = ')}${Q(R('~u · ~v'), R('‖~v‖^2'))}${W(' ~v')}</p>`,
+      enun:`Es la sombra de la diapositiva del coseno, convertida en vector. Su largo, con signo, es ${W('‖~u‖ cos θ')}, que es ${Q(R('~u · ~v'), R('‖~v‖'))}.`,
+      html:`<p class="teoria-mas">Por el versor de ${W('~v')}, da la fórmula: abajo a la derecha.</p>`,
       figura:dib({ vista:[-0.6, -0.8, 5.6, 3.6], u:46, grilla:true, ejes:true, alt:'u, v y la proyección de u sobre v, sobre el eje x',
         guias:[[[2, 3], [2, 0], 3]],
-        extra:(X, Y) => `<path class="v-recto" data-desde="3" d="M${X(2)} ${Y(0.3)}L${X(1.7)} ${Y(0.3)}L${X(1.7)} ${Y(0)}"/>`,
+        extra:(X, Y, u) => { const t = Math.atan2(3, 2), r = 0.7;
+          return `<path class="v-recto" data-desde="3" d="M${X(2)} ${Y(0.3)}L${X(1.7)} ${Y(0.3)}L${X(1.7)} ${Y(0)}"/>` +
+            `<line class="v-sombra" data-desde="3" x1="${X(0)}" y1="${Y(0)}" x2="${X(2)}" y2="${Y(0)}"/>` +
+            `<path class="v-arco" d="M${X(r)} ${Y(0)}A${r * u} ${r * u} 0 0 0 ${X(r * Math.cos(t))} ${Y(r * Math.sin(t))}"/>` +
+            `<text class="v-theta" x="${X(1.0 * Math.cos(t / 2))}" y="${Y(1.0 * Math.sin(t / 2)) + 7}">θ</text>`; },
         flechas:[{ de:[0, 0], a:[4, 0], rot:'v', cls:'fl-2', pos:[26, 22] }, { de:[0, 0], a:[2, 3], rot:'u', cls:'fl-1', pos:[-14, -2] },
-                 { de:[0, 0.04], a:[2, 0.04], cls:'fl-3', desde:3 }] }),
+                 { de:[0, 0.04], a:[2, 0.04], cls:'fl-3', desde:3 }] }) +
+        `<div class="sombra-cuentas proy-cuenta" data-desde="2"><p class="rot">la proyección</p>${A(`${R('proy_~v ~u')} = ${Q(R('~u · ~v'), R('‖~v‖'))} · ${Q(R('~v'), R('‖~v‖'))}`, ` = ${Q(R('~u · ~v'), R('‖~v‖^2'))} ${R('~v')}`)}</div>`,
       revela:{ txt:`Con ${W('~u = (2, 3)')} y ${W('~v = (4, 0)')}: ${Q(8, 16)} por (4, 0), que es (2, 0).` },
-      mas:[`Si ${W('~u · ~v')} es negativo, la proyección apunta al revés de ${W('~v')}. Sobre el eje X, queda la x y la y pasa a 0.`] },
+      mas:[`Si ${W('~u · ~v')} es negativo, la sombra cae del otro lado y la proyección apunta al revés de ${W('~v')}.`] },
   ],
   ejemplos:[
     { tras:'proyeccion', titulo:'Un ángulo con componentes', prosa:true, fija:1,
@@ -658,8 +721,10 @@ const TEMAS = [
       r:'Porque se mide el ángulo más chico entre las dos flechas, puestas con el mismo origen. Si da más de 180° por un lado, por el otro da menos.' },
     { p:'¿La proyección es un vector o un número?',
       r:'Un vector: es un número por v. El número, que puede ser negativo, dice cuántas veces v.' },
-    { p:'¿Qué pasa si u y v son perpendiculares?',
-      r:'El producto escalar es 0, y la proyección es el vector nulo: la sombra es un punto.' },
+    { p:'¿Por qué se puede acostar v sobre el eje x?',
+      r:'Porque girar el dibujo no cambia el largo de las flechas ni el ángulo entre ellas.' },
+    { p:'¿Qué pasa con la sombra si el ángulo es recto?',
+      r:'Es un punto: mide 0, y el producto escalar es 0. Por eso la proyección es el vector nulo.' },
     { p:'En el ejemplo, ¿por qué √5 · √10 es 5√2?',
       r:'Porque √5 · √10 es √50, y 50 es 25 · 2: sale el 5 de la raíz.' },
     { p:'En el ejercicio de x y x + 2, ¿qué se hace con x igual a −6?',
@@ -667,13 +732,27 @@ const TEMAS = [
     { p:'En el último ejercicio, ¿qué es proyectar sobre el eje X?',
       r:'Proyectar sobre (1, 0): de un vector queda solo su x. La y pasa a ser 0.' },
   ],
-  notas:`<p><b>El tema.</b> El ángulo sale del producto escalar despejado. Lo que más se pregunta
+  notas:`<p><b>De dónde sale el coseno.</b> Con v acostado sobre el eje x, u es (‖u‖ cos θ,
+      ‖u‖ sen θ) y v es (‖v‖, 0), y el producto escalar por componentes da ‖u‖ ‖v‖ cos θ. La
+      sombra (‖u‖ cos θ) es la misma que después se convierte en la proyección: conviene
+      decirlo con esa palabra en las dos diapositivas.</p>
+    <p><b>El supuesto escondido.</b> Acostar v es girar el dibujo, y se da por hecho que girar no
+      cambia el producto escalar. Es cierto, pero en la clase no está demostrado. Para
+      cursillistas alcanza; el profesor tiene que saberlo, por si alguien pregunta.</p>
+    <p><b>La demostración completa</b>, para el grupo que ya vio el teorema del coseno: u, v y
+      u − v forman un triángulo, con θ entre u y v. Por el teorema del coseno, y por el cuadrado
+      de una resta (tema 4):</p>
+    ${A(R('‖~u − ~v‖^2 = ‖~u‖^2 + ‖~v‖^2 − 2 ‖~u‖ ‖~v‖ cos θ'), R('‖~u − ~v‖^2 = ‖~u‖^2 + ‖~v‖^2 − 2 ~u · ~v'))}
+    <p>Comparándolas, ${W('~u · ~v = ‖~u‖ ‖~v‖ cos θ')}, sin girar nada.</p>
+    <p><b>El tema.</b> El ángulo sale del producto escalar despejado. Lo que más se pregunta
       en el examen es el signo: positivo, agudo; cero, recto; negativo, obtuso (o llano). En el
       ejercitario, una afirmación dice «obtuso» a secas y es falsa por el llano: por eso se
       usa la versión del 2.2, que dice «obtuso o llano».</p>
     <p><b>La proyección</b> es lo más difícil de la unidad. Lo importante: es un vector sobre la
       recta de v, y apunta al revés de v cuando el producto escalar es negativo. Eso es lo que
       resuelve el desafío.</p>
+    <p><b>Sobre el eje X.</b> Proyectar sobre el eje X es proyectar sobre (1, 0): queda la x, y
+      la y pasa a ser 0. Lo usa el 19 del Ejercitario 2.1.</p>
     <p>El 11 del Ejercitario 2.1 pide grados, minutos y segundos: que tengan la calculadora en
       modo grados (DEG).</p>
     <p><b>Los ejercicios.</b> Seis, de menor a mayor: los dos de afirmaciones, el coseno sin
@@ -835,8 +914,9 @@ const UNIDAD = {
       y seis después del 5.</p>
     <p><b>El reparto de las cuatro horas.</b> Diagnóstico inicial, 10 minutos. Temas 1 y 2, con
       su ejercicio, 40. Tema 3, con cinco ejercicios, 50. <b>Pausa</b> de un cuarto de hora.
-      Tema 4, con tres ejercicios, 45. Tema 5, con seis ejercicios, 70. Diagnóstico final, 10. El
-      desafío va de tarea y se corrige al empezar la clase siguiente.</p>
+      Tema 4, con tres ejercicios, 45. Tema 5, con la sombra y seis ejercicios, 75. Diagnóstico final, 10. El
+      desafío va de tarea y se corrige al empezar la clase siguiente. Son cinco minutos más que
+      las cuatro horas: se acepta así, sin sacar ningún ejercicio.</p>
     <p><b>El otro ejercitario.</b> El 2.1 y el 2.2 de fijación son el mismo ejercitario con otros
       números. De cada par se eligió la versión más clara (la del 2.2 en el 6 y el 7); la otra
       queda para la casa. El 7 del 2.1 dice «obtuso» a secas y es falso por el llano, y el 10
