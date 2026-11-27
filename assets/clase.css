@@ -981,6 +981,9 @@ body[data-solo="1"] .mc-ver-btn{margin-top:10px}
 .problema-diapo .mc-enun{font-size:1.5rem; line-height:1.5; margin-bottom:16px}
 .problema-diapo .mc-ops{grid-template-columns:1fr; font-size:1.35rem; gap:6px}
 .problema-diapo .mc-ops li{justify-self:start; white-space:normal; padding-left:2em; text-indent:-1.6em}
+/* la sangría colgante es solo del renglón: adentro de una fracción, una raíz o
+   una flecha cada parte es un bloque que la heredaría y se correría a la izquierda */
+.problema-diapo .mc-ops li *{text-indent:0}
 /* un ejercicio con opciones que son oraciones (largo:true) va con letra más chica, para entrar entero */
 body[data-solo="1"] .problema-diapo .mc-largo .mc-enun{font-size:1.3em; margin-bottom:10px}
 body[data-solo="1"] .problema-diapo .mc-largo .mc-ops{font-size:1.15em; gap:3px}
