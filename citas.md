@@ -93,7 +93,7 @@ explicarlo.
 | 8.º | Factorización | «La matemática pura es la poesía de las ideas lógicas.» |
 | 8.º | Expresiones racionales | «Todo debería hacerse lo más simple posible, pero no más simple.» |
 | 8.º | Sistemas de ecuaciones | «Lo eternamente incomprensible del mundo es que sea comprensible.» |
-| 8.º | Circunferencia | «La belleza de la matemática solo se le muestra a quien la sigue con paciencia.» |
+| 8.º | Circunferencia | «La belleza de la matemática solo se le muestra a quien la sigue con paciencia.» (en uso en el cursillo: buscar otra) |
 | 9.º | Cuadráticas y parábola | «La imaginación es más importante que el conocimiento.» |
 | 9.º | Cuerpos geométricos | «Lo que sabemos es una gota; lo que ignoramos, un océano.» |
 | 9.º | Estadística y probabilidad | «Él no juega a los dados.» |
@@ -101,4 +101,6 @@ explicarlo.
 | Cursillo | Sistema métrico decimal | «Para todos los tiempos, para todos los pueblos.» — **en uso** |
 | Cursillo | Operaciones fundamentales | «No te preocupes por tus dificultades con la matemática; las mías son mayores.» — **en uso** |
 | Cursillo | Divisibilidad | «Tenemos que saber. Sabremos.» — **en uso** |
+| Cursillo | Divisibilidad: refuerzo | «La belleza de la matemática solo se le muestra a quien la sigue con paciencia.» — **en uso** |
+| Cursillo | Vectores | «No se puede ser matemático sin ser, además, poeta del alma.» — **en uso** |
 | — | OMAPA | «Si no podés resolver un problema, hay uno más fácil que sí podés resolver: encontralo.» |

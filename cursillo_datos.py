@@ -55,6 +55,14 @@ TEMAS = {
         'ejercicios': [('Ejercitario', '3.1 y 3.2', None),
                        ('Cuestionario', 'Unidad 4', None)],
     },
+    'divisibilidad-refuerzo': {
+        'titulo': 'Divisibilidad: refuerzo y profundización',
+        'materia': 'Matemática 1', 'bloque': 'Aritmética',
+        'fuente': 'Aritmética y Álgebra · Unidad 4',
+        'clase': 'cursillo/clases/divisibilidad-refuerzo.html', 'teoria': [],
+        'ejercicios': [('Ejercitario', '3.1 y 3.2', None),
+                       ('Cuestionario', 'Unidad 4', None)],
+    },
     'sistema-metrico': {
         'titulo': 'Sistema métrico decimal',
         'materia': 'Matemática 1', 'bloque': 'Aritmética',
@@ -67,7 +75,7 @@ TEMAS = {
         'titulo': 'Vectores',
         'materia': 'Analítica', 'bloque': 'Geometría analítica',
         'fuente': 'Geometría Analítica y Cálculo · Unidad 2',
-        'clase': None, 'teoria': [],
+        'clase': 'cursillo/clases/vectores.html', 'teoria': [],
         'ejercicios': [('Ejercitario', '2.1 y 2.2 de fijación', None),
                        ('Ejercitario Principia', 'Capítulo 2', None)],
     },

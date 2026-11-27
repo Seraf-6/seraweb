@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="../../assets/img/seraweb.svg" type="image/svg+xml">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vectores · Cursillo · SeraWeb</title>
+<meta name="description" content="Cursillo de ingreso: vectores en el plano. Qué es un vector, módulo y tipos, operaciones, producto escalar, ángulo y proyección; un ejemplo resuelto por tema y una lista de ejercicios del ejercitario, de menor a mayor.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' file:; script-src 'self' file: 'unsafe-inline'; style-src 'self' file: 'unsafe-inline'; img-src 'self' file: data:; font-src 'self' file:; media-src 'self' file:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<script src="../../assets/acceso.js"></script>
+<link rel="stylesheet" href="../../assets/base.css">
+<link rel="stylesheet" href="../../assets/sitio.css">
+<link rel="stylesheet" href="../../assets/clase.css">
+<style>
+/* ---------- solo de esta página ---------- */
+/* de qué ejercicio del material sale cada uno */
+.fuente{display:block; margin-top:8px; font-family:var(--mono); font-style:normal; font-size:11px;
+  letter-spacing:.04em; color:var(--lapiz)}
+body[data-solo="1"] .fuente{font-size:.45em}
+/* la flecha de arriba de un vector: una raya y su punta */
+.vec{position:relative; display:inline-block; padding-top:.2em; line-height:1; text-indent:0}
+.vec::before{content:""; position:absolute; left:.04em; right:.16em; top:.1em; border-top:.06em solid currentColor}
+.vec::after{content:""; position:absolute; right:.02em; top:.025em; border-left:.2em solid currentColor;
+  border-top:.1em solid transparent; border-bottom:.1em solid transparent}
+sub .vec{padding-top:.1em}
+/* las afirmaciones I), II)… de un ejercicio, una por renglón */
+.afirm{display:block; margin:.35em 0 .45em 1em}
+.afirm > span{display:block}
+/* la fórmula sola, grande */
+.forma-grande{margin:.1em 0 .5em; font-size:1.6em; text-align:center}
+body[data-solo="1"] .forma-grande{font-size:1.45em}
+/* las reglas: el nombre a la izquierda y lo que dice a la derecha */
+.reglas{border-collapse:collapse; margin:.1em 0 .6em; font-size:1.05em}
+.reglas th{padding:.28em 1.1em .28em 0; text-align:left; vertical-align:baseline;
+  font-family:var(--sans); font-weight:600; font-size:.8em; color:var(--lapiz)}
+.reglas td{padding:.28em 0; vertical-align:baseline}
+.reglas tr + tr :is(th,td){border-top:1px solid var(--linea)}
+.reglas tr[data-desde]:not(.fig-ve) :is(th,td), .reglas tr[data-desde]:not(.fig-ve) + tr :is(th,td){border-top-color:transparent}
+@media (min-width:701px){ .teoria-cuerpo.con-figura:has(.reglas){grid-template-columns:minmax(0,1fr) minmax(0,1.15fr)} }
+body[data-solo="1"] .envoltura:has(.teoria-diapo.activa .reglas){max-width:none}
+/* los dibujos: flechas sobre la cuadrícula */
+.vdib{display:block; max-width:100%; height:auto; margin:0 auto}
+.vdib .v-gr{stroke:var(--linea); stroke-width:1}
+.vdib .v-eje{stroke:var(--lapiz); stroke-width:1.6}
+.vdib .v-guia{stroke:var(--lapiz); stroke-width:1.4; stroke-dasharray:5 5; fill:none}
+.vdib .v-num{font-family:var(--sans); font-size:14px; fill:var(--lapiz); text-anchor:middle}
+.vdib .fl{color:var(--tinta)}
+.vdib .fl.fl-1{color:var(--acento)}
+.vdib .fl.fl-2{color:var(--dest)}
+.vdib .fl.fl-3{color:var(--acento2)}
+.vdib .fl line{stroke:currentColor; stroke-width:3; stroke-linecap:round}
+.vdib .fl polygon{fill:currentColor}
+.vdib text{font-family:var(--serif); font-style:italic; font-weight:700; font-size:19px; fill:currentColor;
+  paint-order:stroke; stroke:var(--papel); stroke-width:4px; stroke-linejoin:round}
+.vdib .v-mini{fill:none; stroke:currentColor; stroke-width:1.6}
+.vdib .v-pt{color:var(--tinta)}
+.vdib .v-pt circle{fill:currentColor}
+.vdib .v-recto{fill:none; stroke:var(--tinta); stroke-width:1.6}
+.teoria-figura .vdib{max-height:62vh; width:auto}
+/* la teoría, más apretada: cada diapositiva entra en la pantalla con todos sus pasos */
+body[data-solo="1"] .teoria-diapo .teoria-tit{font-size:1.75em; margin-bottom:6px}
+body[data-solo="1"] .teoria-diapo .teoria-pregunta{font-size:1.25em; margin-bottom:8px}
+body[data-solo="1"] .teoria-diapo .teoria-enun{font-size:1.2em; padding:8px 14px; margin-bottom:8px}
+body[data-solo="1"] .teoria-diapo .teoria-mas{font-size:1em; margin-bottom:6px}
+body[data-solo="1"] .teoria-diapo .teoria-respuesta{font-size:1.05em; padding:6px 12px; margin-bottom:8px}
+body[data-solo="1"] .teoria-diapo .forma-grande{font-size:1.3em; margin:0 0 .3em}
+body[data-solo="1"] .teoria-diapo .reglas{font-size:1em}
+/* las opciones cortas, en fila */
+:is(#mc-E21-1,#mc-E21-16,#mc-E22-6,#mc-E21-2,#mc-E21-3,#mc-E21-12,#mc-E21-10,#mc-E22-7,#mc-E21-8,#mc-E21-9,#mc-E21-17,#mc-E21-11,#mc-E21-19) .mc-ops{grid-template-columns:repeat(5,max-content); column-gap:2.2em}
+/* la figura de un ejercicio, a la derecha del enunciado */
+.ej-fig{float:right; margin:0 0 .4em 1.2em}
+.ej-fig .vdib{width:auto; max-height:44vh}
+@media (max-width:700px){
+  .teoria-cuerpo.con-figura:has(.reglas){grid-template-columns:minmax(0,1fr)}
+  .reglas th{display:block; padding:.45em 0 0}
+  .reglas td{display:block; padding:0 0 .3em}
+  .reglas tr + tr td{border-top:0}
+  .ej-fig{float:none; margin:.4em 0}
+  :is(#mc-E21-1,#mc-E21-16,#mc-E22-6,#mc-E21-2,#mc-E21-3,#mc-E21-12,#mc-E21-10,#mc-E22-7,#mc-E21-8,#mc-E21-9,#mc-E21-17,#mc-E21-11,#mc-E21-19) .mc-ops{grid-template-columns:repeat(2,max-content) !important}
+}
+</style>
+</head>
+<body data-diapos=".diagnostico-diapo, .intro, .teoria-diapo, .ejemplo-diapo, .problema-diapo, .desafio">
+<nav class="sitio-nav">
+  <div class="sitio-nav-int">
+    <a class="sitio-marca" href="../../index.html">Sera<span>Web</span></a>
+    <div class="sitio-ruta">
+      <a href="../../index.html">Inicio</a><span class="sep">/</span>
+      <a href="../index.html">Cursillo</a><span class="sep">/</span>
+      <span>Vectores</span>
+    </div>
+  </div>
+</nav>
+
+<div class="envoltura">
+
+  <header class="tapa">
+    <p class="sello">SeraWeb · Cursillo de ingreso</p>
+    <h1>Vectores en el plano</h1>
+    <p class="bajada">«No se puede ser matemático sin ser, además, poeta del alma.»<span class="firma">Sofia Kovalévskaya, en sus memorias</span></p>
+    <div class="pie-tapa">
+      <span>Geometría Analítica y Cálculo · unidad 2</span>
+      <span>Docente: Juan Serafini</span>
+    </div>
+  </header>
+
+  <nav class="nav" aria-label="Ir a un tema">
+    <div class="nav-int" id="nav"></div>
+  </nav>
+
+  <div id="diagnostico-lugar"></div>
+
+  <section class="intro" id="inicio" data-tema="unidad">
+    <p class="cinta">Cursillo de ingreso · Geometría Analítica y Cálculo · unidad 2</p>
+    <h2>Flechas que se suman</h2>
+    <ul class="puntos">
+      <li>Un vector es una flecha: dice <b>cuánto</b>, <b>en qué dirección</b> y <b>hacia qué lado</b>.</li>
+      <li>En el plano, cada vector son dos números: sus <b>componentes</b>. Con ellas se suma, se
+        mide y se calculan ángulos.</li>
+      <li>Cinco temas de teoría, con un ejemplo resuelto cada uno, y al final los ejercicios del
+        ejercitario, de menor a mayor.</li>
+    </ul>
+    <div class="recorrido" id="recorrido"></div>
+  </section>
+
+  <main id="temas"></main>
+
+  <footer class="creditos">
+    Material de clase del cursillo de ingreso · Sigue la unidad 2 (Vectores en el plano) de
+    Geometría Analítica y Cálculo. Los ejercicios de la lista son del Ejercitario 2.1 y del 2.2
+    de fijación, transcriptos con sus opciones y su número, con las figuras redibujadas; la
+    teoría, los ejemplos y los dibujos son propios. Cada respuesta y cada opción de esta página
+    están verificadas en <span class="ec">verificacion/cursillo_vectores.py</span>.
+  </footer>
+</div>
+
+<script src="../../assets/pizarra.js"></script>
+
+<script>
+/* En cursiva van solo las letras sueltas (u, v, x, k, θ queda derecha):
+   cos, vers, proy y las palabras quedan derechas. */
+Pizarra.letras = /(?<![A-Za-zÁ-úñ&])(?<!\d )[A-Za-z](?![A-Za-zÁ-úñ;])/g;
+
+/* ── la notación ──
+   V('u') es el vector u, con su flecha arriba. En R() y W() el vector se
+   marca con ~: '~u · ~v', '‖~u + ~v‖', y '_~v' lo pone como subíndice
+   (proy_~v ~u). W() además lo escribe como fórmula. VV() pone la flecha a
+   todas las mayúsculas y al 0: es para las figuras (A + B = 0). */
+const V = l => `<span class="vec">${l}</span>`;
+const R = s => s.replace(/_~(\w)/g, (m, l) => `<sub>${V(l)}</sub>`).replace(/~(\w+)/g, (m, l) => V(l))
+  .replace(/₁/g, '<sub>1</sub>').replace(/₂/g, '<sub>2</sub>');
+const W = s => M(R(s));
+const VV = s => M(s.replace(/[A-Z0]/g, V));
+/* de qué ejercicio sale */
+const fte = s => `<span class="fuente">${s}</span>`;
+const E21 = n => fte(`Ejercitario 2.1, ejercicio ${n}`);
+const E22 = n => fte(`Ejercitario 2.2 de fijación, ejercicio ${n}`);
+/* las afirmaciones I), II)… */
+const af = (...xs) => `<span class="afirm">${xs.map(x => `<span>${x}</span>`).join('')}</span>`;
+/* las reglas: [nombre, lo que dice, el paso con que llega] */
+const reglas = (...filas) => `<table class="reglas"><tbody>${filas.map(([n, a, desde]) =>
+  `<tr${desde ? ` data-desde="${desde}"` : ''}><th>${n}</th><td>${a}</td></tr>`).join('')}</tbody></table>`;
+
+/* ── los dibujos ──
+   dib({ vista:[x0, y0, x1, y1], u (px por unidad), grilla, ejes, flechas,
+         guias, numeros, puntos, extra, alt }). Cada cosa puede llegar con un
+   paso de la teoría (desde). Una flecha: { de, a, rot, cls:'fl-1'|'fl-2'|
+   'fl-3', punteada, pos:[dx, dy] (dónde va el nombre), sinFlechita }. */
+function dib(o){
+  const [x0, y0, x1, y1] = o.vista, u = o.u || 36, m = o.margen ?? 26;
+  const X = x => +(m + (x - x0) * u).toFixed(1), Y = y => +(m + (y1 - y) * u).toFixed(1);
+  const ancho = X(x1) + m, alto = Y(y0) + m;
+  const d = k => k ? ` data-desde="${k}"` : '';
+  let s = '';
+  if (o.grilla){
+    for (let x = Math.ceil(x0); x <= x1; x++) s += `<line class="v-gr" x1="${X(x)}" y1="${Y(y0)}" x2="${X(x)}" y2="${Y(y1)}"/>`;
+    for (let y = Math.ceil(y0); y <= y1; y++) s += `<line class="v-gr" x1="${X(x0)}" y1="${Y(y)}" x2="${X(x1)}" y2="${Y(y)}"/>`;
+  }
+  if (o.ejes){
+    s += `<line class="v-eje" x1="${X(x0)}" y1="${Y(0)}" x2="${X(x1)}" y2="${Y(0)}"/><line class="v-eje" x1="${X(0)}" y1="${Y(y0)}" x2="${X(0)}" y2="${Y(y1)}"/>`;
+    const [ex, ey] = o.ejes === 'XY' ? ['X', 'Y'] : ['x', 'y'];
+    s += `<text class="v-num" x="${X(x1) - 6}" y="${Y(0) + 18}">${ex}</text><text class="v-num" x="${X(0) + 12}" y="${Y(y1) + 10}">${ey}</text>`;
+  }
+  for (const [p, q, k] of o.guias || [])
+    s += `<line class="v-guia"${d(k)} x1="${X(p[0])}" y1="${Y(p[1])}" x2="${X(q[0])}" y2="${Y(q[1])}"/>`;
+  for (const [x, y, t, k] of o.numeros || []) s += `<text class="v-num"${d(k)} x="${X(x)}" y="${Y(y) + 5}">${t}</text>`;
+  if (o.extra) s += o.extra(X, Y, u);
+  for (const f of o.flechas || []) s += flecha(f, X, Y, d);
+  for (const p of o.puntos || [])
+    s += `<g class="v-pt"${d(p.desde)}><circle cx="${X(p.p[0])}" cy="${Y(p.p[1])}" r="4"/><text x="${X(p.p[0]) + (p.dx ?? 10)}" y="${Y(p.p[1]) + (p.dy ?? -8)}">${p.rot}</text></g>`;
+  return `<svg class="vdib" viewBox="0 0 ${ancho} ${alto}" width="${ancho}" role="img" aria-label="${o.alt}">${s}</svg>`;
+}
+function flecha(f, X, Y, d){
+  const ax = X(f.de[0]), ay = Y(f.de[1]), bx = X(f.a[0]), by = Y(f.a[1]);
+  const L = Math.hypot(bx - ax, by - ay), ux = (bx - ax) / L, uy = (by - ay) / L, h = 13, w = 5.5;
+  const cx = bx - ux * h, cy = by - uy * h, r = n => n.toFixed(1);
+  const punta = [[bx, by], [cx - uy * w, cy + ux * w], [cx + uy * w, cy - ux * w]].map(p => p.map(r).join(',')).join(' ');
+  let rot = '';
+  if (f.rot){
+    const [ox, oy] = f.pos || [uy * 17, -ux * 17];
+    const tx = (ax + bx) / 2 + ox, ty = (ay + by) / 2 + oy + 6;
+    rot = `<text x="${r(tx)}" y="${r(ty)}" text-anchor="middle">${f.rot}</text>` + (f.sinFlechita ? '' :
+      `<path class="v-mini" d="M${r(tx - 6)} ${r(ty - 18)}h11m-3.5 -3l3.5 3l-3.5 3"/>`);
+  }
+  return `<g class="fl ${f.cls || ''}"${d(f.desde)}><line x1="${ax}" y1="${ay}" x2="${r(cx)}" y2="${r(cy)}"${
+    f.punteada ? ' stroke-dasharray="7 6"' : ''}/><polygon points="${punta}"/>${rot}</g>`;
+}
+/* la escuadrita del ángulo recto, en el origen, entre las direcciones p y q */
+const recto = (p, q, k) => (X, Y, u) => {
+  const n = v => { const l = Math.hypot(...v); return [v[0] / l * .32, v[1] / l * .32]; };
+  const a = n(p), b = n(q), c = [a[0] + b[0], a[1] + b[1]];
+  return `<path class="v-recto"${k ? ` data-desde="${k}"` : ''} d="M${X(a[0])} ${Y(a[1])}L${X(c[0])} ${Y(c[1])}L${X(b[0])} ${Y(b[1])}"/>`;
+};
+
+/* las figuras del ejercitario, redibujadas */
+const CUADRADO = dib({ vista:[-0.6, -0.6, 3.6, 3.6], u:46, alt:'Un cuadrado con los vectores A, B, C, D sobre sus lados y E, F por el centro',
+  guias:[[[1.5, 1.5], [3, 3]], [[1.5, 1.5], [3, 0]]],
+  flechas:[{ de:[0, 0], a:[0, 3], rot:'A', pos:[-18, 0] }, { de:[0, 3], a:[3, 3], rot:'B', pos:[0, -14] },
+           { de:[3, 3], a:[3, 0], rot:'C', pos:[18, 0] }, { de:[3, 0], a:[0, 0], rot:'D', pos:[0, 26] },
+           { de:[0, 0], a:[1.5, 1.5], rot:'E', pos:[14, 16] }, { de:[1.5, 1.5], a:[0, 3], rot:'F', pos:[16, 4] }] });
+const PENTAGONO = dib({ vista:[-1.6, -0.7, 5.3, 5.1], u:34, alt:'Un pentágono con los vectores A, B, C, D, E sobre sus lados y F, G por adentro',
+  flechas:[{ de:[0, 0], a:[-1, 2.6], rot:'A', pos:[-16, 4] }, { de:[-1, 2.6], a:[1.9, 4.4], rot:'B', pos:[-12, -12] },
+           { de:[1.9, 4.4], a:[4.6, 2.6], rot:'C', pos:[14, -12] }, { de:[3.6, 0], a:[4.6, 2.6], rot:'D', pos:[18, 6] },
+           { de:[0, 0], a:[3.6, 0], rot:'E', pos:[0, 26] }, { de:[4.6, 2.6], a:[0, 0], rot:'F', pos:[4, -12] },
+           { de:[0, 0], a:[1.9, 4.4], rot:'G', pos:[-16, 10] }] });
+const PLANO_UV = (v4) => dib({ vista:[-1.4, -5, 5.6, 6], u:25, ejes:'XY', alt:'Los vectores u, hasta (4, 5), y v, hasta (3, −4)',
+  guias:[[[4, 5], [4, 0]], [[4, 5], [0, 5]], [[3, -4], [3, 0]], [[3, -4], [0, -4]]],
+  numeros:[[-0.6, 5, '5'], [-0.7, -4, '−4'], [3, 0.45, '3'], [4.3, -0.7, '4']],
+  flechas:[{ de:[0, 0], a:[4, 5], rot:'u', pos:[-14, -4] }, { de:[0, 0], a:[3, -4], rot:'v', pos:[16, 4] }] });
+
+
+const TEMAS = [
+{
+  n:1, corto:'Qué es un vector', titulo:'Qué es un vector', pag:'material de lectura, secciones 1 y 2',
+  teoria:[
+    { id:'magnitudes', cajon:'definicion', chip:'Magnitudes', titulo:'Escalares y vectoriales',
+      pregunta:'«Caminé 3 km desde la plaza.» ¿Alcanza para saber dónde quedé?',
+      enun:'Una magnitud es todo lo que se puede medir. Algunas quedan dichas con un número y su unidad; otras necesitan además hacia dónde.',
+      figura:reglas(['Escalares', 'un número y su unidad: el tiempo, la masa, la temperatura, el volumen', 1],
+                    ['Vectoriales', 'además, una dirección y un sentido: la velocidad, la aceleración, la fuerza', 1]),
+      revela:{ txt:'No: falta hacia dónde. El desplazamiento es una magnitud vectorial, y se representa con un vector.' } },
+    { id:'vector', cajon:'definicion', chip:'Vector', titulo:'Un segmento con flecha',
+      pregunta:'Una flecha que va de A a B. ¿Qué tres cosas dice?',
+      enun:`Un <b>vector</b> es un segmento dirigido, ${W('~AB')}: tiene su origen en A y su extremo en B.`,
+      html:reglas(['Módulo', `el largo del segmento: ${W('‖~AB‖')}`], ['Dirección', 'la recta que lo contiene (o cualquier paralela)'],
+                  ['Sentido', 'hacia dónde apunta: de A a B']),
+      figura:dib({ vista:[0, 0, 7, 4.3], u:44, alt:'El vector AB, con la recta de su dirección punteada',
+        guias:[[[0, 0.5], [7, 3.3], 2]],
+        flechas:[{ de:[1, 1], a:[6, 3], cls:'fl-1' }],
+        puntos:[{ p:[1, 1], rot:'A', dx:-8, dy:24 }, { p:[6, 3], rot:'B', dx:4, dy:-14 }] }),
+      revela:{ txt:'Cuánto mide, sobre qué recta está y hacia qué lado apunta.' },
+      mas:[`Dirección no es sentido: cada recta tiene una dirección y dos sentidos. ${W('~AB')} y ${W('~BA')} tienen la misma dirección y sentidos contrarios.`] },
+    { id:'igualdad', cajon:'definicion', chip:'Igualdad', titulo:'Cuándo dos vectores son iguales',
+      pregunta:'Tres flechas en distintos lugares, igual de largas, paralelas y apuntando para el mismo lado. ¿Son tres vectores o uno?',
+      enun:'Dos vectores son <b>iguales</b> (equipolentes) cuando tienen el mismo módulo, la misma dirección y el mismo sentido. No importa dónde estén.',
+      figura:dib({ vista:[-0.5, -0.5, 7.5, 4.5], u:36, grilla:true, ejes:true, alt:'Tres flechas iguales en distintos lugares; una sale del origen',
+        flechas:[{ de:[1, 2], a:[4, 4], cls:'fl-1' }, { de:[4, 0.5], a:[7, 2.5], cls:'fl-1' }, { de:[0, 0], a:[3, 2], cls:'fl-3', desde:3 }] }),
+      revela:{ txt:'Uno solo: las tres flechas son representantes del mismo vector.' },
+      mas:['El que sale del origen, O = (0, 0), es el vector <b>fijo</b>; los otros son <b>libres</b>. Todo vector libre es igual a uno fijo: se lo traslada hasta que su origen caiga en O.'] },
+    { id:'componentes', cajon:'definicion', chip:'Componentes', titulo:'Las componentes: extremo menos origen',
+      pregunta:`${M('A = (−1, 2)')} y ${M('B = (3, 5)')}. Para ir de A a B, ¿cuánto se avanza en x y cuánto en y?`,
+      enun:`Las <b>componentes</b> de un vector son lo que avanza en x y en y: el extremo menos el origen. ${W('~AB = (x₂ − x₁, y₂ − y₁)')}`,
+      figura:dib({ vista:[-1.6, -0.6, 4.6, 5.6], u:38, grilla:true, ejes:true, alt:'El vector que va de A hasta B, con lo que avanza en x y en y',
+        guias:[[[-1, 2], [3, 2], 2], [[3, 2], [3, 5], 2]],
+        numeros:[[1, 1.45, '4', 2], [3.35, 3.4, '3', 2]],
+        flechas:[{ de:[-1, 2], a:[3, 5], cls:'fl-1' }, { de:[0, 0], a:[4, 3], cls:'fl-3', punteada:true, desde:2 }],
+        puntos:[{ p:[-1, 2], rot:'A', dx:-6, dy:-12 }, { p:[3, 5], rot:'B', dx:-24, dy:2 }] }),
+      revela:{ txt:`${W('~AB = (3 − (−1), 5 − 2)')}, que da (4, 3): es el vector fijo que llega al punto (4, 3).` },
+      mas:[`${W('2~i − 4~j')} es otra forma de escribir (2, −4): ${W('~i')} es (1, 0) y ${W('~j')} es (0, 1).`] },
+  ],
+  ejemplos:[
+    { tras:'componentes', titulo:'El cuarto punto', prosa:true, fija:1,
+      enun:`Dados ${M('A = (2, −1)')}, ${M('B = (5, 3)')}, ${M('C = (4, 6)')} y ${M('D = (x, y)')}. Si ${W('~AB')} y ${W('~DC')} son iguales, ¿cuánto es ${M('x + y')}?`,
+      pasos:[
+        'Lo que se busca: el punto D. Los dos vectores son iguales, así que sus componentes son iguales.',
+        P('Componentes de AB: el extremo menos el origen.', R('~AB = (5 − 2, 3 − (−1))'), ' = (3, 4)'),
+        P('Componentes de DC: C menos D.', R('~DC = (4 − x, 6 − y)')),
+        P('Igualo las primeras componentes y despejo.', '4 − x = 3', '−x = 3 − 4', 'x = 1'),
+        P('Igualo las segundas.', '6 − y = 4', '−y = 4 − 6', 'y = 2'),
+        P('Sumo.', 'x + y = 1 + 2', ' = 3'),
+      ],
+      final:`${M('x + y = 3')}, con el punto D = (1, 2)`,
+      control:`Con D = (1, 2):${A(R('~DC = (4 − 1, 6 − 2)'), ' = (3, 4) ✓')}` },
+  ],
+  preguntas:[
+    { p:'¿Por qué el extremo menos el origen, y no al revés?',
+      r:'Porque las componentes dicen cuánto hay que avanzar para ir del origen al extremo. Al revés da el vector BA, el opuesto.' },
+    { p:'Si dos flechas están en lugares distintos, ¿cómo pueden ser el mismo vector?',
+      r:'Un vector no dice dónde está: dice cuánto, en qué dirección y hacia dónde. Como un desplazamiento: «tres cuadras al norte» vale desde cualquier esquina.' },
+    { p:'¿Dirección y sentido no son lo mismo?',
+      r:'No. La dirección es la recta: horizontal, vertical, inclinada. El sentido es para qué lado de esa recta se va. Una calle tiene una dirección y dos sentidos de circulación.' },
+    { p:'En el ejemplo, ¿por qué DC es C menos D?',
+      r:'Porque DC empieza en D y termina en C: el extremo es C y el origen, D.' },
+  ],
+  notas:`<p><b>El tema.</b> Es vocabulario, y va rápido: magnitud escalar y vectorial, módulo,
+      dirección y sentido, igualdad, vector fijo y libre, y las componentes. Lo que más se usa
+      después es lo último: el extremo menos el origen.</p>
+    <p><b>Dirección y sentido</b> es donde más se confunden: que digan un ejemplo de dos vectores
+      con la misma dirección y distinto sentido antes de seguir.</p>
+    <p>En el ejercitario aparece ${W('2~i − 4~j')} (el ejercicio 2 de la lista): por eso la última
+      línea de las componentes.</p>`
+},
+{
+  n:2, corto:'Módulo y tipos', titulo:'El módulo y los tipos de vectores', pag:'material de lectura, secciones 2.4 y 2.5',
+  teoria:[
+    { id:'modulo', cajon:'teorema', chip:'Módulo', titulo:'Cuánto mide un vector',
+      pregunta:'¿Cuánto mide la flecha que va de (0, 0) a (3, 4)?',
+      enun:`El <b>módulo</b> es el largo. Las componentes son los catetos, y por Pitágoras: ${W('‖~v‖ = √(x^2 + y^2)')}`,
+      figura:dib({ vista:[-0.6, -0.8, 4.6, 4.6], u:44, grilla:true, ejes:true, alt:'El vector (3, 4) y su triángulo rectángulo',
+        guias:[[[0, 0], [3, 0], 2], [[3, 0], [3, 4], 2]],
+        numeros:[[1.5, -0.5, '3', 2], [3.35, 2, '4', 2]],
+        flechas:[{ de:[0, 0], a:[3, 4], rot:'v', cls:'fl-1', pos:[-16, -2] }] }),
+      revela:{ txt:`${W('‖~v‖ = √(9 + 16)')}, que es √25: mide 5.` },
+      mas:[`Con el origen y el extremo, es la distancia entre los dos puntos: ${W('‖~AB‖ = √((x₂ − x₁)^2 + (y₂ − y₁)^2)')}`,
+           'El módulo nunca es negativo: es un largo.'] },
+    { id:'tipos', cajon:'definicion', chip:'Tipos', titulo:'Los tipos de vectores',
+      pregunta:'¿Puede un vector medir 0? ¿Y medir 1?',
+      enun:'Los vectores tienen nombre según su módulo y su dirección.',
+      figura:reglas(['Nulo', `${W('~0')} es (0, 0): módulo 0, sin dirección ni sentido`, 1],
+                    ['Unitario', `módulo 1: ${W('‖~u‖ = 1')}`, 1],
+                    ['Opuesto', `${W('−~v')}: el mismo módulo y la misma dirección, el sentido contrario`, 1],
+                    ['Colineales', `la misma dirección (paralelos): ${W('~u = k · ~v')}`, 1],
+                    ['Perpendiculares', 'sus direcciones forman un ángulo recto', 1]),
+      revela:{ txt:'El nulo mide 0: su origen y su extremo coinciden. Los que miden 1 son los unitarios.' },
+      mas:['Colineales pueden tener el mismo sentido (k positivo) o el contrario (k negativo). El opuesto es el caso k igual a −1.'] },
+    { id:'versor', cajon:'definicion', chip:'Versor', titulo:'El versor',
+      pregunta:`${W('~v = (6, 8)')}. ¿Qué vector de largo 1 apunta igual que ${W('~v')}?`,
+      enun:`El <b>versor</b> de ${W('~v')} es el vector unitario con su misma dirección y su mismo sentido: ${W('~v')} dividido por su módulo.`,
+      html:`<p class="forma-grande">${M(`vers ${V('v')} = `)}${Q(V('v'), `‖${V('v')}‖`)}</p>`,
+      figura:dib({ vista:[-0.7, -0.7, 6.6, 8.6], u:28, grilla:true, ejes:true, alt:'El vector (6, 8) y su versor, de largo 1',
+        extra:(X, Y, u) => `<circle class="v-guia" data-desde="3" cx="${X(0)}" cy="${Y(0)}" r="${u}"/>`,
+        flechas:[{ de:[0, 0], a:[6, 8], rot:'v', cls:'fl-1', pos:[-16, -2] }, { de:[0, 0], a:[0.6, 0.8], cls:'fl-2', desde:3 }] }),
+      revela:{ txt:`El módulo es 10. El versor es (${Q(6, 10)}, ${Q(8, 10)}), que es (${Q(3, 5)}, ${Q(4, 5)}).` },
+      mas:[`Para un vector de módulo 15 con la dirección y el sentido de ${W('~v')}: se multiplica el versor por 15.`] },
+  ],
+  ejemplos:[
+    { tras:'versor', titulo:'El dato es el módulo', prosa:true, fija:1,
+      enun:`El vector ${W('~v = (5, m + 2)')} mide 13. Si m es positivo, ¿cuánto vale m?`,
+      pasos:[
+        'Lo que se busca: m. Se conoce el módulo, así que se escribe con las componentes.',
+        P('El módulo, con las componentes.', R('‖~v‖ = √(5^2 + (m + 2)^2)')),
+        P('Igualo a 13 y elevo al cuadrado los dos miembros.', '25 + (m + 2)^2 = 169'),
+        P('Resto 25 a los dos miembros.', `25 + (m + 2)^2 ${N('− 25')} = 169 ${N('− 25')}`, '(m + 2)^2 = 144'),
+        P('Los números que al cuadrado dan 144 son 12 y −12. Con m positivo, m + 2 es 12.', 'm + 2 = 12', 'm = 10'),
+        'Con −12 daría m igual a −14, que no sirve: m tiene que ser positivo.',
+      ],
+      final:`${M('m = 10')}`,
+      control:`El vector es (5, 12):${A('5^2 + 12^2 = 25 + 144', ' = 169', '√169 = 13 ✓')}` },
+  ],
+  preguntas:[
+    { p:'¿Por qué en el módulo se elevan al cuadrado las componentes?',
+      r:'Porque es Pitágoras: las componentes son los catetos de un triángulo rectángulo, y el módulo es la hipotenusa.' },
+    { p:'Si una componente es negativa, ¿el módulo da negativo?',
+      r:'No: al elevarla al cuadrado queda positiva. (−3, 4) mide lo mismo que (3, 4): 5.' },
+    { p:'¿Para qué sirve el versor?',
+      r:'Para fabricar vectores con una dirección dada y el largo que uno quiera: el versor por 15 mide 15 y apunta como el vector.' },
+    { p:'En el ejemplo, ¿por qué no sirve m igual a −14?',
+      r:'Daría (5, −12), que también mide 13. Pero el enunciado pide m positivo: por eso se descarta.' },
+  ],
+  notas:`<p><b>El tema.</b> El módulo es Pitágoras, y conviene decirlo así. Los tipos de vectores
+      son vocabulario que el ejercitario usa en las afirmaciones de verdadero o falso: colineal,
+      opuesto, unitario, versor.</p>
+    <p><b>El versor</b> es lo que piden los ejercicios de «un vector de módulo 15 con la dirección
+      y el sentido de b». Que vean que el versor de (6, 8) mide 1 antes de seguir: con la
+      calculadora, 0,6 al cuadrado más 0,8 al cuadrado. Un vector unitario es su propio versor:
+      lo usa la afirmación III del ejercicio 10 de la lista.</p>`
+},
+{
+  n:3, corto:'Operaciones', titulo:'Las operaciones con vectores', pag:'material de lectura, sección 3',
+  teoria:[
+    { id:'suma', cajon:'definicion', chip:'Suma', titulo:'La suma',
+      pregunta:`${W('~u = (2, 1)')} y ${W('~v = (1, 3)')}. Si se camina ${W('~u')} y después ${W('~v')}, ¿dónde se termina?`,
+      enun:`Se suma componente a componente: ${W('~u + ~v = (x₁ + x₂, y₁ + y₂)')}`,
+      figura:dib({ vista:[-0.6, -0.6, 4.6, 4.6], u:44, grilla:true, ejes:true, alt:'u, después v, y la suma, la diagonal del paralelogramo',
+        flechas:[{ de:[0, 1e-9], a:[1, 3], cls:'fl-2', punteada:true, desde:3 }, { de:[1, 3], a:[3, 4], cls:'fl-1', punteada:true, desde:3 },
+                 { de:[0, 0], a:[2, 1], rot:'u', cls:'fl-1', pos:[4, 20] }, { de:[2, 1], a:[3, 4], rot:'v', cls:'fl-2', pos:[18, 2] },
+                 { de:[0, 0], a:[3, 4], desde:2 }] }),
+      revela:{ txt:`${W('~u + ~v = (3, 4)')}: la flecha que va del origen de ${W('~u')} al extremo de ${W('~v')}.` },
+      mas:['Por el otro lado del paralelogramo se llega al mismo punto: la suma es conmutativa, y es la diagonal del paralelogramo.',
+           `También es asociativa, y ${W('~0')} es el neutro: ${W('~u + ~0 = ~u')}.`] },
+    { id:'poligono', cajon:'estrategia', chip:'Polígono', titulo:'El método del polígono',
+      pregunta:'Si las flechas se ponen una a continuación de la otra y la última vuelve al punto de partida, ¿cuánto da la suma?',
+      enun:'Cada flecha empieza donde termina la anterior. La suma va del origen de la primera al extremo de la última.',
+      figura:dib({ vista:[-0.6, -0.8, 6.2, 4.4], u:40, alt:'Tres flechas encadenadas y la resultante, del principio al final',
+        flechas:[{ de:[0, 0], a:[1.5, 3], rot:'a', cls:'fl-1', pos:[-16, 0] }, { de:[1.5, 3], a:[4, 3.6], rot:'b', cls:'fl-2', pos:[0, -12] },
+                 { de:[4, 3.6], a:[5.5, 1.2], rot:'c', cls:'fl-3', pos:[16, 0] }, { de:[0, 0], a:[5.5, 1.2], desde:1 }] }),
+      revela:{ txt:`El vector nulo: si la cadena se cierra, la suma es ${W('~0')}.` },
+      mas:['Para leer una figura del ejercitario: buscar cadenas que se cierran (suman 0) y caminos distintos entre los mismos dos puntos (dan lo mismo).'] },
+    { id:'resta-escalar', cajon:'definicion', chip:'Resta y producto por un número', titulo:'La resta y el producto por un número',
+      pregunta:`Si ${W('~v = (2, −1)')}, ¿qué es ${W('3~v')}? ¿Y ${W('−~v')}?`,
+      enun:`${W('k · ~v = (k x, k y)')}: la misma dirección; el mismo sentido si k es positivo, el contrario si es negativo. Restar es sumar el opuesto: ${W('~u − ~v = (x₁ − x₂, y₁ − y₂)')}`,
+      figura:dib({ vista:[-2.6, -3.6, 6.6, 1.6], u:34, grilla:true, ejes:true, alt:'v, 3v y −v sobre la misma recta',
+        flechas:[{ de:[0, 0], a:[6, -3], rot:'3v', cls:'fl-3', pos:[16, 22], desde:2 }, { de:[0, 0], a:[-2, 1], rot:'−v', cls:'fl-2', pos:[-6, -12], desde:2 },
+                 { de:[0, 0], a:[2, -1], rot:'v', cls:'fl-1', pos:[-6, 18] }] }),
+      revela:{ txt:`${W('3~v = (6, −3)')} y ${W('−~v = (−2, 1)')}.` },
+      mas:[`Por eso las componentes de ${W('~AB')} son B menos A: es el vector que, sumado a A, llega a B.`,
+           `Valen las distributivas: ${W('k(~u + ~v) = k~u + k~v')} y ${W('(a + b)~v = a~v + b~v')}.`] },
+  ],
+  ejemplos:[
+    { tras:'resta-escalar', titulo:'Combinar dos vectores', prosa:true, fija:1,
+      enun:`Dados ${W('~u = (1, 2)')}, ${W('~v = (3, −1)')} y ${W('~w = (5, 3)')}, hallar k y m tales que ${W('~w = k~u + m~v')}.`,
+      pasos:[
+        'Lo que se busca: dos números, k y m. Una igualdad de vectores son dos igualdades de números.',
+        P('Escribo cada lado con componentes.', '(5, 3) = k(1, 2) + m(3, −1)', ' = (k + 3m, 2k − m)'),
+        P('Igualo componente a componente.', 'k + 3m = 5', '2k − m = 3'),
+        P('Despejo m de la segunda.', 'm = 2k − 3'),
+        P('Reemplazo en la primera.', `k + 3 · ${N('(2k − 3)')} = 5`, '7k − 9 = 5'),
+        P('Sumo 9 y divido entre 7.', `7k − 9 ${N('+ 9')} = 5 ${N('+ 9')}`, '7k = 14', 'k = 2'),
+        P('Vuelvo a m.', 'm = 2 · 2 − 3', ' = 1'),
+      ],
+      final:`${M('k = 2')} y ${M('m = 1')}`,
+      control:`${A(R('2~u + ~v = (2, 4) + (3, −1)'), ' = (5, 3) ✓')}` },
+  ],
+  preguntas:[
+    { p:'¿Por qué la suma es la diagonal del paralelogramo?',
+      r:'Porque se puede caminar primero u y después v, o primero v y después u: los dos caminos son los lados del paralelogramo y terminan en el mismo punto.' },
+    { p:'¿Qué pasa si se multiplica un vector por 0?',
+      r:'Da el vector nulo, (0, 0).' },
+    { p:'En la figura del polígono, ¿y si c volviera al principio?',
+      r:'Entonces la cadena se cerraría y a + b + c sería el vector nulo. Es lo que más se usa en las figuras del ejercitario.' },
+    { p:'¿Por qué en el ejemplo hay dos ecuaciones?',
+      r:'Porque dos vectores son iguales cuando son iguales las dos componentes: la x con la x y la y con la y.' },
+  ],
+  notas:`<p><b>El tema.</b> Con componentes, las operaciones son de a una componente. Con
+      flechas, la suma es encadenar: el método del polígono es el que piden las figuras del
+      ejercitario (los ejercicios 5 y 6 de la lista).</p>
+    <p><b>El polígono.</b> Conviene que lo hagan con el dedo sobre la figura: «empiezo acá, sigo
+      la flecha, sigo la otra». Una cadena que se cierra suma 0, y dos caminos entre los mismos
+      puntos son iguales.</p>
+    <p>El ejemplo es el ejercicio 4 de la lista con otros números: una combinación de dos
+      vectores es un sistema de dos ecuaciones.</p>`
+},
+{
+  n:4, corto:'Producto escalar', titulo:'El producto escalar', pag:'material de lectura, sección 3.4',
+  teoria:[
+    { id:'producto-escalar', cajon:'definicion', chip:'Producto escalar', titulo:'El producto escalar da un número',
+      pregunta:`${W('~u = (3, 2)')} y ${W('~v = (4, −1)')}. ¿Qué da ${W('~u · ~v')}: un vector o un número?`,
+      enun:`Se multiplican las componentes que se corresponden y se suman: ${W('~u · ~v = x₁ x₂ + y₁ y₂')}`,
+      revela:{ txt:'3 · 4 + 2 · (−1), que da 12 − 2: 10. Un número.' },
+      mas:['Por eso se llama producto <b>escalar</b>: el resultado es un escalar, no un vector.'] },
+    { id:'propiedades', cajon:'teorema', chip:'Propiedades', titulo:'Las reglas del producto escalar',
+      pregunta:`Si ${W('~v = (3, 4)')}, ¿cuánto es ${W('~v · ~v')}?`,
+      enun:'Son las de multiplicar números, más una nueva: un vector por sí mismo.',
+      figura:reglas(['Consigo mismo', W('~v · ~v = ‖~v‖^2'), 1],
+                    ['Conmutativa', W('~u · ~v = ~v · ~u'), 3],
+                    ['Distributiva', W('~u · (~v + ~w) = ~u · ~v + ~u · ~w'), 3],
+                    ['Con un número', W('k(~u · ~v) = (k~u) · ~v'), 3],
+                    ['El cero', `${W('~v · ~v')} es 0 solo si ${W('~v')} es ${W('~0')}`, 3]),
+      revela:{ txt:'9 + 16, que da 25: es 5 al cuadrado, y 5 es el módulo de (3, 4).' },
+      mas:['Con estas reglas el producto escalar se trabaja como una multiplicación de números: se distribuye, se saca factor común.'] },
+    { id:'perpendiculares', cajon:'teorema', chip:'Perpendiculares', titulo:'Perpendiculares: producto escalar 0',
+      pregunta:`${W('~u = (2, 3)')} y ${W('~v = (−3, 2)')}: ¿forman ángulo recto?`,
+      enun:`Dos vectores no nulos son <b>perpendiculares</b> cuando ${W('~u · ~v = 0')}. Son <b>paralelos</b> cuando sus componentes son proporcionales: ${W('x₁ y₂ − x₂ y₁ = 0')}.`,
+      figura:dib({ vista:[-3.6, -0.6, 2.6, 3.6], u:44, grilla:true, ejes:true, alt:'Los vectores (2, 3) y (−3, 2), en ángulo recto',
+        extra:recto([2, 3], [-3, 2], 2),
+        flechas:[{ de:[0, 0], a:[2, 3], rot:'u', cls:'fl-1', pos:[16, 2] }, { de:[0, 0], a:[-3, 2], rot:'v', cls:'fl-2', pos:[-4, -14] }] }),
+      revela:{ txt:`${W('~u · ~v')} es 2 · (−3) + 3 · 2, que da −6 + 6: 0. Sí, son perpendiculares.` },
+      mas:['Un perpendicular a (a, b) se arma cambiando el orden y un signo: (−b, a).'] },
+    { id:'cuadrado', cajon:'estrategia', chip:'Estrategia', titulo:'El cuadrado de una suma de vectores',
+      pregunta:`Si se conocen ${W('‖~u‖')}, ${W('‖~v‖')} y ${W('~u · ~v')}, ¿cuánto mide ${W('~u + ~v')}?`,
+      enun:`Es el cuadrado de un binomio, con ${W('~v · ~v = ‖~v‖^2')}:`,
+      figura:reglas(['La suma', W('‖~u + ~v‖^2 = ‖~u‖^2 + 2 ~u · ~v + ‖~v‖^2'), 1],
+                    ['La resta', W('‖~u − ~v‖^2 = ‖~u‖^2 − 2 ~u · ~v + ‖~v‖^2'), 1],
+                    ['Restando las dos', W('‖~u + ~v‖^2 − ‖~u − ~v‖^2 = 4 ~u · ~v'), 3],
+                    ['Sumando las dos', W('‖~u + ~v‖^2 + ‖~u − ~v‖^2 = 2‖~u‖^2 + 2‖~v‖^2'), 4]),
+      revela:{ txt:'Se calcula el cuadrado del módulo con los tres datos, y al final se saca la raíz.' },
+      mas:['Si se conocen los módulos de la suma y de la resta, restándolas sale el producto escalar.',
+           'Sumándolas, se va el producto escalar: queda el doble de la suma de los cuadrados de los módulos.'] },
+  ],
+  ejemplos:[
+    { tras:'cuadrado', titulo:'El producto escalar sin componentes', prosa:true, fija:1,
+      enun:`${W('‖~u‖ = 5')}, ${W('‖~v‖ = 3')} y ${W('‖~u + ~v‖ = 7')}. ¿Cuánto es ${W('~u · ~v')}?`,
+      pasos:[
+        `Lo que se busca: ${W('~u · ~v')}. Los datos son tres módulos: se usa el cuadrado de la suma.`,
+        P('El cuadrado de la suma.', R('‖~u + ~v‖^2 = ‖~u‖^2 + 2 ~u · ~v + ‖~v‖^2')),
+        P('Reemplazo los módulos.', R('7^2 = 5^2 + 2 ~u · ~v + 3^2'), R('49 = 34 + 2 ~u · ~v')),
+        P('Resto 34 a los dos miembros.', R(`49 ${N('− 34')} = 34 + 2 ~u · ~v ${N('− 34')}`), R('15 = 2 ~u · ~v')),
+        P('Divido entre 2.', R(`~u · ~v = ${Q('15', '2')}`)),
+      ],
+      final:`${M(`${V('u')} · ${V('v')} = `)}${Q('15', '2')}`,
+      control:`Con ese producto escalar:${A('25 + 2 · 7,5 + 9 = 25 + 15 + 9', ' = 49 ✓')}` },
+  ],
+  preguntas:[
+    { p:'¿Por qué el producto escalar de un vector por sí mismo es el módulo al cuadrado?',
+      r:'Porque (x, y) · (x, y) es x² + y², y eso es lo que está adentro de la raíz del módulo.' },
+    { p:'¿Por qué (2, 3) y (−3, 2) son perpendiculares?',
+      r:'Al cambiar el orden y un signo, los dos productos quedan iguales y con signo contrario: se cancelan. Es girar la flecha un cuarto de vuelta.' },
+    { p:'En el ejemplo, ¿no se puede sumar 5 + 3 y listo?',
+      r:'No: los módulos no se suman, salvo que los dos vectores apunten igual. Por eso ‖u + v‖ es 7 y no 8: están un poco abiertos.' },
+    { p:'¿Hay que saberse la fórmula de la resta de memoria?',
+      r:'No: es la de la suma con −v en lugar de v. El término del medio cambia de signo.' },
+  ],
+  notas:`<p><b>El tema.</b> Es el más importante de la unidad: casi la mitad del ejercitario se
+      resuelve con el producto escalar. Lo que tienen que sacar: da un número, el de un vector
+      consigo mismo es su módulo al cuadrado, y es 0 cuando son perpendiculares.</p>
+    <p><b>El cuadrado de una suma</b> es la estrategia de los ejercicios sin componentes (los
+      ejercicios 11 y 12 de la lista): se eleva al cuadrado y se desarrolla como un binomio.
+      Antes de mostrar la tabla, que lo intenten con lo que saben de (a + b)².</p>`
+},
+{
+  n:5, corto:'Ángulo y proyección', titulo:'El ángulo entre dos vectores y la proyección', pag:'material de lectura, secciones 4 y 5',
+  teoria:[
+    { id:'angulo', cajon:'teorema', chip:'Ángulo', titulo:'El ángulo entre dos vectores',
+      pregunta:`${W('~u · ~v = 6')}, ${W('‖~u‖ = 3')} y ${W('‖~v‖ = 4')}. ¿El ángulo que forman es agudo u obtuso?`,
+      enun:`Para dos vectores no nulos, con θ entre 0° y 180°:`,
+      html:`<p class="forma-grande">${M('cos θ = ')}${Q(R('~u · ~v'), R('‖~u‖ ‖~v‖'))}</p>`,
+      figura:reglas(['Positivo', `${W('~u · ~v')} mayor que 0: agudo (o 0°)`, 2],
+                    ['Cero', `${W('~u · ~v')} igual a 0: recto`, 2],
+                    ['Negativo', `${W('~u · ~v')} menor que 0: obtuso (o 180°, llano)`, 2]),
+      revela:{ txt:`${M('cos θ')} es ${Q(6, 12)}, que es ${Q(1, 2)}: θ mide 60°, y es agudo.` },
+      mas:['El signo del producto escalar dice cómo es el ángulo antes de hacer ninguna cuenta.',
+           'Para el ángulo en grados, minutos y segundos, la calculadora: la tecla cos⁻¹.'] },
+    { id:'proyeccion', cajon:'definicion', chip:'Proyección', titulo:'La proyección de un vector sobre otro',
+      pregunta:`Si la luz cae perpendicular a ${W('~v')}, ¿qué sombra hace ${W('~u')} sobre la recta de ${W('~v')}?`,
+      enun:`Un número por ${W('~v')}: un vector en la dirección de ${W('~v')}.`,
+      html:`<p class="forma-grande">${W('proy_~v ~u = ')}${Q(R('~u · ~v'), R('‖~v‖^2'))}${W(' ~v')}</p>`,
+      figura:dib({ vista:[-0.6, -0.8, 5.6, 3.6], u:46, grilla:true, ejes:true, alt:'u, v y la proyección de u sobre v, sobre el eje x',
+        guias:[[[2, 3], [2, 0], 3]],
+        extra:recto([0, 1], [-1, 0], 0) && ((X, Y) => `<path class="v-recto" data-desde="3" d="M${X(2)} ${Y(0.3)}L${X(1.7)} ${Y(0.3)}L${X(1.7)} ${Y(0)}"/>`),
+        flechas:[{ de:[0, 0], a:[4, 0], rot:'v', cls:'fl-2', pos:[26, 22] }, { de:[0, 0], a:[2, 3], rot:'u', cls:'fl-1', pos:[-14, -2] },
+                 { de:[0, 0.04], a:[2, 0.04], cls:'fl-3', desde:3 }] }),
+      revela:{ txt:`Con ${W('~u = (2, 3)')} y ${W('~v = (4, 0)')}: ${Q(8, 16)} por (4, 0), que es (2, 0).` },
+      mas:[`Si ${W('~u · ~v')} es negativo, la proyección apunta al revés de ${W('~v')}. Sobre el eje X, queda la x y la y pasa a 0.`] },
+  ],
+  ejemplos:[
+    { tras:'proyeccion', titulo:'Un ángulo con componentes', prosa:true, fija:1,
+      enun:`¿Qué ángulo forman ${W('~u = (1, 2)')} y ${W('~v = (3, 1)')}?`,
+      pasos:[
+        'Lo que se busca: θ. Hacen falta el producto escalar y los dos módulos.',
+        P('El producto escalar.', R('~u · ~v = 1 · 3 + 2 · 1'), ' = 5'),
+        P('Los módulos.', R('‖~u‖ = √(1 + 4)'), ' = √5', R('‖~v‖ = √(9 + 1)'), ' = √10'),
+        P('El coseno.', `cos θ = ${Q('5', '√5 · √10')}`, ` = ${Q('5', '5√2')}`, ` = ${Q('1', '√2')}`),
+        `El ángulo cuyo coseno es ${Q('1', '√2')}, que es ${Q('√2', '2')}, es el de 45°.`,
+      ],
+      final:`${M('θ = 45°')}`,
+      control:`El coseno de 45° por los dos módulos tiene que dar el producto escalar:${A(`${Q('√2', '2')} · √5 · √10 = ${Q('√2', '2')} · 5√2`, ' = 5 ✓')}` },
+  ],
+  preguntas:[
+    { p:'¿Por qué el ángulo entre dos vectores no pasa de 180°?',
+      r:'Porque se mide el ángulo más chico entre las dos flechas, puestas con el mismo origen. Si da más de 180° por un lado, por el otro da menos.' },
+    { p:'¿La proyección es un vector o un número?',
+      r:'Un vector: es un número por v. El número, que puede ser negativo, dice cuántas veces v.' },
+    { p:'¿Qué pasa si u y v son perpendiculares?',
+      r:'El producto escalar es 0, y la proyección es el vector nulo: la sombra es un punto.' },
+    { p:'En el ejemplo, ¿por qué √5 · √10 es 5√2?',
+      r:'Porque √5 · √10 es √50, y 50 es 25 · 2: sale el 5 de la raíz.' },
+  ],
+  notas:`<p><b>El tema.</b> El ángulo sale del producto escalar despejado. Lo que más se pregunta
+      en el examen es el signo: positivo, agudo; cero, recto; negativo, obtuso (o llano). En el
+      ejercitario, una afirmación dice «obtuso» a secas y es falsa por el llano: por eso la
+      lista usa la versión del 2.2, que dice «obtuso o llano».</p>
+    <p><b>La proyección</b> es lo más difícil de la unidad. Lo importante: es un vector sobre la
+      recta de v, y apunta al revés de v cuando el producto escalar es negativo. Eso es lo que
+      resuelve el desafío.</p>
+    <p>El ejercicio 14 de la lista pide grados, minutos y segundos: que tengan la calculadora en
+      modo grados (DEG).</p>`
+},
+{
+  n:6, corto:'Ejercicios', titulo:'Los ejercicios, de menor a mayor', pag:'del Ejercitario 2.1 y del 2.2 de fijación',
+  problemas:[
+    { cod:'E21-1', titulo:'1 · Operaciones con componentes',
+      enun:`Dados los vectores ${W('~a = (−1, 3)')} y ${W('~b = (4, 8)')}, la suma de las componentes del vector ${W('~x = 3(~b − 2~a) + 6~a − 2~b')} es igual a:${E21(1)}`,
+      opciones:[{ t:'8' }, { t:'12', ok:true }, { t:'10' }, { t:'7' }, { t:'24' }] },
+    { cod:'E21-16', titulo:'2 · Leer los vectores en el plano', largo:true,
+      enun:`<span class="ej-fig">${PLANO_UV()}</span>En la figura de abajo, están representados los vectores ${W('~u')} y ${W('~v')}. De las afirmaciones siguientes:${af(
+        `I) ${W('−~v = (−3, −4)')}`, `II) ${W('~u · ~v = −8')}`, `III) ${M(`${Q(1, 2)}${V('u')} = (2, 5)`)}`, `IV) ${W('~u − ~v = (1, 9)')}`)}La cantidad de opciones verdaderas es:${E21(16)}`,
+      opciones:[{ t:'tres' }, { t:'dos', ok:true }, { t:'una' }, { t:'cuatro' }, { t:'cero' }] },
+    { cod:'E22-6', titulo:'3 · Un vector con módulo y dirección',
+      enun:`Sabiendo que el módulo de un vector ${W('~a')} es igual a 15 y que tiene la misma dirección y sentido que el vector ${W('~b = (3, −4)')}, la suma de las componentes del vector ${W('~a')} es:${E22(6)}`,
+      opciones:[{ t:'3', error:'se le fue el signo: a es (9, −12), y 9 − 12 no es 12 − 9' }, { t:'12' }, { t:'−3', ok:true },
+                { t:'5', error:'dio el módulo de b' }, { t:'−5' }] },
+    { cod:'E21-2', titulo:'4 · Una combinación de dos vectores',
+      enun:`Sean los vectores ${W('~u = (−2, 1)')}, ${W('~v = (3, −2)')} y ${W('~w = 2~i − 4~j')}, tres vectores no colineales y ${W('~w = k ~u + m ~v')}. El valor de ${M('k + m')} es igual a:${E21(2)}`,
+      opciones:[{ t:'6', error:'dio solo m' }, { t:'8', error:'dio solo k' }, { t:'10' }, { t:'2', error:'restó: k − m' }, { t:'14', ok:true }] },
+    { cod:'E21-3', titulo:'5 · El polígono en un cuadrado', largo:true,
+      enun:`<span class="ej-fig">${CUADRADO}</span>En la figura de abajo, ${VV('‖A‖ = ‖B‖ = ‖C‖ = ‖D‖')} y ${VV('‖E‖ = ‖F‖')}. El vector resultante de los vectores mostrados es igual a:${E21(3)}`,
+      opciones:[{ t:`${VV('D')}` }, { t:`${VV('2A')}`, error:'no vio que A, B, C y D se cierran: los contó como A' }, { t:`${VV('3A')}` },
+                { t:`${VV('2D')}` }, { t:`${VV('A')}`, ok:true }] },
+    { cod:'E21-4', titulo:'6 · El polígono en un pentágono', largo:true,
+      enun:`<span class="ej-fig">${PENTAGONO}</span>Dados los vectores de la figura de abajo, de las afirmaciones siguientes, la verdadera es:${E21(4)}`,
+      opciones:[{ t:`${VV('A + B − F + C = 0')}`, error:'A + B + C llega al mismo punto que −F: suman el doble, no 0' },
+                { t:`${VV('A + G + B = 0')}` }, { t:`${VV('E + F = D')}`, error:'E + F es −D: no miró el sentido de D' },
+                { t:`${VV('G + C = D + E')}`, ok:true }, { t:`${VV('C + G = F')}`, error:'C + G es −F: no miró el sentido de F' }] },
+    { cod:'E21-12', titulo:'7 · Dirección y sentido', largo:true,
+      enun:`Dados los vectores ${W('~p = (3, 2)')}, ${W('~q = (2, −3)')} y ${W('~r = (4, 6)')}:${af(
+        `I) ${W('~p − ~q')} y ${W('~q − ~r')} tienen la misma dirección.`, `II) ${W('~p + ~q + ~r')} y ${W('3~q')} no tiene la misma direción.`,
+        `III) ${W('~p + ~q')} tiene sentido contrario al del vector (−10, 2).`)}De las proposiciones anteriores es(son) verdadera(s):${E21(12)}`,
+      opciones:[{ t:'solo I' }, { t:'solo II' }, { t:'solo III' }, { t:'solo I y II' }, { t:'solo II y III', ok:true }] },
+    { cod:'E21-10', titulo:'8 · Perpendiculares', largo:true,
+      enun:`Dados los vectores ${W('~u = (1, a)')} y ${W('~v = (−a, 1)')}, donde a pertenece al conjunto de los números enteros positivos:${af(
+        `I) El producto escalar de ${W('~u')} por ${W('~v')} es a.`, `II) El coseno del ángulo que forman los vectores ${W('~u')} y ${W('~v')} es 0.`,
+        `III) El módulo de ${W('~u')} es igual al módulo de ${W('~v')}.`, 'IV) Los vectores son paralelos.')}De las afirmaciones anteriores, es(son) falsa(s):${E21(10)}`,
+      opciones:[{ t:'Una' }, { t:'Dos', ok:true }, { t:'Tres' }, { t:'Todas' }, { t:'Ninguna' }] },
+    { cod:'E21-15', titulo:'9 · Colineales, versor y proyección', largo:true,
+      enun:`De las siguientes afirmaciones, la falsa es:${E21(15)}`,
+      opciones:[{ t:'Dos vectores no nulos que forman un ángulo de 0° son colineales.' },
+                { t:'Dos vectores no nulos que forman un ángulo de 180° son colineales.' },
+                { t:'Dos vectores colineales pueden tener sentidos opuestos.' },
+                { t:'Si dos vectores no nulos tienen el mismo versor, dichos vectores son iguales.', ok:true },
+                { t:`Dados los vectores ${W('~u ≠ ~0')} y ${W('~v ≠ ~0')}, el vector ${W('proy_~v ~u')} es el producto de un escalar por el vector ${W('~v')}.` }] },
+    { cod:'E22-7', titulo:'10 · Lo que dice el producto escalar', largo:true,
+      enun:`De las siguientes afirmaciones:${af(
+        `I) Si los vectores no nulos ${W('~u')} y ${W('~v')} son opuestos, entonces ${W('~u · ~v = 0')}`,
+        'II) Si el producto escalar de dos vectores no nulos es negativo, entonces dichos vectores forman un ángulo es obtuso o llano',
+        'III) Todo vector unitario es versor de algún vector no nulo.',
+        `IV) Si los vectores no nulos ${W('~u + ~v')} y ${W('~u − ~v')} son perpendiculares, entonces ${W('‖~u‖^2 = ‖~v‖^2')}`)}La cantidad de opciones falsas es:${E22(7)}`,
+      opciones:[{ t:'Una', ok:true }, { t:'Cuatro' }, { t:'Cero' }, { t:'Dos' }, { t:'Tres' }] },
+    { cod:'E21-8', titulo:'11 · El coseno sin componentes',
+      enun:`Dados los vectores ${W('~u')} y ${W('~v')} tales que ${W('‖~u‖ = 4')}, ${W('‖~v‖ = 6')} y ${W('‖~u + ~v‖ = 7')}. El coseno del ángulo que forman ${W('~u')} y ${W('~v')} es:${E21(8)}`,
+      opciones:[{ t:'−3', error:'dio 2 u · v y no siguió' }, { t:`${Q(1, 16)}`, error:'se le fue el signo' }, { t:`−${Q(1, 16)}`, ok:true },
+                { t:`${Q(2, 3)}` }, { t:`−${Q(2, 3)}` }] },
+    { cod:'E21-9', titulo:'12 · El producto escalar sin componentes',
+      enun:`Dos vectores ${W('~u')} y ${W('~v')} son tales que ${W('‖~u + ~v‖ = 4')} y ${W('‖~u − ~v‖ = 3')}. El producto escalar ${W('~u · ~v')} es igual a:${E21(9)}`,
+      opciones:[{ t:`${Q(7, 3)}` }, { t:`${Q(4, 3)}`, error:'dividió los dos módulos' }, { t:`${Q(7, 2)}`, error:'dividió entre 2 y no entre 4' },
+                { t:`${Q(7, 4)}`, ok:true }, { t:`${Q(3, 4)}` }] },
+    { cod:'E21-17', titulo:'13 · Una ecuación con el coseno',
+      enun:`Los vectores ${W('~u')} y ${W('~v')} forman un ángulo α tal que ${M('cos α = ')}${Q(5, 8)}. Si además ${W('~u · ~v = 15')}, ${W('‖~u‖ = x')} y ${W('‖~v‖ = x + 2')}, entonces la suma de los módulos de los vectores ${W('~u')} y ${W('~v')} es:${E21(17)}`,
+      opciones:[{ t:'4', error:'dio solo el módulo de u' }, { t:'6', error:'dio solo el módulo de v' }, { t:'−6' },
+                { t:'−10', error:'tomó la solución negativa, x igual a −6: un módulo no es negativo' }, { t:'10', ok:true }] },
+    { cod:'E21-11', titulo:'14 · El ángulo, con la calculadora',
+      enun:`Dados los vectores ${W('~u = (3, 0)')} y ${W('~v = (1, −√2)')}, el ángulo formado por ${W('−2~u')} y ${W('3~v')} es el ángulo cuyo suplemento es de:${E21(11)}`,
+      opciones:[{ t:'55° 30′ 45″' }, { t:'124° 29′ 15″' }, { t:'54° 44′ 8″', ok:true },
+                { t:'35° 15′ 52″', error:'le restó 90° al ángulo, en vez de restarlo de 180°' },
+                { t:'125° 15′ 52″', error:'dio el ángulo, y no su suplemento' }] },
+    { cod:'E21-19', titulo:'15 · La proyección del versor',
+      enun:`Dado el vector ${W('~u = (x, x)')}, siendo ${M('x > 0')}, entonces la proyección del versor de ${W('~u')} sobre el eje X, es:${E21(19)}`,
+      opciones:[{ t:'(1, 0)' }, { t:`(${Q('√2', '2')}, ${Q('√2', '2')})`, error:'dio el versor, sin proyectarlo' }, { t:'(−1, 0)' },
+                { t:`(${Q('√2', '2')}, 0)`, ok:true }, { t:`(−${Q('√2', '2')}, 0)` }] },
+  ],
+  preguntas:[
+    { p:'¿Por qué el orden de la lista es ese?',
+      r:'Va de lo que se hace con las componentes a lo que se hace sin ellas: primero cuentas, después figuras, después afirmaciones, y al final módulos, ángulos y proyecciones sin componentes.' },
+    { p:'En el 2, ¿cómo se leen u y v de la figura?',
+      r:'Por las líneas punteadas: u llega a x igual a 4 y a y igual a 5, y v llega a x igual a 3 y a y igual a −4.' },
+    { p:'En el 5, ¿por qué A, B, C y D suman cero?',
+      r:'Porque dan la vuelta al cuadrado y vuelven al punto de partida: la cadena se cierra.' },
+    { p:'En el 13, ¿qué se hace con x igual a −6?',
+      r:'Se descarta: x es el módulo de u, y un módulo no puede ser negativo.' },
+    { p:'En el 15, ¿qué es proyectar sobre el eje X?',
+      r:'Proyectar sobre (1, 0): de un vector queda solo su x. La y pasa a ser 0.' },
+  ],
+  notas:`<p><b>La lista.</b> Quince ejercicios del ejercitario, de menor a mayor, que tocan los
+      cinco temas: operaciones (1, 4, 5 y 6), qué es un vector (2), módulo y tipos (3, 7 y 9),
+      producto escalar (8, 10 y 12) y ángulo y proyección (11, 13, 14 y 15). El desafío es el
+      más difícil. Están transcriptos tal cual, con sus opciones; las figuras están redibujadas.</p>
+    <p><b>El otro ejercitario.</b> El 2.1 y el 2.2 de fijación son el mismo ejercitario con otros
+      números. De cada par se eligió la versión más clara (la del 2.2 en el 3 y el 10); la otra
+      queda para la casa. El 7 del 2.1 dice «obtuso» a secas y es falso por el llano, y el 10
+      del 2.2 dice que un coseno «es 90°»: por eso esos dos no se usan.</p>
+    <p><b>Ritmo.</b> Unos 90 minutos para los quince. Los primeros seis son de cuentas y figuras,
+      y van rápido; del 11 en adelante conviene resolver uno en el pizarrón y dejar que hagan el
+      siguiente solos.</p>
+    <p><b>Ejercitario 2.1, ejercicio 1</b>. Simplificando, x es b: 3b − 6a + 6a − 2b deja b.
+      Las componentes de (4, 8) suman 12: la B.</p>
+    <p><b>Ejercitario 2.1, ejercicio 16</b>. En la figura, u es (4, 5) y v es (3, −4). La I es
+      falsa (−v es (−3, 4)), la II verdadera (12 − 20 da −8), la III falsa (la mitad de u es
+      (2; 2,5)) y la IV verdadera. Dos: la B.</p>
+    <p><b>Ejercitario 2.2 de fijación, ejercicio 6</b>. b mide 5: a es 3 veces b, (9, −12). Sus
+      componentes suman −3: la C.</p>
+    <p><b>Ejercitario 2.1, ejercicio 2</b>. Componente a componente: −2k + 3m da 2, y k − 2m da
+      −4. De ahí m es 6 y k es 8. Suman 14: la E.</p>
+    <p><b>Ejercitario 2.1, ejercicio 3</b>. A, B, C y D dan la vuelta al cuadrado y suman 0. E y
+      F van del vértice de abajo al de arriba pasando por el centro: suman A. La resultante es
+      A: la E.</p>
+    <p><b>Ejercitario 2.1, ejercicio 4</b>. G + C va del vértice de abajo al de la derecha; D + E
+      también, por el otro lado. La verdadera es la D.</p>
+    <p><b>Ejercitario 2.1, ejercicio 12</b>. p − q es (1, 5) y q − r es (−2, −9): no son
+      proporcionales, la I es falsa. p + q + r es (9, 5) y 3q es (6, −9): no tienen la misma
+      dirección, la II es verdadera. p + q es (5, −1), y (−10, 2) es −2 por él: sentido
+      contrario, la III es verdadera. La E.</p>
+    <p><b>Ejercitario 2.1, ejercicio 10</b>. u · v da −a + a: 0. La I es falsa y la II
+      verdadera; los dos miden √(1 + a²), la III es verdadera; son perpendiculares, no
+      paralelos, la IV es falsa. Dos falsas: la B.</p>
+    <p><b>Ejercitario 2.1, ejercicio 15</b>. (1, 0) y (2, 0) tienen el mismo versor y no son
+      iguales: la falsa es la D.</p>
+    <p><b>Ejercitario 2.2 de fijación, ejercicio 7</b>. La I es falsa: si son opuestos, u · v es
+      −‖u‖². La II es verdadera (el coseno es negativo), la III también (un unitario es su propio
+      versor) y la IV también: (u + v) · (u − v) es ‖u‖² − ‖v‖². Una falsa: la A.</p>
+    <p><b>Ejercitario 2.1, ejercicio 8</b>. 49 es 16 + 2 u · v + 36: u · v es −3/2. El coseno es
+      −3/2 entre 24, −1/16: la C.</p>
+    <p><b>Ejercitario 2.1, ejercicio 9</b>. Restando los cuadrados, 16 − 9 es 4 u · v: u · v es
+      7/4, la D.</p>
+    <p><b>Ejercitario 2.1, ejercicio 17</b>. x(x + 2) · 5/8 es 15: x(x + 2) es 24, y x es 4 (la
+      otra solución, −6, no sirve). Los módulos son 4 y 6, suman 10: la E.</p>
+    <p><b>Ejercitario 2.1, ejercicio 11</b>. −2u es (−6, 0) y 3v es (3, −3√2). El coseno da
+      −1/√3, y el ángulo, 125° 15′ 52″. Su suplemento: 54° 44′ 8″, la C.</p>
+    <p><b>Ejercitario 2.1, ejercicio 19</b>. El versor de (x, x) es (√2/2, √2/2), para cualquier x
+      positivo. Sobre el eje X queda su x: (√2/2, 0), la D.</p>`
+},
+];
+
+/* El desafío: el 20 del Ejercitario 2.1, resuelto en la pizarra. Junta el
+   ángulo, la proyección y el producto escalar. En el ejercitario es la E. */
+const DESAFIO = {
+  titulo:'El doble del ángulo', prosa:true, fija:1,
+  enun:`«El ángulo formado por los vectores ${W('~u')} y ${W('~v')} es el doble del ángulo formado por ${W('~u')} y la proyección de ${W('~u')} sobre ${W('~v')}. Si ${W('~u ≠ ~v')} y ${W('‖~u‖ = ‖~v‖ = 4')}, el producto escalar ${W('~u · ~v')} es igual a:» Las opciones son −2, 2, 4, 8 y −8.${E21(20)}`,
+  pasos:[
+    `Lo que se sabe: los dos vectores miden 4, no son iguales, y el ángulo θ entre ${W('~u')} y ${W('~v')} es el doble del que forma ${W('~u')} con su proyección.`,
+    `La proyección está sobre la recta de ${W('~v')}: apunta como ${W('~v')} si el producto escalar es positivo, y al revés si es negativo.`,
+    `Si apuntara como ${W('~v')}, el ángulo con la proyección sería el mismo θ, y θ sería el doble de sí mismo: 0°. Con el mismo módulo, ${W('~u')} sería igual a ${W('~v')}, y no puede ser.`,
+    P('Entonces apunta al revés, y el ángulo con la proyección es 180° − θ.', 'θ = 2 · (180° − θ)'),
+    P('Distributiva.', 'θ = 360° − 2θ'),
+    P('Sumo 2θ a los dos miembros.', `θ ${N('+ 2θ')} = 360° − 2θ ${N('+ 2θ')}`, '3θ = 360°'),
+    P('Divido entre 3.', 'θ = 120°'),
+    P('El producto escalar, despejado de la fórmula del ángulo.', R('~u · ~v = ‖~u‖ ‖~v‖ cos θ'), ' = 4 · 4 · cos 120°', ' = 16 · cos 120°',
+      ` = 16 · (−${Q(1, 2)})`, ' = −8'),
+  ],
+  final:`${W('~u · ~v = −8')}: la E`,
+  control:`Con θ de 120°, el producto escalar es negativo y la proyección apunta al revés de ${W('~v')}. El ángulo con ${W('~u')} es:${A('180° − 120° = 60°', '2 · 60° = 120° ✓')}`,
+  preguntas:[
+    { p:'¿Por qué no puede ser que la proyección apunte como v?',
+      r:'Porque el ángulo sería el mismo, θ, y θ igual al doble de θ solo pasa con 0°. Dos vectores del mismo módulo con ángulo 0° son iguales, y el enunciado dice que no lo son.' },
+    { p:'¿Cuánto es cos 120°?',
+      r:'−1/2: 120° es 180° − 60°, y el coseno de un ángulo y el de su suplemento son opuestos.' },
+    { p:'¿Para qué dice que miden 4?',
+      r:'Para el último paso: el producto escalar es el producto de los módulos por el coseno.' },
+  ],
+  notas:`<p>El ejercicio 20 del Ejercitario 2.1, resuelto paso a paso: el más difícil de la
+      unidad. Las opciones del ejercitario son −2, 2, 4, 8 y −8; la correcta es la E.</p>
+    <p>Lo que traba es que la proyección puede apuntar al revés. Conviene dibujar los dos casos en
+      el pizarrón: u y v abiertos menos de 90° (la proyección apunta como v) y más de 90° (apunta
+      al revés), y preguntar en cuál de los dos puede ser el doble.</p>
+    <p>Si no alcanza el tiempo, va de tarea y se corrige al empezar la clase siguiente. El 20 del
+      2.2 de fijación es el mismo con el triple: da θ igual a 135° y −8√2.</p>`
+};
+
+/* El diagnóstico: cinco ítems al empezar y cinco al terminar, uno por tema,
+   propios y de opción múltiple. Van de a pares: I1 y F1 miden lo mismo con
+   otros números. Cada opción incorrecta sale de un error que los alumnos
+   cometen de verdad; todo se recalcula en el verificador. */
+const DIAGNOSTICO = {
+  clave:true, porHoja:5,
+  consigna:'Antes de empezar. Respondan en papel, solos: el código del ítem y la letra. Al final de la clase hay otros cinco iguales.',
+  notas:`<p><b>La prueba de antes y después</b>, como en las otras clases del cursillo: cinco ítems
+      al empezar, uno por tema, y cinco al terminar que miden lo mismo con otros números. Juntar
+      las hojas antes de «Ver clave».</p>
+    <p>Cada incorrecta sale de un error distinto (en la clave de abajo): restar al revés, sumar
+      las componentes en vez de elevarlas al cuadrado, olvidarse de un signo, confundir
+      perpendicular con paralelo, o sumar los módulos.</p>`,
+  items:[
+    { cod:'I1', tema:'1', enun:`Si ${M('A = (2, −1)')} y ${M('B = (5, 3)')}, ¿cuáles son las componentes del vector que va de A a B?`, opciones:[
+      { t:'(−3, −4)', error:'restó al revés: el origen menos el extremo' },
+      { t:'(3, 4)', ok:true },
+      { t:'(7, 2)', error:'sumó las coordenadas' },
+      { t:'(3, 2)', error:'en la y restó 3 − 1, sin el signo de −1' },
+      { t:'(4, 3)', error:'cambió el orden de las componentes' } ] },
+    { cod:'I2', tema:'2', enun:'¿Cuánto mide el vector (−6, 8)?', opciones:[
+      { t:'2', error:'sumó las componentes' },
+      { t:'14', error:'sumó las componentes sin el signo' },
+      { t:'100', error:'no sacó la raíz' },
+      { t:'10', ok:true },
+      { t:'2√7', error:'restó los cuadrados, 64 − 36' } ] },
+    { cod:'I3', tema:'3', enun:`Si ${W('~u = (2, −1)')} y ${W('~v = (−3, 4)')}, ¿cuánto es ${W('2~u − ~v')}?`, opciones:[
+      { t:'(5, −5)', error:'no multiplicó u por 2' },
+      { t:'(1, 2)', error:'sumó v en vez de restarlo' },
+      { t:'(7, −6)', ok:true },
+      { t:'(7, 2)', error:'en la y, −2 − 4 lo hizo −2 + 4' },
+      { t:'(−7, 6)', error:'hizo v − 2u' } ] },
+    { cod:'I4', tema:'4', enun:'¿Para qué valor de m son perpendiculares (3, −2) y (4, m)?', opciones:[
+      { t:'6', ok:true },
+      { t:'−6', error:'se le fue el signo al despejar' },
+      { t:`−${Q(8, 3)}`, error:'usó la condición de paralelos' },
+      { t:'−5', error:'sumó las componentes en vez de multiplicarlas' },
+      { t:`${Q(1, 6)}`, error:'despejó al revés: 2 entre 12' } ] },
+    { cod:'I5', tema:'5', enun:'Dos vectores miden 3 y 4 y forman un ángulo de 60°. ¿Cuánto mide su suma?', opciones:[
+      { t:'7', error:'sumó los módulos' },
+      { t:'5', error:'usó Pitágoras, como si fueran perpendiculares' },
+      { t:'√13', error:'restó el doble del producto escalar: es la fórmula de la resta' },
+      { t:'37', error:'no sacó la raíz' },
+      { t:'√37', ok:true } ] },
+  ],
+  final:{
+    consigna:'Ahora, los cinco del final. Respondan en papel, solos, igual que al empezar.',
+    notas:'<p>Los mismos cinco del principio con otros números. Juntar las hojas antes de «Ver clave», y después corregir juntos los dos.</p>',
+    items:[
+      { cod:'F1', tema:'1', enun:`Si ${M('A = (−1, 4)')} y ${M('B = (3, 1)')}, ¿cuáles son las componentes del vector que va de A a B?`, opciones:[
+        { t:'(2, 5)', error:'sumó las coordenadas' },
+        { t:'(−4, 3)', error:'restó al revés: el origen menos el extremo' },
+        { t:'(2, −3)', error:'en la x restó 3 − 1, sin el signo de −1' },
+        { t:'(−3, 4)', error:'cambió el orden de las componentes' },
+        { t:'(4, −3)', ok:true } ] },
+      { cod:'F2', tema:'2', enun:'¿Cuánto mide el vector (5, −12)?', opciones:[
+        { t:'17', error:'sumó las componentes sin el signo' },
+        { t:'169', error:'no sacó la raíz' },
+        { t:'√119', error:'restó los cuadrados, 144 − 25' },
+        { t:'13', ok:true },
+        { t:'−7', error:'sumó las componentes' } ] },
+      { cod:'F3', tema:'3', enun:`Si ${W('~u = (−1, 3)')} y ${W('~v = (4, −2)')}, ¿cuánto es ${W('2~u − ~v')}?`, opciones:[
+        { t:'(6, −8)', error:'hizo v − 2u' },
+        { t:'(−6, 8)', ok:true },
+        { t:'(2, 4)', error:'sumó v en vez de restarlo' },
+        { t:'(−5, 5)', error:'no multiplicó u por 2' },
+        { t:'(−6, 4)', error:'en la y, 6 − (−2) lo hizo 6 − 2' } ] },
+      { cod:'F4', tema:'4', enun:'¿Para qué valor de m son perpendiculares (2, 5) y (m, −4)?', opciones:[
+        { t:`−${Q(8, 5)}`, error:'usó la condición de paralelos' },
+        { t:`${Q(1, 10)}`, error:'despejó al revés: 2 entre 20' },
+        { t:'−10', error:'se le fue el signo al despejar' },
+        { t:'−3', error:'sumó las componentes en vez de multiplicarlas' },
+        { t:'10', ok:true } ] },
+      { cod:'F5', tema:'5', enun:'Dos vectores miden 2 y 5 y forman un ángulo de 60°. ¿Cuánto mide su suma?', opciones:[
+        { t:'√39', ok:true },
+        { t:'7', error:'sumó los módulos' },
+        { t:'√19', error:'restó el doble del producto escalar: es la fórmula de la resta' },
+        { t:'39', error:'no sacó la raíz' },
+        { t:'√29', error:'usó Pitágoras, como si fueran perpendiculares' } ] },
+    ],
+  },
+};
+
+const UNIDAD = {
+  preguntas:[
+    { p:'¿Para qué sirven los vectores fuera de la matemática?',
+      r:'Para todo lo que tiene dirección: una fuerza, una velocidad, un desplazamiento. En Física se usan desde la primera unidad.' },
+    { p:'¿Por qué a veces se escribe ‖v‖ y a veces |v|?',
+      r:'Son dos formas de escribir el módulo. El ejercitario usa ‖v‖, con dos rayas, para no confundirlo con el valor absoluto de un número.' },
+  ],
+  notas:`<p>Clase del cursillo de ingreso sobre la <b>unidad 2</b> de Geometría Analítica y
+      Cálculo: vectores en el plano. Sigue el orden del material de lectura: qué es un vector,
+      módulo y tipos, operaciones, producto escalar, ángulo y proyección.</p>
+    <p><b>El recorrido.</b> Cada tema es teoría (cada diapositiva arranca con una pregunta que
+      contestan antes de ver nada) y un ejemplo resuelto en la pizarra, con números propios.
+      Al final, la <b>lista de ejercicios</b>: quince del ejercitario, de menor a mayor, tal
+      cual y con sus opciones, y el desafío.</p>
+    <p><b>El reparto de las cuatro horas.</b> Diagnóstico inicial, 10 minutos. Temas 1 y 2
+      (vocabulario y módulo), 35. Tema 3, 25. <b>Pausa</b> de un cuarto de hora. Tema 4, 30.
+      Tema 5, 25. La lista, unos 90. Diagnóstico final, 10. El desafío, si no alcanza el tiempo,
+      va de tarea.</p>
+    <p><b>La notación.</b> El vector con su flecha arriba, el módulo con dos rayas (‖v‖, como el
+      ejercitario) y el producto escalar con el punto. Las componentes con coma: (3, 4).</p>`
+};
+
+Pizarra.unidad({ TEMAS, DESAFIO, UNIDAD, DIAGNOSTICO, grado:'cursillo', temasLibro:6 });
+</script>
+
+<script src="../../assets/proyeccion.js" defer></script>
+<script src="../../assets/timer.js" defer></script>
+<script src="../../assets/clase.js" defer></script>
+</body>
+</html>
