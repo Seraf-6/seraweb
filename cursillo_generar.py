@@ -3,9 +3,11 @@
 Lo llama build.py, que le pasa su plantilla (`pagina`, `barra`, `pie`) para
 que la página tenga la misma barra, el mismo pie, Proyección y Timer.
 
-Arriba va la semana (todas las semanas cargadas están en el HTML; un guion
-chico muestra la de hoy, marca el día y avisa los jueves); abajo, el banco de
-temas. Sin JavaScript se ve la última semana cargada.
+Arriba van las semanas, cada una plegable: un guion chico pliega las que ya
+pasaron, deja abiertas la de hoy y las que vienen, marca el día y avisa los
+jueves. Una semana sin clases es una grilla que todavía no llegó. Abajo, el
+banco de temas. Sin JavaScript quedan abiertas la última semana con clases y
+las siguientes.
 """
 import datetime as dt
 import html
@@ -79,27 +81,36 @@ def tarjeta_clase(c, sube):
         </article>"""
 
 
-def semana_html(s, visible, sube):
+def semana_html(s, abierta, sube):
+    """Una semana, plegable: el rótulo y el resumen en el <summary>, la grilla adentro.
+    Una semana sin clases es una grilla que todavía no llegó: cada turno dice «por llegar»."""
     por = {(c['dia'], c['turno']): c for c in s['clases']}
+    espera = not s['clases']
+    vacio = '<span class="cur-libre">por llegar</span>' if espera else '<span class="cur-libre">libre</span>'
     dias = []
     for d in DIAS:
         f = fecha(s, d)
         celdas = []
         for tid, (tnom, thoras) in TURNOS.items():
             c = por.get((d, tid))
-            cuerpo = tarjeta_clase(c, sube) if c else '<span class="cur-libre">libre</span>'
+            cuerpo = tarjeta_clase(c, sube) if c else vacio
             celdas.append(f"""<div class="cur-turno{'' if c else ' vacio'}">
         <span class="cur-turno-nom">{tnom} <small>{thoras}</small></span>
         {cuerpo}
       </div>""")
-        libre = not any((d, t) in por for t in TURNOS)
+        libre = not espera and not any((d, t) in por for t in TURNOS)
         dias.append(f"""<div class="cur-dia{' libre' if libre else ''}" data-fecha="{f.isoformat()}">
       <h3><span>{NOMBRE_DIA[d]}</span> <small>{corta(f)}</small></h3>
       {''.join(celdas)}
     </div>""")
-    return f"""<div class="cur-semana" data-lunes="{s['lunes']}" data-rotulo="{e(rotulo_semana(s))}"{'' if visible else ' hidden'}>
+    n = len(s['clases'])
+    resumen = 'la grilla todavía no llegó' if espera else f'{n} clase{"" if n == 1 else "s"}'
+    return f"""<details class="cur-sem{' espera' if espera else ''}" data-lunes="{s['lunes']}"{' open' if abierta else ''}>
+  <summary><h2>{e(rotulo_semana(s))}</h2><span class="cur-sem-cual"></span><span class="cur-sem-res">{resumen}</span></summary>
+  <div class="cur-semana">
     {''.join(dias)}
-  </div>"""
+  </div>
+</details>"""
 
 
 def se_dio(tid):
@@ -140,7 +151,7 @@ def banco(sube):
 
 GUION = r"""<script>
 (function () {
-  var semanas = [].slice.call(document.querySelectorAll('.cur-semana'));
+  var semanas = [].slice.call(document.querySelectorAll('.cur-sem'));
   if (!semanas.length) return;
   function lee(iso) { var p = iso.split('-'); return new Date(+p[0], p[1] - 1, +p[2]); }
   function iso(d) {
@@ -153,31 +164,25 @@ GUION = r"""<script>
   var lunesHoy = mas(hoy, dow === 0 ? -6 : 1 - dow);
   var objetivo = dow === 0 ? mas(lunesHoy, 7) : lunesHoy;   // el domingo ya mira la que viene
   var lunes = semanas.map(function (s) { return s.getAttribute('data-lunes'); });
-  var i = lunes.indexOf(iso(objetivo));
-  if (i < 0) {                                       // la más cercana hacia atrás, o la primera
-    i = 0;
-    for (var k = 0; k < lunes.length; k++) if (lunes[k] <= iso(objetivo)) i = k;
-  }
-  var rot = document.getElementById('cur-rotulo');
-  var ant = document.getElementById('cur-ant'), sig = document.getElementById('cur-sig');
-  function muestra(n) {
-    i = n;
-    semanas.forEach(function (s, k) { s.hidden = k !== i; });
-    rot.textContent = semanas[i].getAttribute('data-rotulo');
-    ant.disabled = i === 0; sig.disabled = i === semanas.length - 1;
-  }
-  ant.addEventListener('click', function () { if (i > 0) muestra(i - 1); });
-  sig.addEventListener('click', function () { if (i < semanas.length - 1) muestra(i + 1); });
-  document.querySelector('.cur-nav').hidden = semanas.length < 2;
+  // las que ya pasaron, plegadas; la de ahora y las que vienen, abiertas
+  var ahora = iso(objetivo), siguiente = iso(mas(objetivo, 7));
+  semanas.forEach(function (s, k) {
+    var l = lunes[k], cual = s.querySelector('.cur-sem-cual');
+    s.open = l >= ahora;
+    s.classList.toggle('pasada', l < ahora);
+    cual.textContent = l < ahora ? 'ya pasó' : l === ahora ? (dow === 0 ? 'la que viene' : 'esta semana')
+                     : l === siguiente ? 'la que viene' : '';
+    cual.hidden = !cual.textContent;
+  });
   var d = document.querySelector('.cur-dia[data-fecha="' + iso(hoy) + '"]');
   if (d) d.classList.add('hoy');
-  muestra(i);
   // jueves: cargar la disponibilidad; viernes y sábado: ¿llegó la grilla?
   var prox = mas(lunesHoy, 7), aviso = document.getElementById('cur-aviso');
   var meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto',
                'septiembre','octubre','noviembre','diciembre'];
   var cual = prox.getDate() + ' de ' + meses[prox.getMonth()];
-  var cargada = lunes.indexOf(iso(prox)) >= 0;
+  var k = lunes.indexOf(iso(prox));                  // una semana sin clases todavía no está cargada
+  var cargada = k >= 0 && !semanas[k].classList.contains('espera');
   if (dow === 4) aviso.innerHTML = '<strong>Hoy es jueves:</strong> cargá la disponibilidad para la semana del ' + cual + '.';
   else if ((dow === 5 || dow === 6) && !cargada)
     aviso.innerHTML = '<strong>Falta la grilla</strong> de la semana del ' + cual + ': cuando llegue, se carga en cursillo_datos.py.';
@@ -197,15 +202,15 @@ def pagina_cursillo(pagina, barra, pie):
   <p class="bajada">La semana de clases y, debajo, los temas: cada uno con su clase para
     proyectar, la teoría y los ejercicios del libro.</p>
 </header>""")
-    ultima = orden[-1] if orden else None
+    # sin JavaScript: abiertas la última semana con clases y las que vienen después
+    con_clases = [s['lunes'] for s in orden if s['clases']]
+    desde = con_clases[-1] if con_clases else ''
+    semanas = ''.join(semana_html(s, s['lunes'] >= desde, sube) for s in orden) \
+        or '<p>Todavía no hay semanas cargadas.</p>'
     cuerpo.append(f"""<section class="bloque" id="semana">
   <p class="eyebrow">Mi semana</p>
-  <div class="cur-encabezado">
-    <h2 id="cur-rotulo">{e(rotulo_semana(ultima)) if ultima else 'Todavía no hay semanas cargadas'}</h2>
-    <div class="cur-nav"><button class="cur-flecha" type="button" id="cur-ant" aria-label="Semana anterior">←</button><button class="cur-flecha" type="button" id="cur-sig" aria-label="Semana siguiente">→</button></div>
-  </div>
   <div class="aviso" id="cur-aviso" hidden></div>
-  {''.join(semana_html(s, s is ultima, sube) for s in orden)}
+  {semanas}
 </section>""")
     cuerpo.append(f"""<section class="bloque" id="temas">
   <p class="eyebrow">El banco</p>

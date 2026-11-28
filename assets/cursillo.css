@@ -3,21 +3,32 @@
 
 .cur-portada{padding-block:32px 18px}
 
-.cur-encabezado{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
-.cur-encabezado h2{margin:0}
-.cur-nav{display:flex; gap:6px}
-.cur-nav[hidden]{display:none}
-.cur-flecha{
-  font:700 18px/1 var(--sans); min-width:44px; min-height:44px; border-radius:5px;
-  border:1px solid var(--acento); background:none; color:var(--acento); cursor:pointer}
-.cur-flecha:hover,.cur-flecha:focus-visible{background:var(--acento); color:var(--papel)}
-.cur-flecha[disabled]{opacity:.3; cursor:default; background:none; color:var(--acento)}
+/* cada semana, plegable: el rótulo con su flechita, cuál es y cuántas clases */
+.cur-sem{border-top:1px solid var(--linea-fuerte); padding:6px 0 10px}
+.cur-sem + .cur-sem{margin-top:6px}
+.cur-sem > summary{
+  list-style:none; cursor:pointer; display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;
+  padding:10px 0 4px}
+.cur-sem > summary::-webkit-details-marker{display:none}
+.cur-sem > summary h2{margin:0; display:flex; align-items:baseline; gap:10px}
+.cur-sem > summary h2::before{
+  content:'▸'; color:var(--acento); font-size:.7em; display:inline-block; transition:transform .2s}
+.cur-sem[open] > summary h2::before{transform:rotate(90deg)}
+.cur-sem > summary:hover h2,.cur-sem > summary:focus-visible h2{color:var(--acento)}
+.cur-sem-cual{
+  font:700 11px var(--mono); letter-spacing:.1em; text-transform:uppercase; color:var(--papel);
+  background:var(--acento); padding:3px 8px; border-radius:4px}
+.cur-sem-cual[hidden]{display:none}
+.cur-sem-res{font-family:var(--mono); font-size:12.5px; color:var(--lapiz)}
+.cur-sem.pasada > summary h2{font-size:1.25rem; color:var(--lapiz)}
+.cur-sem.pasada .cur-sem-cual{background:none; color:var(--lapiz); border:1px solid var(--linea-fuerte)}
+.cur-sem.espera .cur-libre{font-style:italic}
+@media (prefers-reduced-motion:reduce){.cur-sem > summary h2::before{transition:none}}
 
 /* la grilla: seis días en columnas, con los turnos alineados por subgrid */
 .cur-semana{
   display:grid; grid-template-columns:repeat(6,minmax(0,1fr));
   grid-template-rows:auto auto auto; gap:0 8px; margin-top:16px}
-.cur-semana[hidden]{display:none}
 .cur-dia{
   display:grid; grid-row:span 3; grid-template-rows:subgrid; gap:8px;
   padding:8px; border-radius:6px; border:1px solid transparent}

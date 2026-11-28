@@ -28,12 +28,10 @@
 </header>
 <section class="bloque" id="semana">
   <p class="eyebrow">Mi semana</p>
-  <div class="cur-encabezado">
-    <h2 id="cur-rotulo">Semana del 23 al 28 de noviembre</h2>
-    <div class="cur-nav"><button class="cur-flecha" type="button" id="cur-ant" aria-label="Semana anterior">←</button><button class="cur-flecha" type="button" id="cur-sig" aria-label="Semana siguiente">→</button></div>
-  </div>
   <div class="aviso" id="cur-aviso" hidden></div>
-  <div class="cur-semana" data-lunes="2026-11-23" data-rotulo="Semana del 23 al 28 de noviembre">
+  <details class="cur-sem" data-lunes="2026-11-23" open>
+  <summary><h2>Semana del 23 al 28 de noviembre</h2><span class="cur-sem-cual"></span><span class="cur-sem-res">5 clases</span></summary>
+  <div class="cur-semana">
     <div class="cur-dia libre" data-fecha="2026-11-23">
       <h3><span>Lunes</span> <small>23/11</small></h3>
       <div class="cur-turno vacio">
@@ -110,6 +108,66 @@
       </div>
     </div>
   </div>
+</details><details class="cur-sem espera" data-lunes="2026-11-30" open>
+  <summary><h2>Semana del 30 de noviembre al 5 de diciembre</h2><span class="cur-sem-cual"></span><span class="cur-sem-res">la grilla todavía no llegó</span></summary>
+  <div class="cur-semana">
+    <div class="cur-dia" data-fecha="2026-11-30">
+      <h3><span>Lunes</span> <small>30/11</small></h3>
+      <div class="cur-turno vacio">
+        <span class="cur-turno-nom">Mañana <small>8:00 a 12:00</small></span>
+        <span class="cur-libre">por llegar</span>
+      </div><div class="cur-turno vacio">
+        <span class="cur-turno-nom">Tarde <small>14:00 a 18:00</small></span>
+        <span class="cur-libre">por llegar</span>
+      </div>
+    </div><div class="cur-dia" data-fecha="2026-12-01">
+      <h3><span>Martes</span> <small>1/12</small></h3>
+      <div class="cur-turno vacio">
+        <span class="cur-turno-nom">Mañana <small>8:00 a 12:00</small></span>
+        <span class="cur-libre">por llegar</span>
+      </div><div class="cur-turno vacio">
+        <span class="cur-turno-nom">Tarde <small>14:00 a 18:00</small></span>
+        <span class="cur-libre">por llegar</span>
+      </div>
+    </div><div class="cur-dia" data-fecha="2026-12-02">
+      <h3><span>Miércoles</span> <small>2/12</small></h3>
+      <div class="cur-turno vacio">
+        <span class="cur-turno-nom">Mañana <small>8:00 a 12:00</small></span>
+        <span class="cur-libre">por llegar</span>
+      </div><div class="cur-turno vacio">
+        <span class="cur-turno-nom">Tarde <small>14:00 a 18:00</small></span>
+        <span class="cur-libre">por llegar</span>
+      </div>
+    </div><div class="cur-dia" data-fecha="2026-12-03">
+      <h3><span>Jueves</span> <small>3/12</small></h3>
+      <div class="cur-turno vacio">
+        <span class="cur-turno-nom">Mañana <small>8:00 a 12:00</small></span>
+        <span class="cur-libre">por llegar</span>
+      </div><div class="cur-turno vacio">
+        <span class="cur-turno-nom">Tarde <small>14:00 a 18:00</small></span>
+        <span class="cur-libre">por llegar</span>
+      </div>
+    </div><div class="cur-dia" data-fecha="2026-12-04">
+      <h3><span>Viernes</span> <small>4/12</small></h3>
+      <div class="cur-turno vacio">
+        <span class="cur-turno-nom">Mañana <small>8:00 a 12:00</small></span>
+        <span class="cur-libre">por llegar</span>
+      </div><div class="cur-turno vacio">
+        <span class="cur-turno-nom">Tarde <small>14:00 a 18:00</small></span>
+        <span class="cur-libre">por llegar</span>
+      </div>
+    </div><div class="cur-dia" data-fecha="2026-12-05">
+      <h3><span>Sábado</span> <small>5/12</small></h3>
+      <div class="cur-turno vacio">
+        <span class="cur-turno-nom">Mañana <small>8:00 a 12:00</small></span>
+        <span class="cur-libre">por llegar</span>
+      </div><div class="cur-turno vacio">
+        <span class="cur-turno-nom">Tarde <small>14:00 a 18:00</small></span>
+        <span class="cur-libre">por llegar</span>
+      </div>
+    </div>
+  </div>
+</details>
 </section>
 <section class="bloque" id="temas">
   <p class="eyebrow">El banco</p>
@@ -151,7 +209,7 @@
 </footer>
 <script>
 (function () {
-  var semanas = [].slice.call(document.querySelectorAll('.cur-semana'));
+  var semanas = [].slice.call(document.querySelectorAll('.cur-sem'));
   if (!semanas.length) return;
   function lee(iso) { var p = iso.split('-'); return new Date(+p[0], p[1] - 1, +p[2]); }
   function iso(d) {
@@ -164,31 +222,25 @@
   var lunesHoy = mas(hoy, dow === 0 ? -6 : 1 - dow);
   var objetivo = dow === 0 ? mas(lunesHoy, 7) : lunesHoy;   // el domingo ya mira la que viene
   var lunes = semanas.map(function (s) { return s.getAttribute('data-lunes'); });
-  var i = lunes.indexOf(iso(objetivo));
-  if (i < 0) {                                       // la más cercana hacia atrás, o la primera
-    i = 0;
-    for (var k = 0; k < lunes.length; k++) if (lunes[k] <= iso(objetivo)) i = k;
-  }
-  var rot = document.getElementById('cur-rotulo');
-  var ant = document.getElementById('cur-ant'), sig = document.getElementById('cur-sig');
-  function muestra(n) {
-    i = n;
-    semanas.forEach(function (s, k) { s.hidden = k !== i; });
-    rot.textContent = semanas[i].getAttribute('data-rotulo');
-    ant.disabled = i === 0; sig.disabled = i === semanas.length - 1;
-  }
-  ant.addEventListener('click', function () { if (i > 0) muestra(i - 1); });
-  sig.addEventListener('click', function () { if (i < semanas.length - 1) muestra(i + 1); });
-  document.querySelector('.cur-nav').hidden = semanas.length < 2;
+  // las que ya pasaron, plegadas; la de ahora y las que vienen, abiertas
+  var ahora = iso(objetivo), siguiente = iso(mas(objetivo, 7));
+  semanas.forEach(function (s, k) {
+    var l = lunes[k], cual = s.querySelector('.cur-sem-cual');
+    s.open = l >= ahora;
+    s.classList.toggle('pasada', l < ahora);
+    cual.textContent = l < ahora ? 'ya pasó' : l === ahora ? (dow === 0 ? 'la que viene' : 'esta semana')
+                     : l === siguiente ? 'la que viene' : '';
+    cual.hidden = !cual.textContent;
+  });
   var d = document.querySelector('.cur-dia[data-fecha="' + iso(hoy) + '"]');
   if (d) d.classList.add('hoy');
-  muestra(i);
   // jueves: cargar la disponibilidad; viernes y sábado: ¿llegó la grilla?
   var prox = mas(lunesHoy, 7), aviso = document.getElementById('cur-aviso');
   var meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto',
                'septiembre','octubre','noviembre','diciembre'];
   var cual = prox.getDate() + ' de ' + meses[prox.getMonth()];
-  var cargada = lunes.indexOf(iso(prox)) >= 0;
+  var k = lunes.indexOf(iso(prox));                  // una semana sin clases todavía no está cargada
+  var cargada = k >= 0 && !semanas[k].classList.contains('espera');
   if (dow === 4) aviso.innerHTML = '<strong>Hoy es jueves:</strong> cargá la disponibilidad para la semana del ' + cual + '.';
   else if ((dow === 5 || dow === 6) && !cargada)
     aviso.innerHTML = '<strong>Falta la grilla</strong> de la semana del ' + cual + ': cuando llegue, se carga en cursillo_datos.py.';

@@ -129,8 +129,10 @@ else:
 # ── la semana que viene ──
 hoy = dt.date.today()
 prox = hoy + dt.timedelta(days=7 - hoy.weekday())
-if prox.isoformat() not in vistos and hoy.weekday() >= 3:
-    pendientes.append(f'la semana del {prox} todavía no está cargada')
+con_clases = {s['lunes'] for s in D.SEMANAS if s['clases']}
+if prox.isoformat() not in con_clases and hoy.weekday() >= 3:
+    pendientes.append(f'la semana del {prox} todavía no está cargada'
+                      + (' (está, esperando la grilla)' if prox.isoformat() in vistos else ''))
 
 print(f'Cursillo: {len(D.SEMANAS)} semana(s), '
       f'{sum(len(s["clases"]) for s in D.SEMANAS)} clase(s), {len(D.TEMAS)} tema(s).')

@@ -105,4 +105,7 @@ SEMANAS = [
          'consigna': 'Ejercitario Principia, Capítulo 2: Vectores.',
          'temas': ['vectores']},
     ]},
+    # La grilla todavía no llegó: una semana con la lista vacía sale con sus
+    # días y cada turno «por llegar». Cuando llegue, se cargan sus clases acá.
+    {'lunes': '2026-11-30', 'clases': []},
 ]

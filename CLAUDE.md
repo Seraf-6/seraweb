@@ -796,11 +796,15 @@ arman **según lo que toque**: si mañana se da divisibilidad, se hace esa.
   al banco.
 
 `cursillo/index.html` es público y abre con **la semana**: lunes a sábado,
-mañana y tarde, cada clase con su grupo, su consigna y su material. Un guion
-chico elige la semana de hoy (el domingo ya muestra la que viene), marca el día,
-deja ir a otras semanas con flechas y avisa los jueves que hay que cargar la
-disponibilidad (y viernes o sábado, si la grilla de la que viene no está). Sin
-JavaScript se ve la última semana cargada. Para probar otra fecha:
+mañana y tarde, cada clase con su grupo, su consigna y su material. Cada semana
+es plegable (un `<details>`): un guion chico pliega las que ya pasaron, deja
+abiertas la de hoy (el domingo ya cuenta la que viene) y las siguientes, las
+rotula («esta semana», «la que viene», «ya pasó»), marca el día y avisa los
+jueves que hay que cargar la disponibilidad (y viernes o sábado, si la grilla
+de la que viene no está). Una semana con `'clases': []` es una grilla que
+todavía no llegó: sale con sus días y cada turno «por llegar», y para el aviso
+cuenta como no cargada. Sin JavaScript quedan abiertas la última semana con
+clases y las siguientes. Para probar otra fecha:
 `cursillo/index.html?hoy=2026-11-26`. Debajo va el banco de temas, con dónde
 se dio cada uno.
 
