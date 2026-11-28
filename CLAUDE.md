@@ -822,7 +822,7 @@ unidad dividiendo. En el cursillo, **el litro se escribe
 «L»** (kL, daL, mL): proyectada, la «l» se confunde con un 1. El observador lo
 explica, porque el material del Poli usa la minúscula.
 
-**El material del Poli no se publica: es la fuente.** Juan lo baja del Drive
+**El material del Poli no se publica tal cual: es la fuente.** Juan lo baja del Drive
 del cursillo (zip por materia: Aritmética y Álgebra, Geometría Analítica y
 Cálculo, Física, Geometría y Trigonometría; cada unidad con su teoría, sus
 ejercitarios, su cuestionario y «Sus Solucionarios») a `cursillo/materiales…/`,
@@ -835,7 +835,7 @@ ejercitarios, el cuestionario) **con otros números**, y cada uno dice de dónde
 sale (`fte()`, como en OMAPA); los ejemplos chicos son las piezas del problema
 grande del tema. Lo pidió Juan (22/11/2026): en el cursillo, a diferencia de
 Matemática, los ejemplos siguen los del material. Los números se cambian igual:
-el material no se publica, y el original queda para resolverlo en clase.
+el material no se publica tal cual pero si se puede subir partes si Juan lo pide.
 
 **Sistema métrico es una clase lineal, sin saltear nada** (lo pidió Juan el
 23/11/2026, después de probar el formato de niveles). El recorrido: un
